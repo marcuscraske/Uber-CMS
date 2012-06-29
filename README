@@ -1,0 +1,21 @@
+Uber CMS
+***********************************************************************************************************
+
+Description
+==========================================================================================================
+A simple, fast and efficient content management system (CMS) with a simple-to-use template engine and
+plugin system. The aim of this project is to develop a CMS compatible with IIS and Mono, whilst creating
+an application that can be easily modified to meet any needs.
+
+Features
+==========================================================================================================
+> Plugin system:
+-- Run cycles/periodic tasks.
+-- Ability to temporarily disable plugins.
+> Easy URL rewriting support.
+> Template engine:
+-- Conditional markup blocks using <!--IF:flag--><!--ELSE--><!--ENDIF--> with nesting support.
+
+License
+==========================================================================================================
+Creative Commons Attribution-ShareAlike 3.0 unported
