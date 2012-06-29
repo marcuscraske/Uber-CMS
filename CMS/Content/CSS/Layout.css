@@ -1,0 +1,154 @@
+.clear
+{
+	clear: both;
+}
+body
+{
+	margin: 0em;
+	background: #690;
+	color: #FFF;
+	font: normal 14px Arial,Verdana;
+}
+.FAUX_NAV
+{
+	z-index: 2;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background: #360;
+	height: 6em;
+}
+.AREA_BANNER
+{
+	z-index: 3;
+	position: relative;
+	width: 100%;
+	background: #9C0;
+	height: 4em;
+}
+.AREA_BANNER h1
+{
+	margin: 0em;
+	padding: 0.5em;
+	text-shadow: 0em 0em 0.3em #666;
+}
+.WRAPPER
+{
+	position: relative;
+	margin: auto;
+	width: 60em;
+}
+.AREA_ITEM
+{
+	position: relative;
+}
+.AREA_NAV
+{
+	z-index: 3;
+	width: 100%;
+	background: #360;
+	height: 2em;
+}
+.AREA_NAV .ITEM /* Menu item container */
+{
+	float: left;
+	color: #FFF;
+	text-decoration: none;
+	background: #360;
+	overflow: hidden;
+	height: 2em;
+	line-height: 1em;
+	margin-left: 0.5em;
+	font-size: 1em;
+	min-width: 12em;
+}
+.AREA_NAV .ITEM:hover
+{
+	overflow: visible;
+	background: #9C0;
+	font-weight: bold;
+	box-shadow: 0em 3em 3em #000;
+}
+.AREA_NAV .ITEM a /* Menu item container item */
+{
+	float: left;
+	width: 100%;
+	height: 2em;
+	color: #FFF;
+	text-decoration: none;
+}
+.AREA_NAV .ITEM div a:hover /* Sub menu items on hover */
+{
+	background: #360;
+	color: #FFF !important;
+	box-shadow: 0em 0em 1em #360;
+}
+.AREA_NAV .ITEM:hover a /* Items on container hover */
+{
+	color: #360;
+}
+.AREA_NAV .ITEM:hover div a /* Sub items on container hover */
+{
+	font-weight: normal;
+}
+.AREA_NAV .ITEM a span /* Padding */
+{
+	display: block;
+	padding: 0.5em;
+}
+.AREA_NAV .ITEM div /* Sub menu */
+{
+	float: left;
+	width: 100%;
+	background: #9C0;
+}
+.AREA_NAV .ACCOUNT
+{
+	float: right;
+	height: 2em;
+	line-height: 2em;
+	margin-right: 0.5em;
+}
+.AREA_CONTENT
+{
+	z-index: 1;
+	margin-top: 1em;
+	width: 100%;
+	background: #FFF;
+	color: #360;
+	padding: 0.5em;
+	box-shadow: 0em 0em 3em -1em #000;
+	min-height: 25em;
+	border-radius: 0.5em;
+}
+.AREA_FOOTER, .AREA_FOOTER a
+{
+	color: #360;
+}
+.AREA_FOOTER
+{
+	padding: 0.5em;
+	text-align: center;
+}
+h2, h3
+{
+	margin: 0em;
+	margin-left: -0.5em;
+	margin-top: -0.5em;
+	width: 60em;
+	font-size: 1em;
+	padding: 0.5em;
+}
+h2
+{
+	background: #360;
+	color: #FFF;
+	border-top-left-radius: 0.5em;
+	border-top-right-radius: 0.5em;
+}
+h3
+{
+	background: #CCC;
+	color: #666;
+}

@@ -1,0 +1,446 @@
+﻿﻿/*
+ * UBERMEAT FOSS
+ * ****************************************************************************************
+ * License:                 Creative Commons Attribution-ShareAlike 3.0 unported
+ *                          http://creativecommons.org/licenses/by-sa/3.0/
+ * 
+ * Project:                 Uber CMS
+ * File:                    /App_Code/Misc/Plugins.cs
+ * Author(s):               limpygnome						limpygnome@gmail.com
+ * To-do/bugs:              none
+ * 
+ * Responsible for providing a range of useful methods for plugins.
+ */
+using System;
+using System.Collections.Generic;
+using System.Web;
+using System.Reflection;
+using UberLib.Connector;
+using Ionic.Zip;
+using System.IO;
+using System.Xml;
+using System.Text;
+
+namespace UberCMS.Misc
+{
+    public static class Plugins
+    {
+        /// <summary>
+        /// Dynamically invokes a static method.
+        /// </summary>
+        /// <param name="classPath"></param>
+        /// <param name="methodName"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public static bool invokeMethod(string classPath, string methodName, object[] parameters)
+        {
+            try
+            {
+                Type t = Assembly.GetExecutingAssembly().GetType(classPath, false);
+                if (t == null) return false;
+                MethodInfo m = t.GetMethod(methodName);
+                m.Invoke(null, parameters);
+                return true;
+            }
+            catch(MissingMethodException)
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// Dynamically invokes a static method and returns the object; if the method does not exist, null is returned.
+        /// </summary>
+        /// <param name="classPath"></param>
+        /// <param name="methodName"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public static object invokeMethodReturn(string classPath, string methodName, object[] parameters)
+        {
+            try
+            {
+                Type t = Assembly.GetExecutingAssembly().GetType(classPath, false);
+                if (t == null) return null;
+                MethodInfo m = t.GetMethod(methodName);
+                return m.Invoke(null, parameters);
+            }
+            catch (MissingMethodException)
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// Returns the classpath of the plugin responsible for the passed request.
+        /// 
+        /// If a 404 occurs, this method will return a method able to handle the error;
+        /// if no plugin is able to handle a 404, null is returned.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public static string[] getRequestPlugin(Connector conn, HttpRequest request)
+        {
+            string page = request.QueryString["page"];
+            string[] classPath = null;
+            // Lookup the URL rewrite table for a responsible plugin
+            if (page != null)
+            {
+                Result res = conn.Query_Read("SELECT p.pluginid, p.classpath FROM urlrewriting AS u LEFT OUTER JOIN plugins AS p ON p.pluginid=u.pluginid WHERE u.parent IS NULL AND u.title LIKE '" + Utils.Escape(page.Replace("%", "")) + "' AND p.state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' ORDER BY p.invoke_order LIMIT 1");
+                if (res.Rows.Count != 0)
+                    classPath = new string[] { res[0]["pluginid"], res[0]["classpath"] };
+            }
+            // Finsihed...return classpath
+            return classPath;
+        }
+        /// <summary>
+        /// Returns the class-path for the 404 page.
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string[] getRequest404(Connector conn)
+        {
+            Result res = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_404='1' ORDER BY invoke_order ASC LIMIT 1");
+            if (res.Rows.Count != 0)
+                return new string[] { res[0]["pluginid"], res[0]["classpath"] };
+            else
+                return null;
+        }
+        /// <summary>
+        /// Extracts a zip file to a folder.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="destinationPath"></param>
+        /// <returns></returns>
+        public static string extractZip(string path, string destinationPath)
+        {
+            try
+            {
+                using (ZipFile file = new ZipFile(path))
+                {
+                    foreach (ZipEntry entry in file)
+                        entry.Extract(destinationPath, ExtractExistingFileAction.OverwriteSilently);
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Exception occurred whilst unzipping file '" + path + "' to '" + destinationPath + "' - " + ex.Message;
+            }
+            return null;
+        }
+        /// <summary>
+        /// Executes an SQL query file.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string executeSQL(string path, Connector conn)
+        {
+            try
+            {
+                if (!File.Exists(path))
+                    throw new Exception("SQL script '" + path + "' could not be found!");
+                else
+                {
+                    StringBuilder statements = new StringBuilder();
+                    // Build the new list of statements to be executed by stripping out any comments
+                    string data = File.ReadAllText(path).Replace("\r", string.Empty);
+                    int commentIndex;
+                    foreach (string line in data.Split('\n'))
+                    {
+                        commentIndex = line.IndexOf("--");
+                        if (commentIndex == -1)
+                            statements.Append(line).Append("\r\n");
+                        else if (commentIndex < line.Length)
+                            statements.Append(line.Substring(0, commentIndex)).Append("\r\n");
+                    }
+                    // Execute the statements
+                    conn.Query_Execute(statements.ToString());
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Failed to execute SQL file '" + path + "' - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+            }
+        }
+        /// <summary>
+        /// Gets the directory of a plugin.
+        /// </summary>
+        /// <param name="pluginid"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string getPluginBasePath(string pluginid, Connector conn)
+        {
+            return Core.basePath + "\\App_Code\\Plugins\\" + (string)conn.Query_Scalar("SELECT directory FROM plugins WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+        }
+        /// <summary>
+        /// Installs a plugin content directory into the main /Content directory;
+        /// existing files will be over-written!
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string contentInstall(string path)
+        {
+            try
+            {
+                foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+                    File.Copy(file, Core.basePath + "\\Content" + file.Substring(path.Length), true);
+            }
+            catch (Exception ex)
+            {
+                return "Failed to install content - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+            }
+            return null;
+        }
+        /// <summary>
+        /// Uninstalls a plugin content directory from the main /Content directory.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string contentUninstall(string path)
+        {
+            try
+            {
+                foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+                    File.Delete(Core.basePath + "\\Content" + file.Substring(path.Length));
+            }
+            catch (Exception ex)
+            {
+                return "Failed to uninstall content - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+            }
+            return null;
+        }
+        /// <summary>
+        /// Reserves a specified array of URLs for a plugin.
+        /// </summary>
+        /// <param name="pluginid"></param>
+        /// <param name="parent"></param>
+        /// <param name="urls"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string reserveURLs(string pluginid, string parent, string[] urls, Connector conn)
+        {
+            // Check we have URLs to actually reserve
+            if (urls.Length == 0) return null;
+            try
+            {
+                // Build query
+                string escapedPluginid = Utils.Escape(pluginid);
+                string escapedParent = parent != null ? "'" + Utils.Escape(parent) + "'" : "NULL";
+                StringBuilder statement = new StringBuilder("INSERT INTO urlrewriting (pluginid, parent, title) VALUES");
+                foreach (string url in urls)
+                    statement.Append("('" + escapedPluginid + "', " + escapedParent + ", '" + Utils.Escape(url) + "'),");
+                statement.Remove(statement.Length - 1, 1);
+                // Insert into the database
+                conn.Query_Execute(statement.ToString());
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return "Failed to reserve URLs - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+            }
+        }
+        /// <summary>
+        /// Unreserves URLs for a specified plugin.
+        /// </summary>
+        /// <param name="pluginid"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string unreserveURLs(string pluginid, Connector conn)
+        {
+            try
+            {
+                conn.Query_Execute("DELETE FROM urlrewriting WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return "Failed to unreserve urls - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+            }
+        }
+        public static string install(string basePathZip, Connector conn)
+        {
+            string error;
+            // Create cache folder if it doesn't exist
+            try
+            {
+                if (!Directory.Exists(Core.basePath + "\\Cache"))
+                    Directory.CreateDirectory(Core.basePath + "\\Cache");
+            }
+            catch(Exception ex)
+            {
+                return "Error occurred creating cache directory: " + ex.Message;
+            }
+            // Create directory for zip extraction
+            string tempPath = Core.basePath + "\\Cache\\" + DateTime.Now.ToString("yyyyMMddHHmmssffff");
+            if (Directory.Exists(tempPath))
+                try
+                {
+                    Directory.Delete(tempPath, true);
+                }
+                catch (Exception ex)
+                {
+                    return "The temporary directory '" + tempPath + "' already exists and could not be deleted - " + ex.Message + "!";
+                }
+            // Create directory
+            try
+            {
+                Directory.CreateDirectory(tempPath);
+            }
+            catch (Exception ex)
+            {
+                return "Could not create extraction directory - " + ex.Message + "!";
+            }
+            // Extract zip
+            error = extractZip(basePathZip, tempPath);
+            if (error != null) return error;
+            // Load the config
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(File.ReadAllText(tempPath + "\\Config.xml"));
+            }
+            catch (Exception ex)
+            {
+                return "Could not load plugin configuration - " + ex.Message + "!";
+            }
+            // Read config values
+            string directory;
+            string title;
+            string classpath;
+            string cycleInterval;
+            string invokeOrder;
+            bool handles404;
+            bool handlesRequestStart;
+            bool handlesRequestEnd;
+            try
+            {
+                directory = doc["settings"]["directory"].InnerText;
+                title = doc["settings"]["title"].InnerText;
+                classpath = doc["settings"]["classpath"].InnerText;
+                cycleInterval = doc["settings"]["cycle_interval"].InnerText;
+                invokeOrder = doc["settings"]["invoke_order"].InnerText;
+                handles404 = doc["settings"]["handles_404"].InnerText.Equals("1");
+                handlesRequestStart = doc["settings"]["handles_request_start"].InnerText.Equals("1");
+                handlesRequestEnd = doc["settings"]["handles_request_end"].InnerText.Equals("1");
+            }
+            catch(Exception ex)
+            {
+                return "Could not read configuration, it's most likely a piece of data is missing; this could be a plugin designed for a different version of Uber CMS - " + ex.Message + "!";
+            }
+            // Check plugin directory doesn't exist
+            string pluginDir = Core.basePath + "\\App_code\\Plugins\\" + directory;
+            if (Directory.Exists(pluginDir))
+                return "Failed to create new plugin directory - '" + pluginDir + "' already exists!";
+            // Move extracted directory
+            try
+            {
+                Directory.Move(tempPath, pluginDir);
+            }
+            catch (Exception ex)
+            {
+                return "Failed to move extracted directory '" + tempPath + "' to '" + pluginDir + "' - " + ex.Message + "!";
+            }
+            // Insert into the database
+            try
+            {
+                conn.Query_Execute("INSERT INTO plugins (title, directory, classpath, cycle_interval, invoke_order, state, handles_404, handles_request_start, handles_request_end) VALUES('" + Utils.Escape(title) + "', '" + Utils.Escape(directory) + "', '" + Utils.Escape(classpath) + "', '" + Utils.Escape(cycleInterval) + "', '" + Utils.Escape(invokeOrder) + "', '" + (int)(UberCMS.Plugins.Base.State.Disabled) + "', '" + (handles404 ? "1" : "0") + "', '" + (handlesRequestStart ? "1" : "0") + "', '" + (handlesRequestEnd ? "1" : "0") + "')");
+            }
+            catch (Exception ex)
+            {
+                return "Failed to insert plugin into database - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+                try
+                {
+                    Directory.Delete(pluginDir, true);
+                }
+                catch { }
+            }
+            return null;
+        }
+        public static string uninstall(string pluginid, Connector conn)
+        {
+            // Check if the plugin is enabled - else disable it
+            Result info = conn.Query_Read("SELECT state, directory, classpath FROM plugins WHERE pluginid='" + pluginid + "'");
+            if (info.Rows.Count != 1) return "Plugin does not exist!";
+            bool enabled = true;
+            try
+            {
+                enabled = (UberCMS.Plugins.Base.State)int.Parse(info[0]["state"]) == UberCMS.Plugins.Base.State.Enabled;
+            }
+            catch(Exception ex)
+            {
+                return "Could not determine state of plugin - " + ex.Message + "!";
+            }
+            if (enabled)
+                try
+                {
+                    // Attempt to disable the plugin - else we'll continue the uninstallation process
+                    disable(pluginid, conn);
+                }
+                catch
+                {
+                    conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Disabled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+                }
+            // Attempt to invoke the uninstall method
+            try
+            {
+                string error = (string)invokeMethodReturn(info[0]["classpath"], "uninstall", new object[] { pluginid, conn });
+                if (error != null) return error;
+            }
+            catch (Exception ex)
+            {
+                return "Failed to uninstall plugin - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+            }
+            // Remove folder
+            try
+            {
+                Directory.Delete(Core.basePath + "\\App_Code\\Plugins\\" + info[0]["directory"], true);
+            }
+            catch (Exception ex)
+            {
+                return "Critical failure - failed to delete directory - " + ex.Message + "!";
+            }
+            // Remove database entry
+            conn.Query_Execute("DELETE FROM plugins WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+            return null;
+        }
+        public static string enable(string pluginid, Connector conn)
+        {
+            // Grab classpath
+            Result info = conn.Query_Read("SELECT classpath FROM plugins WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+            if (info.Rows.Count != 1)
+                return "Plugin does not exist!";
+            // Invoke enable method
+            try
+            {
+                string result = (string)invokeMethodReturn(info[0]["classpath"], "enable", new object[] { pluginid, conn });
+                if (result != null) return result;
+            }
+            catch (Exception ex)
+            {
+                return "Failed to enable plugin - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+            }
+            // Update status
+            conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+            return null;
+        }
+        public static string disable(string pluginid, Connector conn)
+        {
+            // Grab classpath
+            Result info = conn.Query_Read("SELECT classpath FROM plugins WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+            if (info.Rows.Count != 1)
+                return "Plugin does not exist!";
+            // Invoke disable method
+            try
+            {
+                string result = (string)invokeMethodReturn(info[0]["classpath"], "disable", new object[] { pluginid, conn });
+                if (result != null) return result;
+            }
+            catch (Exception ex)
+            {
+                return "Failed to disable plugin - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+            }
+            // Update status
+            conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Disabled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+            return null;
+        }
+    }
+}
