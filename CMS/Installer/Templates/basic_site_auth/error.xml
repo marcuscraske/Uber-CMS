@@ -1,5 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[error]]></hkey><description><![CDATA[Error container]]></description><html><![CDATA[<div class="BSA_ERROR">
-	<div class="PADDING">
-		%ERROR%
-	</div>
-</div>]]></html></template>

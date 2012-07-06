@@ -1,3 +1,4 @@
+/* Main layout */
 .clear
 {
 	clear: both;
@@ -33,6 +34,11 @@ body
 	padding: 0.5em;
 	text-shadow: 0em 0em 0.3em #666;
 }
+.AREA_BANNER h1 a
+{
+    text-decoration: none;
+    color: #FFF;
+}
 .WRAPPER
 {
 	position: relative;
@@ -61,14 +67,26 @@ body
 	line-height: 1em;
 	margin-left: 0.5em;
 	font-size: 1em;
-	min-width: 12em;
 }
-.AREA_NAV .ITEM:hover
+.AREA_NAV .ITEM img
+{
+    float: left;
+    margin-right: 0.5em;
+    border: none;
+}
+.AREA_NAV .ITEM:hover, .AREA_NAV .ITEM:focus
 {
 	overflow: visible;
 	background: #9C0;
-	font-weight: bold;
-	box-shadow: 0em 3em 3em #000;
+}
+.AREA_NAV .ITEM div
+{
+    clear: both;
+}
+.AREA_NAV .ITEM:hover div, .AREA_NAV .ITEM:focus div
+{
+    box-shadow: 0em 0.5em 1em -0.5em #000;
+    background: #690;
 }
 .AREA_NAV .ITEM a /* Menu item container item */
 {
@@ -78,19 +96,18 @@ body
 	color: #FFF;
 	text-decoration: none;
 }
-.AREA_NAV .ITEM div a:hover /* Sub menu items on hover */
+.AREA_NAV .ITEM div a:hover, .AREA_NAV .ITEM div a:focus /* Sub menu items on hover */
 {
-	background: #360;
+	background: #333;
 	color: #FFF !important;
-	box-shadow: 0em 0em 1em #360;
 }
-.AREA_NAV .ITEM:hover a /* Items on container hover */
+.AREA_NAV .ITEM:hover a, .AREA_NAV .ITEM:focus a /* Items on container hover */
 {
 	color: #360;
 }
-.AREA_NAV .ITEM:hover div a /* Sub items on container hover */
+.AREA_NAV .ITEM:hover div a, .AREA_NAV .ITEM:focus div a
 {
-	font-weight: normal;
+    color: #FFF;
 }
 .AREA_NAV .ITEM a span /* Padding */
 {
@@ -109,6 +126,36 @@ body
 	height: 2em;
 	line-height: 2em;
 	margin-right: 0.5em;
+}
+.AREA_NAV .NAV_BUTTON, .AREA_NAV .NAV_SEP
+{
+    float: right;
+}
+.AREA_NAV .NAV_BUTTON
+{
+    color: #FFF;
+    text-decoration: none;
+    padding: 0em 0.5em;
+    height: 2em;
+}
+.AREA_NAV .NAV_SEP
+{
+    margin: 0.25em 0.5em;
+    width: 0.1em;
+    height: 1.5em;
+    background: #690;
+}
+.AREA_NAV .NAV_BUTTON:hover, .AREA_NAV .NAV_BUTTON:focus
+{
+    background: #9C0;
+    color: #333;
+}
+.AREA_NAV .NAV_BUTTON img
+{
+    width: 1.3em;
+    height: 1.3em;
+    vertical-align: middle;
+    border: none;
 }
 .AREA_CONTENT
 {
@@ -133,9 +180,7 @@ body
 }
 h2, h3
 {
-	margin: 0em;
-	margin-left: -0.5em;
-	margin-top: -0.5em;
+	margin: -0.5em 0em 0.5em -0.5em;
 	width: 60em;
 	font-size: 1em;
 	padding: 0.5em;
@@ -151,4 +196,85 @@ h3
 {
 	background: #CCC;
 	color: #666;
+}
+/* -- Content region -- */
+.FL
+{
+    float: left !important;
+}
+.FR
+{
+    float: right !important;
+}
+/* Error container */
+.ERROR, .SUCCESS
+{
+    margin: 0.5em 0em;
+    padding: 0.5em;
+}
+.ERROR .TEXT, .SUCCESS .TEXT
+{
+    padding: 0.3em 0.5em;
+}
+.ERROR .TEXT
+{
+    background: #FCC;
+    color: #F00;
+    border: solid 0.2em #F00;
+}
+.SUCCESS .TEXT
+{
+    background: #9C0;
+    color: #360;
+    border: solid 0.2em #360;
+}
+/* Button */
+.BUTTON
+{
+    background: #CCC;
+    color: #333;
+    border: none;
+    border-radius: 0.4em;
+    padding: 0.5em;
+    cursor: pointer;
+    text-decoration: none;
+    font: inherit;
+    line-height: 1em;
+    margin: 0.25em;
+}
+.BUTTON:hover, .BUTTON:focus
+{
+    background: #333;
+    color: #FFF;
+}
+/* Textbox */
+.TEXTBOX
+{
+    border: solid 0.1em #CCC;
+    padding: 0.25em;
+    width: 12em;
+}
+.TEXTBOX:hover, .TEXTBOX:focus
+{
+    background: #CCC;
+    color: #333;
+    border: solid 0.1em #666;
+}
+/* Tables */
+.ROW
+{
+    clear: both;
+    margin: 0.5em;
+}
+.ROW .CELL1, .ROW .CELL2
+{
+    float: left;
+}
+.ROW .CELL1 /* Row with one cell */
+{
+    width: 100%;
+}
+.ROW .CELL2 /* Row with two cells */
+{
+    width: 50%;
 }

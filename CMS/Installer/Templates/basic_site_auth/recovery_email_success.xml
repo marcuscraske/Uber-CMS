@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[recovery_email_success]]></hkey><description><![CDATA[Displayed to the user when an e-mail has been successfully dispatched.]]></description><html><![CDATA[<p>
+	An e-mail has been dispatched; check your e-mail and click the link to change your password.
+</p>
+<p>
+	<a href="<!--URL-->/login" class="BUTTON">Login</a>
+</p>]]></html></template>

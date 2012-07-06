@@ -56,7 +56,7 @@ namespace UberCMS.Misc
         public HtmlTemplates(Connector conn)
         {
             templates = new Dictionary<string, string>();
-            loadDb(conn);
+            reloadDb(conn);
         }
         public void dispose()
         {
@@ -113,10 +113,10 @@ namespace UberCMS.Misc
 
         #region "Methods - Loading & Dumping"
         /// <summary>
-        /// Loads the templates stored in the database.
+        /// Reloads the templates stored in the database.
         /// </summary>
         /// <param name="conn"></param>
-        public void loadDb(Connector conn)
+        public void reloadDb(Connector conn)
         {
             lock (templates)
             {

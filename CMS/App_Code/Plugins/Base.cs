@@ -7,12 +7,12 @@ using UberLib.Connector;
 namespace UberCMS.Plugins
 {
     /// <summary>
-    /// An example class for plugins (this should also be used for referencing enum types).
+    /// An example class for plugins (this should also be used for referencing enum types); you shouldn't copy the State enum though.
     /// 
     /// Rules/pro-tips:
     /// - handleRequest
     ///     - If "CONTENT" in pageElements is left null/undefined, a 404 will occur.
-    /// - /Cache should be used for temp content such as uploaded zip archives; this directory will automatically be wiped every-time the app-pool restarts.
+    /// - /Cache should be used for temp content such as uploaded zip archives; this directory will automatically be wiped every-time the appicaton starts.
     /// </summary>
     public static class Base
     {

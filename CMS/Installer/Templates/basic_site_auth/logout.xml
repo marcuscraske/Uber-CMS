@@ -1,6 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[logout]]></hkey><description><![CDATA[Displayed to the user when they've logged-out.]]></description><html><![CDATA[<p>
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[logout]]></hkey><description><![CDATA[Logout page.]]></description><html><![CDATA[<p>
 	You have successfully logged out...
 </p>
 <p>
-	<a class="BSA_BUTTON" href="./register">Register a new account?</a>&nbsp;&nbsp;<a class="BSA_BUTTON" href="./login">Login again?</a>
+	<a class="BUTTON" href="<!--URL-->/register">Register a new account?</a>&nbsp;&nbsp;<a class="BUTTON" href="<!--URL-->/login">Login again?</a>
 </p>]]></html></template>

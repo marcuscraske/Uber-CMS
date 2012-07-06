@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[recovery_qa_question]]></hkey><description><![CDATA[Asks the user to answer a secret question and provide a new password.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/recover/secret_qa">
+	<div class="ROW">
+		<div class="CELL2">
+			Secret question:
+		</div>
+		<div class="CELl2">
+			%SECRET_QUESTION%
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Secret answer:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="secret_answer" value="%SECRET_ANSWER%" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			New password:
+		</div>
+		<div class="CELL2">
+			<input type="password" name="newpassword" class="TEXTBOX" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Confirm password:
+		</div>
+		<div class="CELL2">
+			<input type="password" name="newpassword_confirm" class="TEXTBOX" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Change" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<input type="hidden" name="username" value="%USERNAME%" />	
+</form>
+%ERROR%]]></html></template>

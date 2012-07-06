@@ -153,7 +153,8 @@ namespace UberCMS.Misc
         public void removeFlag(string flag)
         {
             lock(flags)
-                if (flags.Contains(flag)) flags.Remove(flag);
+                if (flags.Contains(flag))
+                    flags.Remove(flag);
         }
         #endregion
     }

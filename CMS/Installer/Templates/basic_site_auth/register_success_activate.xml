@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[register_success_activate]]></hkey><description><![CDATA[Registration success page - displayed when user activation is required.]]></description><html><![CDATA[<p>
+Your account has been successfully registered; you will need to activate your account by checking your e-mail and clicking a verification link.
+</p>
+<p>
+<a href="<!--URL-->/login" class="BUTTON">Login</a>
+</p>]]></html></template>

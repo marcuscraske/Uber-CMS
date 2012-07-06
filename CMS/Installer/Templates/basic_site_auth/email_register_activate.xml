@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[email_register_activate]]></hkey><description><![CDATA[Sent when an account needs e-mail activation.]]></description><html><![CDATA[<p>
+Welcome %USERNAME%!
+</p>
+<h2>Account Activation</h2>
+<p>
+You successfully registered an account to this e-mail address, however you need to click the link below to activate your account:
+</p>
+<p>
+%URL_ACTIVATE%
+</p>
+<p>
+If you did not register this account or you want to cancel the registration, click the below link to delete the account:
+</p>
+<p>
+%URL_DELETE%
+</p>
+<h2>Registration Details</h2>
+<p>
+IP used: %IP_ADDRESS%
+</p>
+<p>
+Browser: %BROWSER%
+</p>
+<p>
+Date/time: %DATE_TIME%
+</p>]]></html></template>

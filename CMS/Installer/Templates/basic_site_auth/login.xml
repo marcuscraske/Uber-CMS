@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[login]]></hkey><description><![CDATA[Login page.]]></description><html><![CDATA[<form method="post" action="./login">
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[login]]></hkey><description><![CDATA[Login page.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/login">
 	<div class="ROW">
 		<div class="CELL2">
 			Username:
@@ -13,19 +13,36 @@
 			Password:
 		</div>
 		<div class="CELL2">
-			<input type="text" name="password" value="%PASSWORD%" class="TEXTBOX" />
+			<input type="password" name="password" class="TEXTBOX" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Captcha code:
+		</div>
+		<div class="CELL2">
+			<img src="./captcha" alt="Captcha code" title="Captcha code" /><br /><input type="text" class="TEXTBOX" name="captcha" />
 		</div>
 		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL1">
-			<input type="submit" value="Login" class="BUTTON" />
+			<input type="checkbox" name="persist" %PERSIST% /> Private Computer
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" value="Login" class="BUTTON FR" />
 		</div>
 	</div>
 	<div class="ROW">
 		<div class="CELL1">
-			<a href="./recover" class="BUTTON">Forgotten your password?</a>
-			<a href="./recover" class="BUTTON">Register?</a>
+			<a href="<!--URL-->/recover" class="BUTTON">Forgot your password?</a>
+			<a href="<!--URL-->/recover" class="BUTTON">Register?</a>
 		</div>
 	</div>
-</form>]]></html></template>
+	<div class="clear"></div>
+</form>
+%ERROR%]]></html></template>

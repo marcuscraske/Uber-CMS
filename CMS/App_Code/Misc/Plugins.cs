@@ -78,7 +78,7 @@ namespace UberCMS.Misc
         /// <returns></returns>
         public static string[] getRequestPlugin(Connector conn, HttpRequest request)
         {
-            string page = request.QueryString["page"];
+            string page = request.QueryString["page"] ?? "home";
             string[] classPath = null;
             // Lookup the URL rewrite table for a responsible plugin
             if (page != null)
@@ -205,6 +205,44 @@ namespace UberCMS.Misc
             catch (Exception ex)
             {
                 return "Failed to uninstall content - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+            }
+            return null;
+        }
+        /// <summary>
+        /// Installs templates within a directory into the database and reloads the templates collection.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string templatesInstall(string path, Connector conn)
+        {
+            try
+            {
+                Core.templates.readDumpToDb(conn, path);
+                Core.templates.reloadDb(conn);
+            }
+            catch (Exception ex)
+            {
+                return "Error occurred installing templates - '" + path + "' - " + ex.Message + "!";
+            }
+            return null;
+        }
+        /// <summary>
+        /// Uninstalls templates based on their pkey/parent-key and reloads the template collection.
+        /// </summary>
+        /// <param name="pkey"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string templatesUninstall(string pkey, Connector conn)
+        {
+            try
+            {
+                conn.Query_Execute("DELETE FROM html_templates WHERE pkey='" + Utils.Escape(pkey) + "'");
+                Core.templates.reloadDb(conn);
+            }
+            catch (Exception ex)
+            {
+                return "Error occurred uninstalling templates - '" + pkey + "' - " + ex.Message;
             }
             return null;
         }

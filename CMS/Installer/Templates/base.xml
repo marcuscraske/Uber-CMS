@@ -3,43 +3,28 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title>Ubermeat - <!--TITLE--></title>
-	<link href="./Content/CSS/Layout.css" type="text/css" rel="Stylesheet" />
+	<link href="<!--URL-->/Content/CSS/Layout.css" type="text/css" rel="Stylesheet" />
 </head>
 <body>
 	<div class="FAUX_NAV">
 		&nbsp;
 	</div>
 	<div class="AREA_BANNER">
-		<h1>&Uuml;bermeat</h1>
+		<h1>
+			<a href="<!--URL-->/home">&Uuml;ber CMS</a>
+		</h1>
 	</div>
 	<div class="WRAPPER">
 		<div class="AREA_NAV AREA_ITEM">
 			<div class="ITEM">
-				<a href="./home">
+				<a href="<!--URL-->/home">
 					<span>
 						Home
 					</span>
 				</a>
-				<div>
-					<a href="./test sub item">
-						<span>
-							test
-						</span>
-					</a>
-					<a href="./test sub item">
-						<span>
-							test
-						</span>
-					</a>
-					<a href="./test sub item">
-						<span>
-							test
-						</span>
-					</a>
-				</div>
 			</div>
 			<div class="ITEM">
-				<a href="./home">
+				<a href="<!--URL-->/home">
 					<span>
 						Projects
 					</span>
@@ -65,21 +50,40 @@
 			
 			<div class="ACCOUNT">
 				<!--IF:AUTHENTICATED-->
-					<a href="./my_account" class="BUTTON">
-						<img src="./Content/my_account.png" alt="My Account" />
-						My Account
+					<div class="ITEM FR">
+						<a href="<!--URL-->/my_account">
+							<span>
+								<img src="<!--URL-->/Content/Images/my_account.png" alt="My Account" />
+								<img class="FR" src="<!--URL-->/Content/Images/dropdown.png" alt="Drop down" />
+								My Account
+							</span>
+						</a>
+						<div>
+							<a href="<!--URL-->/logout">
+								<span>
+									<img src="<!--URL-->/Content/Images/logout.png" alt="Logout" />
+									Logout
+								</span>
+							</a>
+						</div>
+					</div>
+					<div class="NAV_SEP"></div>
+					<a href="<!--URL-->/inbox" class="NAV_BUTTON">
+						<img src="<!--URL-->/Content/Images/inbox.png" alt="Inbox" />
+						(<!--MESSAGES-->)
 					</a>
-					<a href="./logout" class="BUTTON">
-						<img src="./Content/logout.png" alt="Logout" />
-						Logout
+					<div class="NAV_SEP"></div>
+					<a href="<!--URL-->/profile" class="NAV_BUTTON">
+						<!--USERNAME-->
 					</a>
 				<!--ELSE-->
-					<a href="./register" class="BUTTON">
-						<img src="./Content/register.png" alt="Register" />
+					<a href="<!--URL-->/register" class="NAV_BUTTON">
+						<img src="<!--URL-->/Content/Images/register.png" alt="Register" />
 						Register
 					</a>
-					<a href="./login" class="BUTTON">
-						<img src="./Content/login.png" alt="Login" />
+					<div class="NAV_SEP"></div>
+					<a href="<!--URL-->/login" class="NAV_BUTTON">
+						<img src="<!--URL-->/Content/Images/login.png" alt="Login" />
 						Login
 					</a>
 				<!--ENDIF-->

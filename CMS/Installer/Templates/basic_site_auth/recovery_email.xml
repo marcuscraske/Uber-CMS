@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[recovery_email]]></hkey><description><![CDATA[The e-mail sent to a user to change their password through e-mail verification.]]></description><html><![CDATA[<h2>Account Recovery</h2>
+<p>
+	You have requested a password-reset for the following account:
+</p>
+<p>
+	%USERNAME%
+</p>
+<p>
+	To reset your password, click the below link:
+</p>
+<p>
+	%URL%
+</p>
+
+<h2>Recovery Details</h2>
+<p>
+	IP used: %IP_ADDRESS%
+</p>
+<p>
+	Browser: %BROWSER%
+</p>
+<p>
+	Date/time: %DATE_TIME%
+</p>]]></html></template>

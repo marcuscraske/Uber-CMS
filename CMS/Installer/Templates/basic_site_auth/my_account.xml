@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[my_account]]></hkey><description><![CDATA[Used by a user to change their e-mail or/and password.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/my_account">
+<h3>Current Password - Required</h3>
+<div class="ROW">
+	<div class="CELL2">
+		Current password:
+	</div>
+	<div class="CELL2">
+		<input type="password" class="TEXTBOX" name="currentpassword" />
+	</div>
+</div>
+<div class="ROW">
+	<div class="CELL1">
+		<p>Your current password is required to update your e-mail or/and password.</p>
+	</div>
+	<div class="clear"></div>
+</div>
+<h3>E-mail - Optional</h3>
+<div class="ROW">
+	<div class="CELL2">
+		E-mail:
+	</div>
+	<div class="CELL2">
+		<input type="text" class="TEXTBOX" name="email" value="%EMAIL%" />
+	</div>
+	<div class="clear"></div>
+</div>
+<h3>New Password - Optional</h3>
+<div class="ROW">
+	<div class="CELL2">
+		New password:
+	</div>
+	<div class="CELL2">
+		<input type="password" name="newpassword" class="TEXTBOX" />
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Confirm password:
+	</div>
+	<div class="CELL2">
+		<input type="password" name="newpassword_confirm" class="TEXTBOX" />
+	</div>
+	<div class="clear"></div>
+</div>
+<h3>Recovery - Optional</h3>
+<div class="ROW">
+	<div class="CELL2">
+		Secret question:
+	</div>
+	<div class="CELL2">
+		<input type="text" class="TEXTBOX" name="secret_question" value="%SECRET_QUESTION%" />
+	</div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Secret answer:
+	</div>
+	<div class="CELL2">
+		<input type="text" class="TEXTBOX" name="secret_answer" value="%SECRET_ANSWER%" />
+	</div>
+</div>
+<div class="ROW">
+	<div class="CELL1">
+		<p>You can leave these fields empty, which will cause recovery through a secret question to be disabled; if you use this feature, remember that your secret answer is the equivalent of a second password.</p>
+	</div>
+</div>
+<div class="ROW">
+	<div class="CELL1">
+		<input type="submit" class="BUTTON FR" value="Update" />
+	</div>
+	<div class="clear"></div>
+</div>
+</form>
+%ERROR%]]></html></template>

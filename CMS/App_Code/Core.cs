@@ -47,9 +47,11 @@ namespace UberCMS
         public static State state = State.Stopped;
         public static Exception criticalFailureError = null;
         public static string basePath = null;
-        private static Connector globalConnector = null;
+        public static Connector globalConnector = null;
         private static Thread cycThread = null;
         public static Misc.HtmlTemplates templates = null;
+        public static Misc.Settings settings = null;
+        public static Misc.EmailQueue emailQueue = null;
         #endregion
 
         #region "Methods - CMS start/stop/error"
@@ -58,7 +60,7 @@ namespace UberCMS
             try
             {
                 // Set the base-path and check the CMS has been installed
-                basePath = HttpContext.Current.Server.MapPath("");
+                basePath = AppDomain.CurrentDomain.BaseDirectory;
                 if (!File.Exists(basePath + "\\Config.xml"))
                 {
                     state = State.NotInstalled;
@@ -67,13 +69,16 @@ namespace UberCMS
                 // Load the connector settings
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(File.ReadAllText(basePath + "\\Config.xml"));
-                connHost = doc["settings"]["connHost"].InnerText;
-                connPort = int.Parse(doc["settings"]["connPort"].InnerText);
-                connDatabase = doc["settings"]["connDatabase"].InnerText;
-                connUsername = doc["settings"]["connUsername"].InnerText;
-                connPassword = doc["settings"]["connPassword"].InnerText;
+                connHost = doc["settings"]["db"]["host"].InnerText;
+                connPort = int.Parse(doc["settings"]["db"]["port"].InnerText);
+                connDatabase = doc["settings"]["db"]["database"].InnerText;
+                connUsername = doc["settings"]["db"]["username"].InnerText;
+                connPassword = doc["settings"]["db"]["password"].InnerText;
                 // Set the global connector
                 globalConnector = connectorCreate(true);
+                // Load and start e-mail queue service
+                emailQueue = new Misc.EmailQueue(doc["settings"]["mail"]["host"].InnerText, int.Parse(doc["settings"]["mail"]["port"].InnerText), doc["settings"]["mail"]["username"].InnerText, doc["settings"]["mail"]["password"].InnerText, doc["settings"]["mail"]["address"].InnerText);
+                emailQueue.start();
                 // Wipe the cache folder
                 string cachePath = basePath + "\\Cache";
                 if (Directory.Exists(cachePath))
@@ -90,6 +95,9 @@ namespace UberCMS
                     {
                     }
                 }
+                // Load settings
+                settings = new Misc.Settings();
+                settings.reload(globalConnector);
                 // Load templates
                 templates = new Misc.HtmlTemplates(globalConnector);
                 // Invoke plugins
@@ -115,6 +123,8 @@ namespace UberCMS
         {
             // Stop cycler
             cyclerStop();
+            // Stop e-mail queue service
+            emailQueue.stop();
             // Set the state
             state = State.Stopped;
             // Inform each plugin
@@ -128,6 +138,9 @@ namespace UberCMS
             // Dispose the templates
             templates.dispose();
             templates = null;
+            // Dispose settings
+            settings.dispose();
+            settings = null;
             // Dispose the global connector
             try
             {

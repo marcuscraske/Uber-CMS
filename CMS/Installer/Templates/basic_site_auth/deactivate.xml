@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[deactivate]]></hkey><description><![CDATA[Used to confirm account deactivation.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/register/deactivate/?key=%KEY%">
+	<div class="ROW">
+		<div class="CELL1">
+			Click below to cancel your registration...
+		</div>
+	</div>
+	<br /><br />
+	<div class="ROW">
+		<div class="CELL2">
+			Username:
+		</div>
+		<div class="CELL2">
+			%USERNAME%
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" value="Deactivate" class="BUTTON FR" />
+		</div>
+	</div>
+	<input type="hidden" name="confirm" value="1" />
+	<div class="clear"></div>
+</form>]]></html></template>

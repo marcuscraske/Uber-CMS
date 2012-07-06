@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[]]></pkey><hkey><![CDATA[error]]></hkey><description><![CDATA[Error container]]></description><html><![CDATA[<div class="ERROR">
+	<div class="TEXT">
+		%ERROR%
+	</div>
+</div>]]></html></template>

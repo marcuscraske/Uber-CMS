@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[register]]></hkey><description><![CDATA[Registration page.]]></description><html><![CDATA[<h3>Account</h3>
+<form method="post" action="<!--URL-->/register">
+	<div class="ROW">
+		<div class="CELL2">
+			Username:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="username" value="%USERNAME%" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Password:
+		</div>
+		<div class="CELL2">
+			<input type="password" class="TEXTBOX" name="password" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Confirm Password:
+		</div>
+		<div class="CELL2">
+			<input type="password" class="TEXTBOX" name="confirm_password" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			E-mail:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="email" value="%EMAIL%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+<h3>Recovery</h3>
+	<div class="ROW">
+		<div class="CELL2">
+			Secret Question:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="secret_question" value="%SECRET_QUESTION%" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Secret Answer:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="secret_answer" value="%SECRET_ANSWER%" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<p>The secret question &amp; answer are completely optional; you can leave them blank to disable account recovery.</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+<h3>Human Verification</h3>
+	<div class="ROW">
+		<div class="CELL2">
+			Captcha code:
+		</div>
+		<div class="CELL2">
+			<img src="./captcha" alt="Captcha code" title="Captcha code" /><br />
+			<input type="text" class="TEXTBOX" name="captcha" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" value="Register" class="BUTTON FR" />
+		</div>
+	</div>
+</form>
+<div class="clear"></div>
+%ERROR%]]></html></template>

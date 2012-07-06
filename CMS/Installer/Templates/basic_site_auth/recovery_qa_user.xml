@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[recovery_qa_user]]></hkey><description><![CDATA[Asks for the user for a secret question recovery.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/recover/secret_qa">
+	<div class="ROW">
+		<div class="CELL2">
+			Username:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="username" value="%USERNAME%" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Captcha:
+		</div>
+		<div class="CELL2">
+			<img src="<!--URL-->/captcha" alt="Captcha" /><br />
+			<input type="tex" class="TEXTBOX" name="captcha" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Continue" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+%ERROR%]]></html></template>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[email_register_welcome]]></hkey><description><![CDATA[Sent when a new user has successfully been registered.]]></description><html><![CDATA[<p>
+Welcome %USERNAME% to our community!
+</p>
+<h2>Account Registration Successful</h2>
+<p>
+You have successfully registered a new account.
+</p>
+<h2>Registration Details</h2>
+<p>
+IP used: %IP_ADDRESS%
+</p>
+<p>
+Browser: %BROWSER%
+</p>
+<p>
+Date/time: %DATE_TIME%
+</p>]]></html></template>

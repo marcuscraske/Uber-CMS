@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[recovery_email_changed]]></hkey><description><![CDATA[Displayed when a user has changed their password through e-mail recovery.]]></description><html><![CDATA[<p>
+	Your password has been successfully changed!
+</p>
+<p>
+	<a href="<!--URL-->/login" class="BUTTON">Login</a>
+</p>]]></html></template>

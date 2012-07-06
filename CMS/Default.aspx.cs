@@ -43,16 +43,18 @@ public partial class _Default : System.Web.UI.Page
                 Response.Write("</body></html>");
                 Response.End();
                 break;
+            case Core.State.Stopped:
+                Core.cmsStart();
+                break;
         }
         // Setup the request
         conn = Core.connectorCreate(true);
-
-
         elements = new PageElements();
+        elements["URL"] = ResolveUrl("");
         string baseTemplateParent = "default";
         // If debugging, reload cached templates
 #if DEBUG
-        Core.templates.loadDb(conn);
+        Core.templates.reloadDb(conn);
 #endif
         // Invoke the pre-handler methods
         Result plugins = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_request_start='1' ORDER BY invoke_order ASC LIMIT 1");
@@ -89,6 +91,8 @@ public partial class _Default : System.Web.UI.Page
         elements.replaceElements(ref content, 0, 3);
         // Output the built page to the user
         Response.Write(content.ToString());
+        // Dispose connector
+        conn.Disconnect();
     }
     #endregion
 }

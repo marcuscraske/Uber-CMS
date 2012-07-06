@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[recovery_email_newpass]]></hkey><description><![CDATA[Displayed after a user clicks on a recovery e-mail to change their password.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/recover/email/%CODE%">
+	<div class="ROW">
+		<div class="CELL2">
+			New Password:
+		</div>
+		<div class="CELL2">
+			<input type="password" name="new_password" class="TEXTBOX" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Change" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+%ERROR%]]></html></template>

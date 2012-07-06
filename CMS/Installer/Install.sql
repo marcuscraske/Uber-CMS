@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS settings
 	keyname VARCHAR(25) PRIMARY KEY,
 	pluginid INT,
 	FOREIGN KEY(`pluginid`) REFERENCES `plugins`(`pluginid`) ON UPDATE CASCADE ON DELETE CASCADE,
-	value TEXT
+	value TEXT,
+	description TEXT
 );
 CREATE TABLE IF NOT EXISTS urlrewriting
 (
@@ -43,4 +44,12 @@ CREATE TABLE IF NOT EXISTS html_templates
 	description TEXT,
 	html TEXT,
 	PRIMARY KEY(pkey, hkey)
+);
+CREATE TABLE IF NOT EXISTS email_queue
+(
+	emailid INT PRIMARY KEY AUTO_INCREMENT,
+	email TEXT,
+	subject TEXT,
+	body TEXT,
+	html VARCHAR(1)
 );
