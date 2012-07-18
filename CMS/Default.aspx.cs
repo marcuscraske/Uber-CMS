@@ -60,10 +60,6 @@ public partial class _Default : System.Web.UI.Page
 #if DEBUG
         Core.templates.reloadDb(conn);
 #endif
-        //string error = Plugins.install(Server.MapPath(@"/App_Code/Plugins/BasicSiteAuth"), false, conn);
-        //string error = Plugins.enable("11", conn);
-        //string error = Plugins.uninstall("10", false, conn);
-        //if (error != null) throw new Exception(error);
 
         // Invoke the pre-handler methods
         Result plugins = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_request_start='1' ORDER BY invoke_order ASC LIMIT 1");
