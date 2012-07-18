@@ -1,0 +1,3 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_user_group_perm]]></hkey><description><![CDATA[A permission in a user group.]]></description><html><![CDATA[<div class="CHECKBOX FL">
+	<input type="checkbox" id=""group_%GROUPID%$%TITLE%" name="group_%GROUPID%$%TITLE%" value="1" %CHECKED% /><div>%TITLE%</div>
+</div>]]></html></template>

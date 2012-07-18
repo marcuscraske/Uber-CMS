@@ -36,12 +36,14 @@
 		<div class="CELL1">
 			<input type="submit" value="Login" class="BUTTON FR" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL1">
 			<a href="<!--URL-->/recover" class="BUTTON">Forgot your password?</a>
-			<a href="<!--URL-->/recover" class="BUTTON">Register?</a>
+			<a href="<!--URL-->/register" class="BUTTON">Register?</a>
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="clear"></div>
 </form>

@@ -3,6 +3,7 @@
 		<div class="CELL1">
 			Click below to cancel your registration...
 		</div>
+		<div class="clear"></div>
 	</div>
 	<br /><br />
 	<div class="ROW">
@@ -12,12 +13,13 @@
 		<div class="CELL2">
 			%USERNAME%
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL1">
 			<input type="submit" value="Deactivate" class="BUTTON FR" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	<input type="hidden" name="confirm" value="1" />
-	<div class="clear"></div>
 </form>]]></html></template>

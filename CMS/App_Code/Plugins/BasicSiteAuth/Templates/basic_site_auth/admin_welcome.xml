@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_welcome]]></hkey><description><![CDATA[The initial page of the admin panel.]]></description><html><![CDATA[<p>
+Welcome to the admin panel!
+</p>
+<p>
+Form here you can add, remove and change the settings and mechanics of your CMS and plugins.
+</p>]]></html></template>

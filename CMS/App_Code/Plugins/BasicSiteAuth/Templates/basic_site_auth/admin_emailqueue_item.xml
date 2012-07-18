@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_emailqueue_item]]></hkey><description><![CDATA[E-mail item in the queue.]]></description><html><![CDATA[<div class="ROW BORDER">
+	<div class="CELL4">
+		%EMAILID%
+	</div>
+	<div class="CELL4">
+		%EMAIL%
+	</div>
+	<div class="CELL4">
+		%SUBJECT%
+	</div>
+	<div class="CELL4">
+		<a href="<!--ADMIN_URL-->?delete=%EMAILID%" class="BUTTON">Delete</a>
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

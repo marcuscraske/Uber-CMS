@@ -14,5 +14,13 @@ namespace UberCMS.Plugins
             pageElements["TITLE"] = "Page Not Found";
             pageElements["CONTENT"] = "<p>The requested resource could not be located...</p>";
         }
+        public static string enable(string pluginid, Connector conn)
+        {
+            return null;
+        }
+        public static string disable(string pluginid, Connector conn)
+        {
+            return null;
+        }
     }
 }

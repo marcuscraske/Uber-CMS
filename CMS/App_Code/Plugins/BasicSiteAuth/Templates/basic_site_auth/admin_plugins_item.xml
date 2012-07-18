@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_plugins_item]]></hkey><description><![CDATA[Plugin item on the plugins admin page.]]></description><html><![CDATA[<div class="ROW SUB_HEADER">
+	<div class="CELL1">
+		%TITLE%
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		State: %STATE%
+	</div>
+	<div class="CELL2">
+		%BUTTONS%
+		<a href="<!--ADMIN_URL-->?action=uninstall&amp;pluginid=%PLUGINID%" class="BUTTON">Uninstall</a>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Directory:
+	</div>
+	<div class="CELL2">
+		%DIRECTORY%
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Priority:
+	</div>
+	<div class="CELL2">
+		%PRIORITY%
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

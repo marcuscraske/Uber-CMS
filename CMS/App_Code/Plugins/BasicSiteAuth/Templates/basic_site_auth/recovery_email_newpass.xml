@@ -6,6 +6,7 @@
 		<div class="CELL2">
 			<input type="password" name="new_password" class="TEXTBOX" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL1">

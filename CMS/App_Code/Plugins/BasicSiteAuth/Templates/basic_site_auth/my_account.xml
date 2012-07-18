@@ -7,10 +7,11 @@
 	<div class="CELL2">
 		<input type="password" class="TEXTBOX" name="currentpassword" />
 	</div>
+	<div class="clear"></div>
 </div>
 <div class="ROW">
 	<div class="CELL1">
-		<p>Your current password is required to update your e-mail or/and password.</p>
+		Your current password is required to update your e-mail or/and password.
 	</div>
 	<div class="clear"></div>
 </div>
@@ -51,6 +52,7 @@
 	<div class="CELL2">
 		<input type="text" class="TEXTBOX" name="secret_question" value="%SECRET_QUESTION%" />
 	</div>
+	<div class="clear"></div>
 </div>
 <div class="ROW">
 	<div class="CELL2">
@@ -59,11 +61,13 @@
 	<div class="CELL2">
 		<input type="text" class="TEXTBOX" name="secret_answer" value="%SECRET_ANSWER%" />
 	</div>
+	<div class="clear"></div>
 </div>
 <div class="ROW">
 	<div class="CELL1">
-		<p>You can leave these fields empty, which will cause recovery through a secret question to be disabled; if you use this feature, remember that your secret answer is the equivalent of a second password.</p>
+		You can leave these fields empty, which will cause recovery through a secret question to be disabled; if you use this feature, remember that your secret answer is the equivalent of a second password.
 	</div>
+	<div class="clear"></div>
 </div>
 <div class="ROW">
 	<div class="CELL1">

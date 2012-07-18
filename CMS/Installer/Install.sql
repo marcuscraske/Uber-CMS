@@ -51,5 +51,5 @@ CREATE TABLE IF NOT EXISTS email_queue
 	email TEXT,
 	subject TEXT,
 	body TEXT,
-	html VARCHAR(1)
+	html VARCHAR(1) DEFAULT 1
 );

@@ -13,7 +13,7 @@ body
 .FAUX_NAV
 {
 	z-index: 2;
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -70,9 +70,11 @@ body
 }
 .AREA_NAV .ITEM img
 {
-    float: left;
+    width: 1.2em;
+    height: 1.2em;
     margin-right: 0.5em;
     border: none;
+    vertical-align: middle;
 }
 .AREA_NAV .ITEM:hover, .AREA_NAV .ITEM:focus
 {
@@ -206,6 +208,10 @@ h3
 {
     float: right !important;
 }
+.TC
+{
+    text-align: center;
+}
 /* Error container */
 .ERROR, .SUCCESS
 {
@@ -260,13 +266,65 @@ h3
     color: #333;
     border: solid 0.1em #666;
 }
+/* Checkbox */
+.CHECKBOX
+{
+    color: #333;
+    background: #333;
+    margin: 0.5em;
+    width: 14em;
+    height: 2em;
+    line-height: 2em;
+}
+.CHECKBOX div
+{
+    float: right;
+    width: 11.5em;
+    background: #CCC;
+    padding-left: 0.5em;
+}
+.CHECKBOX input[type=checkbox]
+{
+    width: 1em;
+    margin: 0.5em;
+    padding: 0em;
+}
+.CHECKBOX input[type=checkbox]:checked ~ div
+{
+    background: #9C0;
+    color: #360;
+}
 /* Tables */
 .ROW
 {
     clear: both;
-    margin: 0.5em;
+    padding: 0.5em;
+    margin: 0.5em 0em;
 }
-.ROW .CELL1, .ROW .CELL2
+.ROW.HEADER, .ROW.SUB_HEADER /* For shared styling for heading rows */
+{
+    border-radius: 0.5em;
+}
+.ROW.HEADER /* For header rows */
+{
+    background: #333;
+    color: #FFF;
+}
+.ROW.SUB_HEADER
+{
+    background: #CCC;
+    color: #333;
+}
+.ROW.HEADER a
+{
+    color: #FFF;
+    text-decoration: none;
+}
+.ROW.BORDER /* Bottom-border */
+{
+    border-bottom: solid 0.2em #CCC;
+}
+.ROW .CELL1, .ROW .CELL2, .ROW .CELL3, .ROW .CELL4
 {
     float: left;
 }
@@ -277,4 +335,74 @@ h3
 .ROW .CELL2 /* Row with two cells */
 {
     width: 50%;
+}
+.ROW .CELL3 /* Row with three cells */
+{
+    width: 33%;
+}
+.ROW .CELL4 /* Row with four cells */
+{
+    width: 25%;
+}
+/* Admin panel */
+.ADMIN_MENU
+{
+    float: left;
+    width: 10.5em;
+    box-shadow: 0em 0em 3em -1em #333;
+}
+.ADMIN_MENU_HEADER, .ADMIN_MENU_ITEM
+{
+    width: 9.5em;
+    border-top: none;
+    vertical-align: middle;
+    padding: 0.5em;
+    background: #FFF;
+}
+.ADMIN_MENU_HEADER
+{
+    background: #CCC;
+    color: #333;
+}
+.ADMIN_MENU_ITEM
+{
+    display: block;
+    color: #333;
+    text-decoration: none;
+}
+.ADMIN_MENU_ITEM:hover, .ADMIN_MENU_ITEM:focus
+{
+    background: #CCC;
+}
+.ADMIN_MENU_ITEM img
+{
+    float: left;
+    margin-right: 0.5em;
+    width: 1.25em;
+    height: 1.25em;
+    border: none;
+}
+.ADMIN_CONTENT
+{
+    float: right;
+    width: 48em;
+    margin-left: 0.5em;
+}
+.ADMIN_USERGROUP
+{
+    margin-bottom: 0.5em;
+}
+.ADMIN_USERGROUP .TITLE
+{
+    background: #333;
+    color: #FFF;
+    padding: 0.25em;
+}
+.ADMIN_USERGROUP .TITLE a
+{
+    color: #FFF;
+}
+.ADMIN_USERGROUP .PERMISSIONS
+{
+    border: solid 0.1em #333;
 }

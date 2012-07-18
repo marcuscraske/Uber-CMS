@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_user_group]]></hkey><description><![CDATA[A user group.]]></description><html><![CDATA[<div class="ADMIN_USERGROUP">
+	<div class="TITLE">
+		<input type="text" class="TEXTBOX" value="%TITLE%" name="group_%GROUPID%$title" /> - group ID: %GROUPID% - <a href="<!--ADMIN_URL-->?delete=%GROUPID%">Delete</a> - <a href="<!--ADMIN_URL-->?transfer=%GROUPID%">Transfer Users</a>
+	</div>
+	<div class="PERMISSIONS">
+		%PERMISSIONS%
+	<div class="clear"></div>
+	</div>
+</div>]]></html></template>

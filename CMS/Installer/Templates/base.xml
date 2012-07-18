@@ -6,6 +6,9 @@
 	<link href="<!--URL-->/Content/CSS/Layout.css" type="text/css" rel="Stylesheet" />
 </head>
 <body>
+<!--
+<!--BENCH_MARK-->
+-->
 	<div class="FAUX_NAV">
 		&nbsp;
 	</div>
@@ -54,10 +57,28 @@
 						<a href="<!--URL-->/my_account">
 							<span>
 								<img src="<!--URL-->/Content/Images/my_account.png" alt="My Account" />
-								<img class="FR" src="<!--URL-->/Content/Images/dropdown.png" alt="Drop down" />
 								My Account
+								<img src="<!--URL-->/Content/Images/dropdown.png" alt="Drop down" />
 							</span>
 						</a>
+					<!--IF:GROUP_Administrators-->
+						<div>
+						<a href="<!--URL-->/admin">
+								<span>
+									<img src="<!--URL-->/Content/Images/admin.png" alt="Admin" />
+									Admin
+								</span>
+							</a>
+						</div>
+					<!--ENDIF:GROUP_Administrators-->
+						<div>
+						<a href="<!--URL-->/log">
+								<span>
+									<img src="<!--URL-->/Content/Images/log.png" alt="Log" />
+									Account Log
+								</span>
+							</a>
+						</div>
 						<div>
 							<a href="<!--URL-->/logout">
 								<span>

@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_plugins]]></hkey><description><![CDATA[Admin plugin page.]]></description><html><![CDATA[%ERROR%
+<div class="ROW HEADER">
+	<div class="CELL1">Install Plugin - Upload</div>
+	<div class="clear"></div>
+</div>
+<form method="post" action="<!--ADMIN_URL-->?action=upload" enctype="multipart/form-data">
+	<div class="ROW">
+		<div class="CELL2">
+			Plugin Zip Archive:
+		</div>
+		<div class="CELL2">
+			<input type="file" name="plugin_upload" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1"><input type="submit" class="BUTTON FR" value="Upload" /></div>
+	</div>
+</form>
+<div class="ROW HEADER">
+	<div class="CELL1">
+		Plugins
+	</div>
+	<div class="clear"></div>
+</div>
+%ITEMS%]]></html></template>

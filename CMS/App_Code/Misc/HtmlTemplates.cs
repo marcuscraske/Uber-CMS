@@ -103,11 +103,23 @@ namespace UberCMS.Misc
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="key"></param>
-        /// <param name="useDefaultIfNotFound">If the template is not found for the specified parent and this is true, the template with a default parent will be returned.</param>
+        /// <param name="alternative">If the template cannot be found for the specified parent, an attempt will be made to find the same key with the parent specified by this parameter. You can leave this parameter null for the parent to be "default".</param>
         /// <returns></returns>
-        public string get(string parent, string key, bool useDefaultIfNotFound)
+        public string get(string parent, string key, string alternative)
         {
-            return templates.ContainsKey(parent + "$" + key) ? templates[parent + "$" + key] : useDefaultIfNotFound ? templates.ContainsKey(defaultKey + key) ? templates[defaultKey + key] : null : null;
+            if (templates.ContainsKey(parent + "$" + key))
+                return templates[parent + "$" + key];
+            else if (alternative != null)
+            {
+                if (templates.ContainsKey(alternative + "$" + key))
+                    return templates[alternative + "$" + key];
+                else
+                    return null;
+            }
+            else if (templates.ContainsKey(defaultKey + key))
+                return templates[defaultKey + key];
+            else
+                return null;
         }
         #endregion
 
@@ -142,11 +154,14 @@ namespace UberCMS.Misc
             }
         }
         /// <summary>
-        /// Dumps the templates stored in the database to a directory.
+        /// Dumps the templates stored in the database to a directory; the parent parameter
+        /// can be null to cause all templates to be dumped - specify string.empty for global
+        /// templates.
         /// </summary>
         /// <param name="conn"></param>
         /// <param name="directory"></param>
-        public void dump(Connector conn, string directory)
+        /// <param name="parent"></param>
+        public void dump(Connector conn, string directory, string parent)
         {
             // Delete existing templates
             foreach (string file in Directory.GetFiles(directory, "*.xml", SearchOption.AllDirectories))
@@ -158,7 +173,7 @@ namespace UberCMS.Misc
             // Write new templates
             XmlDocument doc;
             XmlWriter writer;
-            foreach (ResultRow template in conn.Query_Read("SELECT * FROM html_templates ORDER BY hkey ASC"))
+            foreach (ResultRow template in conn.Query_Read("SELECT * FROM html_templates" + (parent != null ? " WHERE pkey='" + Utils.Escape(parent) + "'" : string.Empty) + " ORDER BY hkey ASC"))
             {
                 doc = new XmlDocument();
                 // Check the directory exists

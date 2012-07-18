@@ -11,9 +11,10 @@ namespace UberCMS.Misc
     {
         #region "Variables"
         private object threadProtection;
-        private Thread cyclerThread;
+        public Thread cyclerThread = null;
         private string mailHost, mailUsername, mailPassword, mailAddress;
         private int mailPort;
+        public long mailErrors = -1;
         #endregion
 
         #region "Method - Constructors"
@@ -25,6 +26,7 @@ namespace UberCMS.Misc
             this.mailUsername = mailUsername;
             this.mailPassword = mailPassword;
             this.mailAddress = mailAddress;
+            mailErrors = 0;
         }
         #endregion
 
@@ -111,6 +113,12 @@ namespace UberCMS.Misc
                         }
                         catch (SmtpException)
                         {
+                            // We dont wat to cause an overflow, this would cause failure of the queue and possibly core
+                            // -- Assuming the queue would be operational for long durations
+                            if (mailErrors < long.MaxValue - 1)
+                                mailErrors++;
+                            else
+                                mailErrors = 0;
                             failed = true;
                         }
                         catch { }
@@ -118,6 +126,9 @@ namespace UberCMS.Misc
                         else failed = false; // Reset failure flag
                         data = null; res = null;
                     }
+                    else
+                        // Sleep...
+                        Thread.Sleep(100);
                 }
                 catch { }
             }

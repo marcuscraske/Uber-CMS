@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_users_edit_ban]]></hkey><description><![CDATA[Ban item on a user edit page.]]></description><html><![CDATA[<div class="ROW">
+	<div class="CELL3">
+		%DATETIME% until %UNBAN_DATE%
+	</div>
+	<div class="CELL3">
+		Banned by %USERNAME%
+	</div>
+	<div class="CELL3">
+		<a href="<!--ADMIN_URL-->/%USERID%?dban=%BANID%" class="BUTTON">Delete</a>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW BORDER">
+	<div class="CELL1">
+		%REASON%
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

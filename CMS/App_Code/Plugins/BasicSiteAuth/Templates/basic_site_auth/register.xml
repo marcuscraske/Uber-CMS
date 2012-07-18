@@ -7,6 +7,7 @@
 		<div class="CELL2">
 			<input type="text" class="TEXTBOX" name="username" value="%USERNAME%" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL2">
@@ -15,6 +16,7 @@
 		<div class="CELL2">
 			<input type="password" class="TEXTBOX" name="password" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL2">
@@ -23,6 +25,7 @@
 		<div class="CELL2">
 			<input type="password" class="TEXTBOX" name="confirm_password" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL2">
@@ -41,6 +44,7 @@
 		<div class="CELL2">
 			<input type="text" class="TEXTBOX" name="secret_question" value="%SECRET_QUESTION%" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL2">
@@ -49,6 +53,7 @@
 		<div class="CELL2">
 			<input type="text" class="TEXTBOX" name="secret_answer" value="%SECRET_ANSWER%" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL1">
@@ -71,6 +76,7 @@
 		<div class="CELL1">
 			<input type="submit" value="Register" class="BUTTON FR" />
 		</div>
+		<div class="clear"></div>
 	</div>
 </form>
 <div class="clear"></div>

@@ -11,14 +11,22 @@ CREATE TABLE IF NOT EXISTS `bsa_user_groups`
 	access_media_publish VARCHAR(1) DEFAULT 0,
 	access_admin VARCHAR(1) DEFAULT 0
 );
+CREATE TABLE IF NOT EXISTS `bsa_user_groups_labels`
+(
+	labelid INT PRIMARY KEY AUTO_INCREMENT,
+	column_title TEXT NOT NULL,
+	title TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS `bsa_users`
 (
 	userid INT PRIMARY KEY AUTO_INCREMENT,
 	groupid INT,
 	FOREIGN KEY(`groupid`) REFERENCES `bsa_user_groups`(`groupid`) ON UPDATE CASCADE ON DELETE CASCADE,
-	username TEXT NOT NULL,
+	username VARCHAR(18) NOT NULL,
+	UNIQUE(username),
 	password TEXT NOT NULL,
-	email TEXT NOT NULL,
+	email VARCHAR(50) NOT NULL,
+	UNIQUE(email),
 	secret_question TEXT,
 	secret_answer TEXT
 );
@@ -38,6 +46,7 @@ CREATE TABLE IF NOT EXISTS `bsa_user_bans`
 	FOREIGN KEY(`userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE CASCADE,
 	reason TEXT,
 	unban_date DATETIME,
+	datetime DATETIME,
 	banner_userid INT,
 	FOREIGN KEY(`banner_userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE CASCADE
 );
@@ -52,14 +61,16 @@ CREATE TABLE IF NOT EXISTS `bsa_activations`
 	keyid INT PRIMARY KEY AUTO_INCREMENT,
 	userid INT,
 	FOREIGN KEY(`userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE CASCADE,
-	code TEXT
+	code VARCHAR(16) NOT NULL,
+	UNIQUE(code)
 );
 CREATE TABLE IF NOT EXISTS `bsa_recovery_email`
 (
 	recoveryid INT PRIMARY KEY AUTO_INCREMENT,
 	userid INT,
 	FOREIGN KEY(`userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE CASCADE,
-	code TEXT,
+	code VARCHAR(16) NOT NULL,
+	UNIQUE(code),
 	ip TEXT,
 	datetime_dispatched TIMESTAMP
 );
@@ -69,50 +80,23 @@ CREATE TABLE IF NOT EXISTS `bsa_recovery_sqa_attempts`
 	ip TEXT,
 	datetime TIMESTAMP
 );
--- Create procedures
-CREATE PROCEDURE bsa_register
+CREATE TABLE IF NOT EXISTS `bsa_admin_pages`
 (
-	IN groupid INT,
-	IN username TEXT,
-	IN password TEXT,
-	IN email TEXT,
-	IN secret_question TEXT,
-	IN secret_answer TEXT,
-	OUT userid INT
-)
-BEGIN
-	DECLARE result int;
-	IF (SELECT COUNT('') FROM bsa_users AS u WHERE u.email LIKE email) > 0 THEN
-		SELECT -100 INTO result;
-		ROLLBACK;
-	ELSEIF (SELECT COUNT('') FROM bsa_users AS u WHERE u.username LIKE username) > 0 THEN
-		SELECT -200 INTO result;
-		ROLLBACK;
-	ELSE
-		INSERT INTO bsa_users (groupid, username, password, email, secret_question, secret_answer)
-		VALUES
-		(groupid, username, password, email, secret_question, secret_answer);
-		SELECT LAST_INSERT_ID() INTO result;
-		COMMIT;
-	END IF;
-	SELECT result INTO userid;
-END;
-
-CREATE PROCEDURE bsa_change_email
-(
-	IN userid INT,
-	IN email TEXT,
-	OUT errorcode INT
-)
-BEGIN
-	DECLARE result int;
-	IF (SELECT COUNT('') FROM bsa_users AS u WHERE u.email LIKE email AND u.userid != userid) > 0 THEN
-		SELECT 0 INTO result;
-		ROLLBACK;
-	ELSE
-		UPDATE bsa_users SET email=email WHERE userid=userid;
-		SELECT 1 INTO result;
-		COMMIT;
-	END IF;
-	SELECT result INTO errorcode;
-END;
+	pageid INT PRIMARY KEY AUTO_INCREMENT,
+	classpath TEXT,
+	method TEXT,
+	title TEXT,
+	category TEXT,
+	menu_icon TEXT
+);
+-- Insert user group permission columns
+INSERT INTO bsa_user_groups_labels (column_title, title)
+VALUES
+	('access_login', 'Login'),
+	('access_changeaccount', 'Change Account Details'),
+	('access_media_create', 'Media - Create'),
+	('access_media_edit', 'Media - Edit'),
+	('access_media_delete', 'Media - Delete'),
+	('access_media_publish', 'Media - Publish'),
+	('access_admin', 'Admin Permissions')
+;

@@ -162,14 +162,18 @@ namespace UberCMS.Misc
             }
         }
         /// <summary>
-        /// Gets the directory of a plugin.
+        /// Gets the directory of a plugin; returns null if not found.
         /// </summary>
         /// <param name="pluginid"></param>
         /// <param name="conn"></param>
         /// <returns></returns>
         public static string getPluginBasePath(string pluginid, Connector conn)
         {
-            return Core.basePath + "\\App_Code\\Plugins\\" + (string)conn.Query_Scalar("SELECT directory FROM plugins WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+            string basePath = (string)conn.Query_Scalar("SELECT directory FROM plugins WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+            if(basePath == null)
+                return null;
+            else
+                return Core.basePath + "\\App_Code\\Plugins\\" + basePath;
         }
         /// <summary>
         /// Installs a plugin content directory into the main /Content directory;
@@ -294,51 +298,77 @@ namespace UberCMS.Misc
                 return "Failed to unreserve urls - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
             }
         }
-        public static string install(string basePathZip, Connector conn)
+        /// <summary>
+        /// Installs a plugin from either a zip-file or from a given path; if the install is from a zip, the zip file
+        /// will not be deleted by this process (therefore you'll need to delete it after invoking this method).
+        /// </summary>
+        /// <param name="basePath"></param>
+        /// <param name="pathIsZipFile"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string install(string basePath, bool pathIsZipFile, Connector conn)
         {
-            string error;
-            // Create cache folder if it doesn't exist
-            try
+            string error, tempPath = null, pluginDir = null;
+            if (pathIsZipFile)
             {
-                if (!Directory.Exists(Core.basePath + "\\Cache"))
-                    Directory.CreateDirectory(Core.basePath + "\\Cache");
-            }
-            catch(Exception ex)
-            {
-                return "Error occurred creating cache directory: " + ex.Message;
-            }
-            // Create directory for zip extraction
-            string tempPath = Core.basePath + "\\Cache\\" + DateTime.Now.ToString("yyyyMMddHHmmssffff");
-            if (Directory.Exists(tempPath))
+                // Create cache folder if it doesn't exist
                 try
                 {
-                    Directory.Delete(tempPath, true);
+                    if (!Directory.Exists(Core.basePath + "\\Cache"))
+                        Directory.CreateDirectory(Core.basePath + "\\Cache");
                 }
                 catch (Exception ex)
                 {
-                    return "The temporary directory '" + tempPath + "' already exists and could not be deleted - " + ex.Message + "!";
+                    return "Error occurred creating cache directory: " + ex.Message;
                 }
-            // Create directory
-            try
-            {
-                Directory.CreateDirectory(tempPath);
+                // Create directory for zip extraction
+                tempPath = Core.basePath + "\\Cache\\" + DateTime.Now.ToString("yyyyMMddHHmmssffff");
+                if (Directory.Exists(tempPath))
+                    try
+                    {
+                        Directory.Delete(tempPath, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        return "The temporary directory '" + tempPath + "' already exists and could not be deleted - " + ex.Message + "!";
+                    }
+                // Create directory
+                try
+                {
+                    Directory.CreateDirectory(tempPath);
+                }
+                catch (Exception ex)
+                {
+                    return "Could not create extraction directory - " + ex.Message + "!";
+                }
+                // Extract zip
+                error = extractZip(basePath, tempPath);
+                if (error != null) return error;
             }
-            catch (Exception ex)
-            {
-                return "Could not create extraction directory - " + ex.Message + "!";
-            }
-            // Extract zip
-            error = extractZip(basePathZip, tempPath);
-            if (error != null) return error;
             // Load the config
             XmlDocument doc = new XmlDocument();
-            try
+            if (pathIsZipFile)
             {
-                doc.LoadXml(File.ReadAllText(tempPath + "\\Config.xml"));
+                try
+                {
+                    doc.LoadXml(File.ReadAllText(tempPath + "\\Config.xml"));
+                }
+                catch (Exception ex)
+                {
+                    try { Directory.Delete(tempPath, true); } catch { }
+                    return "Could not load plugin configuration - " + ex.Message + "!";
+                }
             }
-            catch (Exception ex)
+            else
             {
-                return "Could not load plugin configuration - " + ex.Message + "!";
+                try
+                {
+                    doc.LoadXml(File.ReadAllText(basePath + "\\Config.xml"));
+                }
+                catch (Exception ex)
+                {
+                    return "Could not load plugin configuration - " + ex.Message + "!";
+                }
             }
             // Read config values
             string directory;
@@ -362,20 +392,32 @@ namespace UberCMS.Misc
             }
             catch(Exception ex)
             {
+                if(pathIsZipFile)
+                    try { Directory.Delete(tempPath, true); }
+                    catch { }
                 return "Could not read configuration, it's most likely a piece of data is missing; this could be a plugin designed for a different version of Uber CMS - " + ex.Message + "!";
-            }
-            // Check plugin directory doesn't exist
-            string pluginDir = Core.basePath + "\\App_code\\Plugins\\" + directory;
-            if (Directory.Exists(pluginDir))
-                return "Failed to create new plugin directory - '" + pluginDir + "' already exists!";
-            // Move extracted directory
-            try
+            }    
+            if (pathIsZipFile)
             {
-                Directory.Move(tempPath, pluginDir);
-            }
-            catch (Exception ex)
-            {
-                return "Failed to move extracted directory '" + tempPath + "' to '" + pluginDir + "' - " + ex.Message + "!";
+                // Check plugin directory doesn't exist
+                pluginDir = Core.basePath + "\\App_code\\Plugins\\" + directory;
+                if (Directory.Exists(pluginDir))
+                {
+                    try { Directory.Delete(tempPath, true); }
+                    catch { }
+                    return "Failed to create new plugin directory - '" + pluginDir + "' already exists! The plugin may already be installed...";
+                }
+                // Move extracted directory
+                try
+                {
+                    Directory.Move(tempPath, pluginDir);
+                }
+                catch (Exception ex)
+                {
+                    try { Directory.Delete(tempPath, true); }
+                    catch { }
+                    return "Failed to move extracted directory '" + tempPath + "' to '" + pluginDir + "' - " + ex.Message + "!";
+                }
             }
             // Insert into the database
             try
@@ -384,16 +426,26 @@ namespace UberCMS.Misc
             }
             catch (Exception ex)
             {
-                return "Failed to insert plugin into database - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
-                try
+                if (pathIsZipFile)
                 {
-                    Directory.Delete(pluginDir, true);
+                    // Delete the directory we copied - error occurred during installation, no point of wasting space/risking probabal future issues
+                    try
+                    {
+                        Directory.Delete(pluginDir, true);
+                    }
+                    catch { }
                 }
-                catch { }
+                return "Failed to insert plugin into database - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
             }
             return null;
         }
-        public static string uninstall(string pluginid, Connector conn)
+        /// <summary>
+        /// Completely uninstalls a plugin.
+        /// </summary>
+        /// <param name="pluginid"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string uninstall(string pluginid, bool deletePath, Connector conn)
         {
             // Check if the plugin is enabled - else disable it
             Result info = conn.Query_Read("SELECT state, directory, classpath FROM plugins WHERE pluginid='" + pluginid + "'");
@@ -428,13 +480,16 @@ namespace UberCMS.Misc
                 return "Failed to uninstall plugin - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
             }
             // Remove folder
-            try
+            if (deletePath)
             {
-                Directory.Delete(Core.basePath + "\\App_Code\\Plugins\\" + info[0]["directory"], true);
-            }
-            catch (Exception ex)
-            {
-                return "Critical failure - failed to delete directory - " + ex.Message + "!";
+                try
+                {
+                    Directory.Delete(Core.basePath + "\\App_Code\\Plugins\\" + info[0]["directory"], true);
+                }
+                catch (Exception ex)
+                {
+                    return "Critical failure - failed to delete directory - " + ex.Message + "!";
+                }
             }
             // Remove database entry
             conn.Query_Execute("DELETE FROM plugins WHERE pluginid='" + Utils.Escape(pluginid) + "'");
@@ -479,6 +534,26 @@ namespace UberCMS.Misc
             // Update status
             conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Disabled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");
             return null;
+        }
+        /// <summary>
+        /// Returns how long ago the specified date occurred; this is to make dates
+        /// easier to read.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static string getTimeString(DateTime date)
+        {
+            TimeSpan t = DateTime.Now.Subtract(date);
+            if (t.TotalSeconds < 60)
+                return t.TotalSeconds < 2 ? "1 second ago" : Math.Round(t.TotalSeconds, 0) + " seconds ago";
+            else if (t.TotalMinutes < 60)
+                return t.TotalSeconds < 2 ? "1 minute ago" : Math.Round(t.TotalMinutes, 0) + " minutes ago";
+            else if (t.TotalHours < 24)
+                return t.TotalHours < 2 ? "1 hour ago" : Math.Round(t.TotalHours, 0) + " hours ago";
+            else if (t.TotalDays < 365)
+                return t.TotalDays < 2 ? "1 day ago" : Math.Round(t.TotalDays, 0) + " days ago";
+            else
+                return date.ToString("dd/MM/yyyy HH:mm:ss");
         }
     }
 }

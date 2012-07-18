@@ -6,6 +6,7 @@
 		<div class="CELL2">
 			<input type="text" class="TEXTBOX" name="username" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL2">
@@ -15,6 +16,7 @@
 			<img src="<!--URL-->/captcha" alt="Captcha" title="Captcha" /><br />
 			<input type="text" class="TEXTBOX" name="captcha" />
 		</div>
+		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL1">

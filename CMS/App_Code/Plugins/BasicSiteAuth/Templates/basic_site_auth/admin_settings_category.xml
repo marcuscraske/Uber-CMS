@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_settings_category]]></hkey><description><![CDATA[Settings category.]]></description><html><![CDATA[<div class="ROW SUB_HEADER">
+	<div class="CELL1">
+		%CATEGORY%
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

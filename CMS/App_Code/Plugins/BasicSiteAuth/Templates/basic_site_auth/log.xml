@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[log]]></hkey><description><![CDATA[The base page for account log.]]></description><html><![CDATA[<p>
+	If you need a specific date/time, hover over the date of a row; you can also click the date and event headers for sorting.
+</p>
+<div class="ROW HEADER">
+	<div class="CELL3">
+		<a href="%SORT_DATE%">Date</a>
+	</div>
+	<div class="CELL3">
+		<a href="%SORT_EVENT%">Event</a>
+	</div>
+	<div class="CELL3">
+		Info
+	</div>
+	<div class="clear"></div>
+</div>
+%EVENTS%
+<div class="LOG TC">
+	<a href="%URL_PREVIOUS%" class="BUTTON FL">Previous</a>
+	<a href="%URL_NEXT%" class="BUTTON FR">Next</a>
+	Page: %PAGE%
+</div>]]></html></template>

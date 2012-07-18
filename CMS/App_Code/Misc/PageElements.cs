@@ -107,7 +107,7 @@ namespace UberCMS.Misc
                 }
             }
             // Find replacement tags
-            foreach (Match m in Regex.Matches(text.ToString(), @"<!--(.*?)-->"))
+            foreach (Match m in Regex.Matches(text.ToString(), @"<!--([a-zA-Z0-9_]*)-->"))
                 text.Replace(m.Value, elements.ContainsKey(m.Groups[1].Value) ? elements[m.Groups[1].Value] : string.Empty);
             currTree++;
             if (currTree < treeMax) replaceElements(ref text, currTree, treeMax);

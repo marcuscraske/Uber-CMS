@@ -61,14 +61,14 @@ namespace UberCMS
             {
                 // Set the base-path and check the CMS has been installed
                 basePath = AppDomain.CurrentDomain.BaseDirectory;
-                if (!File.Exists(basePath + "\\Config.xml"))
+                if (!File.Exists(basePath + "\\CMS.config"))
                 {
                     state = State.NotInstalled;
                     return;
                 }
                 // Load the connector settings
                 XmlDocument doc = new XmlDocument();
-                doc.LoadXml(File.ReadAllText(basePath + "\\Config.xml"));
+                doc.LoadXml(File.ReadAllText(basePath + "\\CMS.config"));
                 connHost = doc["settings"]["db"]["host"].InnerText;
                 connPort = int.Parse(doc["settings"]["db"]["port"].InnerText);
                 connDatabase = doc["settings"]["db"]["database"].InnerText;

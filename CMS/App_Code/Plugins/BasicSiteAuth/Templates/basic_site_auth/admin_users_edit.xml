@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_users_edit]]></hkey><description><![CDATA[The form used to edit a user.]]></description><html><![CDATA[%ERROR%
+<form method="post" action="<!--ADMIN_URL-->/%USERID%">
+	<div class="ROW HEADER">
+		<div class="CELL1">
+			Edit User Details
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Username:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="USERNAME" value="%USERNAME%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			E-mail:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="email" value="%EMAIL%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Password (leave blank to not change it):
+		</div>
+		<div class="CELL2">
+			<input type="password" class="TEXTBOX" name="password" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Secret question:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="secret_question" value="%SECRET_QUESTION%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Secret answer:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="secret_answer" value="%SECRET_ANSWER%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			User group:
+		</div>
+		<div class="CELL2">
+			<select class="TEXTBOX" name="groupid">
+				%GROUPID%
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Save" />
+		</div>
+	</div>
+</form>
+
+<div class="ROW HEADER">
+	<div class="CELL1">
+		Bans
+	</div>
+	<div class="clear"></div>
+</div>
+<form method="get" action="<!--ADMIN_URL-->/%USERID%">
+	<div class="ROW">
+		<div class="CELL2">
+			Reason:
+		</div>
+		<div class="CELL2">
+			<textarea class="TEXTBOX" cols="18" rows="3" name="ban_reason">%BAN_REASON%</textarea>
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Custom (seconds):
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="ban_custom" value="%BAN_CUSTOM%" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="FR BUTTON" value="Custom Ban" />
+			<input type="submit" class="FR BUTTON" name="ban" value="1 Day" />
+			<input type="submit" class="FR BUTTON" name="ban" value="3 Days" />
+			<input type="submit" class="FR BUTTON" name="ban" value="1 Week" />
+			<input type="submit" class="FR BUTTON" name="ban" value="1 Month" />
+			<input type="submit" class="FR BUTTON" name="ban" value="Permanent" />
+		</div>
+	</div>
+</form>
+<div class="ROW SUB_HEADER">
+	<div class="CELL1">
+		History
+	</div>
+	<div class="clear"></div>
+</div>
+%BANS%]]></html></template>

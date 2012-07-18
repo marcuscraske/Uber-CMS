@@ -13,12 +13,12 @@ namespace UberCMS.Plugins
     /// - handleRequest
     ///     - If "CONTENT" in pageElements is left null/undefined, a 404 will occur.
     /// - /Cache should be used for temp content such as uploaded zip archives; this directory will automatically be wiped every-time the appicaton starts.
+    /// - Your plugin SHOULD have the enable, disable and uninstall methods...regardless if they're used or not (simply return null if you don't want to use them).
     /// </summary>
     public static class Base
     {
         public enum State
         {
-            NotInstalled = 0,
             Disabled = 1,
             Enabled = 2
         }

@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_user_groupstransfer]]></hkey><description><![CDATA[Transfer all of the users from one group to another.]]></description><html><![CDATA[<form method="get" action="<!--ADMIN_URL-->">
+	<div class="ROW HEADER">
+		<div class="CELL1">
+			Transfer Users
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Origin:
+		</div>
+		<div class="CELL2">
+			%TITLE% (group ID: %GROUPID%)
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Destination:
+		</div>
+		<div class="CELL2">
+			<select name="transfer_b" class="TEXTBOX">
+				%GROUPS%
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Transfer" />
+		</div>
+	</div>
+	<input type="hidden" name="transfer" value="%GROUPID%" />
+</form>
+%ERROR%]]></html></template>

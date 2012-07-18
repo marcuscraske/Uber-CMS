@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_emailqueue]]></hkey><description><![CDATA[Admin e-mail queue page.]]></description><html><![CDATA[<div class="ROW HEADER">
+	<div class="CELL1">
+		Statistics
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		E-mails in queue:
+	</div>
+	<div class="CELL2">
+		%COUNT%
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Unique recipients in queue:
+	</div>
+	<div class="CELL2">
+		%UNIQUE_COUNT%
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Errors:
+	</div>
+	<div class="CELL2">
+		%ERRORS%
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Cycler thread status:
+	</div>
+	<div class="CELL2">
+		%THREAD_STATUS%
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW HEADER">
+	<div class="CELL4">
+		Email ID
+	</div>
+	<div class="CELL4">
+		Recipient
+	</div>
+	<div class="CELL4">
+		Subject
+	</div>
+	<div class="CELL4">
+		Actions
+	</div>
+	<div class="clear"></div>
+</div>
+%EMAILS%]]></html></template>

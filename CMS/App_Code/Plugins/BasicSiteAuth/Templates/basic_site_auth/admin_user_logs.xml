@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_user_logs]]></hkey><description><![CDATA[Base page for admin user logs.]]></description><html><![CDATA[<form method="post" action="<!--ADMIN_URL-->">
+	<div class="ROW">
+		<div class="CELL2">
+			Username:
+		</div>
+		<div class="CELL2">
+			<input type="text" name="log_username" class="TEXTBOX" value="%USERNAME%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1"><input type="submit" value="Show Log" class="BUTTON FR" /></div>
+		<div class="clear"></div>
+	</div>
+</form>
+%ERROR%]]></html></template>

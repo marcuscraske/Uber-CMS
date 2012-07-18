@@ -18,6 +18,7 @@ using UberLib.Connector;
 using System.Text;
 using UberCMS;
 using UberCMS.Misc;
+using System.Diagnostics;
 
 public partial class _Default : System.Web.UI.Page
 {
@@ -29,6 +30,9 @@ public partial class _Default : System.Web.UI.Page
     #region "Methods - Events"
     protected void Page_Load(object sender, EventArgs e)
     {
+        // Begin recording the time for the request to be processed
+        Stopwatch timer = new Stopwatch();
+        timer.Start();
         // Check the core is operational
         switch (Core.state)
         {
@@ -56,6 +60,11 @@ public partial class _Default : System.Web.UI.Page
 #if DEBUG
         Core.templates.reloadDb(conn);
 #endif
+        //string error = Plugins.install(Server.MapPath(@"/App_Code/Plugins/BasicSiteAuth"), false, conn);
+        //string error = Plugins.enable("11", conn);
+        //string error = Plugins.uninstall("10", false, conn);
+        //if (error != null) throw new Exception(error);
+
         // Invoke the pre-handler methods
         Result plugins = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_request_start='1' ORDER BY invoke_order ASC LIMIT 1");
         foreach (ResultRow plugin in plugins)
@@ -87,7 +96,11 @@ public partial class _Default : System.Web.UI.Page
         foreach (ResultRow plugin in plugins)
             Plugins.invokeMethod(plugin["classpath"], "requestEnd", new object[] { plugin["pluginid"], conn, elements, Request, Response, baseTemplateParent });
         // Format the site template
-        StringBuilder content = new StringBuilder(Core.templates.get(baseTemplateParent, "base", true) ?? string.Empty);
+        StringBuilder content = new StringBuilder(Core.templates.get(baseTemplateParent, "base", null) ?? string.Empty);
+        // Stop the timer and set element
+        timer.Stop();
+        elements["BENCH_MARK"] = "Generated in " + timer.ElapsedMilliseconds + " m/s (" + ((float)timer.ElapsedMilliseconds / 1000) + " secs)";
+        // Replace elements within template
         elements.replaceElements(ref content, 0, 3);
         // Output the built page to the user
         Response.Write(content.ToString());

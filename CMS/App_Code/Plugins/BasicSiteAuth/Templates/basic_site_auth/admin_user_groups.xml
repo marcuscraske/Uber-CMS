@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_user_groups]]></hkey><description><![CDATA[The admin user groups page.]]></description><html><![CDATA[%ERROR%
+
+<form method="post" action="<!--ADMIN_URL-->">
+	<div class="ROW HEADER">
+		<div class="CELL1">
+			Add Group
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Title:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="group_add_title" value="%GROUP_ADD_TITLE%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Create" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+
+<form method="post" action="<!--ADMIN_URL-->">
+%ITEMS%
+<div class="ROW">
+	<div class="CELL1">
+		<input type="submit" class="BUTTON FR" value="Save" />
+	</div>
+</div>
+</form>]]></html></template>
