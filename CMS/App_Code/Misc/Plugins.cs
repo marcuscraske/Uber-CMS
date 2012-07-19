@@ -178,6 +178,8 @@ namespace UberCMS.Misc
         /// <summary>
         /// Installs a plugin content directory into the main /Content directory;
         /// existing files will be over-written!
+        /// 
+        /// Files ending with .file will have their extension removed, useful for JavaScript files.
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
@@ -185,8 +187,17 @@ namespace UberCMS.Misc
         {
             try
             {
+                string destPath;
+                string destDirectory;
                 foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
-                    File.Copy(file, Core.basePath + "\\Content" + file.Substring(path.Length), true);
+                {
+                    destPath = Core.basePath + "\\Content" + file.Substring(path.Length);
+                    if (destPath.EndsWith(".file"))
+                        destPath.Remove(destPath.Length - 5, 5);
+                    destDirectory = Path.GetDirectoryName(destPath);
+                    if (!Directory.Exists(destDirectory)) Directory.CreateDirectory(destDirectory);
+                    File.Copy(file, destPath, true);
+                }
             }
             catch (Exception ex)
             {
@@ -203,8 +214,26 @@ namespace UberCMS.Misc
         {
             try
             {
+                string destPath;
+                string destDirectory;
                 foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+                {
+                    destPath = Core.basePath + "\\Content" + file.Substring(path.Length);
+                    if (destPath.EndsWith(".file"))
+                        destPath.Remove(destPath.Length - 5, 5);
+                    destDirectory = Path.GetDirectoryName(destPath);
                     File.Delete(Core.basePath + "\\Content" + file.Substring(path.Length));
+                    if(Directory.Exists(destDirectory) && Directory.GetFiles(destPath).Length == 0)
+                        // Attempt to delete the directory - we could get no files back due to permissions not allowing us to access certain files,
+                        // it's not critical the directory is deleted so we can ignore it...
+                        try
+                        {
+                            Directory.Delete(destDirectory);
+                        }
+                        catch
+                        {
+                        }
+                }
             }
             catch (Exception ex)
             {
