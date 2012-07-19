@@ -223,9 +223,9 @@ namespace UberCMS.Misc
                         destPath = destPath.Remove(destPath.Length - 5, 5);
                     try
                     {
-                        destDirectory = Path.GetDirectoryName(destPath);
                         File.Delete(destPath);
-                        if (Directory.Exists(destDirectory) && Directory.GetFiles(destPath).Length == 0)
+                        destDirectory = Path.GetDirectoryName(destPath);
+                        if (Directory.Exists(destDirectory) && Directory.GetFiles(destDirectory).Length == 0)
                             // Attempt to delete the directory - we could get no files back due to permissions not allowing us to access certain files,
                             // it's not critical the directory is deleted so we can ignore it...
                             Directory.Delete(destDirectory);
