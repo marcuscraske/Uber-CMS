@@ -193,7 +193,7 @@ namespace UberCMS.Misc
                 {
                     destPath = Core.basePath + "\\Content" + file.Substring(path.Length);
                     if (destPath.EndsWith(".file"))
-                        destPath.Remove(destPath.Length - 5, 5);
+                        destPath = destPath.Remove(destPath.Length - 5, 5);
                     destDirectory = Path.GetDirectoryName(destPath);
                     if (!Directory.Exists(destDirectory)) Directory.CreateDirectory(destDirectory);
                     File.Copy(file, destPath, true);
@@ -220,19 +220,17 @@ namespace UberCMS.Misc
                 {
                     destPath = Core.basePath + "\\Content" + file.Substring(path.Length);
                     if (destPath.EndsWith(".file"))
-                        destPath.Remove(destPath.Length - 5, 5);
-                    destDirectory = Path.GetDirectoryName(destPath);
-                    File.Delete(Core.basePath + "\\Content" + file.Substring(path.Length));
-                    if(Directory.Exists(destDirectory) && Directory.GetFiles(destPath).Length == 0)
-                        // Attempt to delete the directory - we could get no files back due to permissions not allowing us to access certain files,
-                        // it's not critical the directory is deleted so we can ignore it...
-                        try
-                        {
+                        destPath = destPath.Remove(destPath.Length - 5, 5);
+                    try
+                    {
+                        destDirectory = Path.GetDirectoryName(destPath);
+                        File.Delete(destPath);
+                        if (Directory.Exists(destDirectory) && Directory.GetFiles(destPath).Length == 0)
+                            // Attempt to delete the directory - we could get no files back due to permissions not allowing us to access certain files,
+                            // it's not critical the directory is deleted so we can ignore it...
                             Directory.Delete(destDirectory);
-                        }
-                        catch
-                        {
-                        }
+                    }
+                    catch{}
                 }
             }
             catch (Exception ex)
@@ -542,6 +540,9 @@ namespace UberCMS.Misc
             }
             // Update status
             conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+            // Restart the core
+            Core.cmsStop();
+            Core.cmsStart();
             return null;
         }
         public static string disable(string pluginid, Connector conn)
