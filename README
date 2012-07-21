@@ -12,10 +12,19 @@ Features
 > Plugin system:
 -- Run cycles/periodic tasks.
 -- Ability to temporarily disable plugins.
+-- Shared methods for easily install/uninstall of functions such as content and SQL.
+-- Can be uploaded via zip archives within the admin panel.
 > Easy URL rewriting support.
 > Template engine:
 -- Conditional markup blocks using <!--IF:flag--><!--ELSE--><!--ENDIF--> with nesting support.
+-- Templates cached during runtime for faster page rendering.
 
 License
 ===========================================================================================
 Creative Commons Attribution-ShareAlike 3.0 unported
+
+Current Issues
+===========================================================================================
+> Needs testing on Mono:
+-- URL rewriting issues will be the most likely issue.
+> BasicSiteAuth plugin needs re-testing; this will occur soon after no more criticl changes will be made.
