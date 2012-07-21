@@ -442,7 +442,7 @@ namespace UberCMS.Plugins
                             // Attempt to insert the user
                             try
                             {
-                                int userid = conn.Query_Count("INSERT INTO bsa_users (groupid, username, password, email, secret_question, secret_answer) VALUES('" + Utils.Escape(Core.settings[SETTINGS_CATEGORY][SETTINGS_USER_GROUP_DEFAULT]) + "', '" + Utils.Escape(username) + "', '" + Utils.Escape(generateHash(password, salt1, salt2)) + "', '" + Utils.Escape(email) + "', '" + Utils.Escape(secretQuestion) + "', '" + Utils.Escape(secretAnswer) + "'); SELECT LAST_INSERT_ID();");
+                                int userid = conn.Query_Count("INSERT INTO bsa_users (groupid, username, password, email, secret_question, secret_answer, registered) VALUES('" + Utils.Escape(Core.settings[SETTINGS_CATEGORY][SETTINGS_USER_GROUP_DEFAULT]) + "', '" + Utils.Escape(username) + "', '" + Utils.Escape(generateHash(password, salt1, salt2)) + "', '" + Utils.Escape(email) + "', '" + Utils.Escape(secretQuestion) + "', '" + Utils.Escape(secretAnswer) + "', NOW()); SELECT LAST_INSERT_ID();");
                                 // Log registration
                                 logEvent(userid.ToString(), LogEvents.Registered, null, conn);
                                 // Send a welcome or activation e-mail

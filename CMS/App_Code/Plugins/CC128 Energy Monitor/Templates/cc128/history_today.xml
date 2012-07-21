@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[cc128]]></pkey><hkey><![CDATA[history_today]]></hkey><description><![CDATA[The history page for today.]]></description><html><![CDATA[<img src="<!--URL-->/power/history?image=1&amp;width=680&amp;height=430" alt="Graph" title="Graph" />
+<form method="get" action="<!--URL-->/power/history">
+	<div class="ROW">
+		<div class="CELL2">
+			View date:
+		</div>
+		<div class="CELL2">
+			<select name="day" class="TEXTBOX">
+				%ITEMS_DAY%
+			</select>
+			<select name="month" class="TEXTBOX">
+				%ITEMS_MONTH%
+			</select>
+			<select name="year" class="TEXTBOX">
+				%ITEMS_YEAR%
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="View" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<input type="hidden" name="image" value="1" />
+	<input type="hidden" name="width" value="1024" />
+	<input type="hidden" name="height" value="768" />
+</form>]]></html></template>

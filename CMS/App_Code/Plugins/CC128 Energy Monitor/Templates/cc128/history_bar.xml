@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[cc128]]></pkey><hkey><![CDATA[history_bar]]></hkey><description><![CDATA[A bar used in statistics.]]></description><html><![CDATA[<div class="CC128_BAR">
+	<div class="TITLE">%TITLE%</div>
+	<div class="BAR" title="%PERCENT%% - %TITLE%">
+		<div style="width: %PERCENT%%">&nbsp;</div>
+	</div>
+<div class="clear"></div>
+</div>]]></html></template>

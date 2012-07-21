@@ -149,12 +149,33 @@ namespace UberCMS.Misc
             lock(flags)
                 flags.Add(flag);
         }
-
+        /// <summary>
+        ///  Removes a flag.
+        /// </summary>
+        /// <param name="flag"></param>
         public void removeFlag(string flag)
         {
             lock(flags)
                 if (flags.Contains(flag))
                     flags.Remove(flag);
+        }
+        /// <summary>
+        /// Specifies if a flag exists in the collection.
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <returns></returns>
+        public bool containsFlag(string flag)
+        {
+            return flags.Contains(flag);
+        }
+        /// <summary>
+        /// Specifies if an element key exists in the collection.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool containsElementKey(string key)
+        {
+            return elements.ContainsKey(key);
         }
         #endregion
     }

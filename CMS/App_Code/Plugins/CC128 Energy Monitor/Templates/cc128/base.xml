@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[cc128]]></pkey><hkey><![CDATA[base]]></hkey><description><![CDATA[The base content shared between the pages.]]></description><html><![CDATA[<div class="CC128_LEFT">
+	<a <!--IF:CC128_CURR-->class="SELECTED"<!--ENDIF--> href="<!--URL-->/power">Current Usage</a>
+	<a <!--IF:CC128_H_TODAY-->class="SELECTED"<!--ENDIF-->href="<!--URL-->/power/history">History - Today</a>
+	<a <!--IF:CC128_H_MONTH-->class="SELECTED"<!--ENDIF-->href="<!--URL-->/power/history/month">History - This Month</a>
+	<a <!--IF:CC128_H_YEAR-->class="SELECTED"<!--ENDIF-->href="<!--URL-->/power/history/year">History - This Year</a>
+	<a <!--IF:CC128_H_ALL-->class="SELECTED"<!--ENDIF-->href="<!--URL-->/power/history/all">History - All</a>
+</div>
+<div class="CC128_RIGHT">
+<!--CC128_CONTENT-->
+</div>]]></html></template>

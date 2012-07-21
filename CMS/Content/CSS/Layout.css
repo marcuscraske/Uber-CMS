@@ -253,14 +253,17 @@ h3
     background: #333;
     color: #FFF;
 }
-/* Textbox */
+/* Textbox and Textarea */
 .TEXTBOX
+{
+    width: 12em;
+}
+.TEXTBOX, .TEXTAREA
 {
     border: solid 0.1em #CCC;
     padding: 0.25em;
-    width: 12em;
 }
-.TEXTBOX:hover, .TEXTBOX:focus
+.TEXTBOX:hover, .TEXTBOX:focus, .TEXTAREA:hover, .TEXTAREA:focus
 {
     background: #CCC;
     color: #333;

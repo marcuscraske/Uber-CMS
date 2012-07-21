@@ -1,0 +1,96 @@
+﻿.BSA_PROFILES_FRAME
+{
+    background: #000;
+    padding: 0.5em;
+    border-radius: 0.5em;
+}
+.BSA_PROFILES_FRAME .LEFT
+{
+    float: left;
+    width: 14em;
+}
+.BSA_PROFILES_FRAME .LEFT .PANE
+{
+    padding: 0.5em;
+    margin-bottom: 0.5em;
+    border-radius: 0.5em;
+}
+.BSA_PROFILES_FRAME .LEFT .PANE.CENTER
+{
+    text-align: center;
+}
+.BSA_PROFILES_FRAME .LEFT .PANE .PROFILE_PICTURE
+{
+    max-height: 10em;
+    max-width: 10em;
+    border: solid 0.2em #CCC;
+}
+.BSA_PROFILES_FRAME .LEFT .PANE .ICON
+{
+    margin-right: 0.5em;
+}
+.BSA_PROFILES_FRAME .RIGHT
+{
+    float: right;
+    width: 44em;
+}
+.BSA_PROFILES_FRAME .RIGHT .TABS
+{
+    margin-top: 8em;
+}
+.BSA_PROFILES_FRAME .RIGHT .TABS a
+{
+    float: left;
+    display: block;
+    padding: 0.3em 0.8em;
+    text-decoration: none;
+    font-size: larger;
+    border-top-left-radius: 0.5em;
+    border-top-right-radius: 0.5em;
+    margin-right: 0.5em;
+}
+.BSA_PROFILES_FRAME .RIGHT .TABS a:not(.SELECTED)
+{
+    background: #CCC;
+    color: #333;
+}
+.BSA_PROFILES_FRAME .RIGHT .TABS a:not(.SELECTED):hover, .BSA_PROFILES_FRAME .RIGHT .TABS a:not(.SELECTED):focus
+{
+    background: #333;
+    color: #FFF;
+}
+.BSA_PROFILES_FRAME .RIGHT .PROFILE_CONTENT
+{
+    padding: 0.5em;
+    border-radius: 0.5em;
+    border-top-left-radius: 0em;
+}
+.BSA_PROFILES_FRAME .RIGHT .PROFILE_CONTENT .HEADER
+{
+    font-size: larger;
+    padding: 0.2em 0.5em;
+    background: #CCC;
+    color: #333;
+    margin: 0.5em 0em;
+}
+.BSA_PROFILES_FRAME .RIGHT .PROFILE_CONTENT .ABOUT_CONTACT
+{
+    float: left;
+    display: block;
+    height: 1.5em;
+    line-height: 1.5em;
+    padding: 0.3em;
+}
+.BSA_PROFILES_FRAME .RIGHT .PROFILE_CONTENT .ABOUT_CONTACT:hover, .BSA_PROFILES_FRAME .RIGHT .PROFILE_CONTENT .ABOUT_CONTACT:focus
+{
+    background: #CCC;
+    color: #333;
+}
+.BSA_PROFILES_FRAME .RIGHT .PROFILE_CONTENT .ABOUT_CONTACT img
+{
+    float: left;
+    width: 1.3em;
+    height: 1.3em;
+    margin-right: 0.5em;
+    border: none;
+}

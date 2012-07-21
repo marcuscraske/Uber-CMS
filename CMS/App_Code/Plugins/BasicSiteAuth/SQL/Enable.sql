@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS `bsa_users`
 	email VARCHAR(50) NOT NULL,
 	UNIQUE(email),
 	secret_question TEXT,
-	secret_answer TEXT
+	secret_answer TEXT,
+	registered DATETIME
 );
 CREATE TABLE IF NOT EXISTS `bsa_user_log`
 (

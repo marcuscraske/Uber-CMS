@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[cc128]]></pkey><hkey><![CDATA[history_all]]></hkey><description><![CDATA[The history page for all data.]]></description><html><![CDATA[<div class="ROW">
+	<div class="CELL2">
+		Total recordings:
+	</div>
+	<div class="CELL2">
+		%TOTAL%
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Highest recording:
+	</div>
+	<div class="CELL2">
+		%MAX_WATTS% watts - %MAX_DATE%
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Lowest recording (above zero):
+	</div>
+	<div class="CELl2">
+		%MIN_WATTS% watts - %MIN_DATE%
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Average:
+	</div>
+	<div class="CELL2">
+		%AVERAGE% watts
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

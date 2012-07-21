@@ -585,5 +585,23 @@ namespace UberCMS.Misc
             else
                 return date.ToString("dd/MM/yyyy HH:mm:ss");
         }
+        /// <summary>
+        /// Adds a CSS file to the header.
+        /// </summary>
+        /// <param name="path"></param>
+        public static void addHeaderCSS(string path, ref PageElements pageElements)
+        {
+            if (!pageElements.containsElementKey("HEADER")) pageElements["HEADER"] = string.Empty;
+            pageElements["HEADER"] += "<link href=\"" + pageElements["URL"] + path + "\" type=\"text/css\" rel=\"Stylesheet\" />";
+        }
+        /// <summary>
+        /// Adds a JS file to the header.
+        /// </summary>
+        /// <param name="path"></param>
+        public static void addHeaderJS(string path, ref PageElements pageElements)
+        {
+            if (!pageElements.containsElementKey("HEADER")) pageElements["HEADER"] = string.Empty;
+            pageElements["HEADER"] += "<script src=\"" + pageElements["URL"] + path + "\"></script>";
+        }
     }
 }
