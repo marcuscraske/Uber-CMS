@@ -91,17 +91,17 @@ namespace UberCMS.Misc
             return classPath;
         }
         /// <summary>
-        /// Returns the class-path for the 404 page.
+        /// Returns the class-path for the 404 pages in their invoke order ascending.
         /// </summary>
         /// <param name="conn"></param>
         /// <returns></returns>
-        public static string[] getRequest404(Connector conn)
+        public static string[][] getRequest404s(Connector conn)
         {
-            Result res = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_404='1' ORDER BY invoke_order ASC LIMIT 1");
-            if (res.Rows.Count != 0)
-                return new string[] { res[0]["pluginid"], res[0]["classpath"] };
-            else
-                return null;
+            List<string[]> handlers = new List<string[]>();
+            Result res = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_404='1' ORDER BY invoke_order ASC");
+            foreach (ResultRow handler in res)
+                handlers.Add(new string[] { handler["pluginid"], handler["classpath"] });
+            return handlers.ToArray();
         }
         /// <summary>
         /// Extracts a zip file to a folder.
@@ -324,6 +324,24 @@ namespace UberCMS.Misc
             {
                 return "Failed to unreserve urls - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
             }
+        }
+        /// <summary>
+        /// Unreserves an array of titles.
+        /// </summary>
+        /// <param name="urls"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string unreserveURLs(string[] urls, Connector conn)
+        {
+            try
+            {
+                StringBuilder query = new StringBuilder("DELETE FROM urlrewriting WHERE ");
+                foreach (string url in urls)
+                    query.Append("title LIKE '" + Utils.Escape(url) + "' OR ");
+                query.Remove(query.Length - 3, 3);
+            }
+            catch { }
+            return null;
         }
         /// <summary>
         /// Installs a plugin from either a zip-file or from a given path; if the install is from a zip, the zip file

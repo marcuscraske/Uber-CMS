@@ -76,10 +76,16 @@ public partial class _Default : System.Web.UI.Page
         if (data == null || elements["CONTENT"] == null)
         {
             // Plugin not found - find a plugin to handle the 404 error-code
-            data = Plugins.getRequest404(conn);
-            if (data != null)
-                // 404 found
-                Plugins.invokeMethod(data[1], "handleRequestNotFound", new object[]{ data[0], conn, elements, Request, Response, baseTemplateParent });
+            string[][] handlers404 = Plugins.getRequest404s(conn);
+            if (handlers404.Length > 0)
+            {
+                // We'll loop each handler until content is set (useful for e.g. Wiki plugins which take over some URLs when a 404 is thrown)
+                foreach (string[] handler in handlers404)
+                {
+                    Plugins.invokeMethod(handler[1], "handleRequestNotFound", new object[] { handler[0], conn, elements, Request, Response, baseTemplateParent });
+                    if (elements["CONTENT"] != null) break;
+                }
+            }
             else
             {
                 // 404 not found...
