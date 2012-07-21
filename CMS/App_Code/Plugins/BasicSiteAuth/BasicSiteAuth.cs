@@ -123,12 +123,12 @@ namespace UberCMS.Plugins
             Misc.Plugins.reserveURLs(pluginid, null, new string[] { "admin" }, conn);
 #endif
             // Install admin pages
-            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pageUsers", "Users", "Authentication", "Content/Images/bsa_admin/authentication.png", conn);
-            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pageUserGroups", "User Groups", "Authentication", "Content/Images/bsa_admin/user_groups.png", conn);
-            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pageUserLogs", "User Logs", "Authentication", "Content/Images/bsa_admin/user_logs.png", conn);
-            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pageEmailQueue", "E-mail Queue", "Core", "Content/Images/bsa_admin/email_queue.png", conn);
-            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pagePlugins", "Plugins", "Core", "Content/Images/bsa_admin/plugins.png", conn);
-            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pageSettings", "Settings", "Core", "Content/Images/bsa_admin/settings.png", conn);
+            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pageUsers", "Users", "Authentication", "Content/Images/bsa_admin/admin_users.png", conn);
+            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pageUserGroups", "User Groups", "Authentication", "Content/Images/bsa_admin/admin_user_groups.png", conn);
+            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pageUserLogs", "User Logs", "Authentication", "Content/Images/bsa_admin/admin_user_logs.png", conn);
+            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pageEmailQueue", "E-mail Queue", "Core", "Content/Images/bsa_admin/admin_email_queue.png", conn);
+            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pagePlugins", "Plugins", "Core", "Content/Images/bsa_admin/admin_plugins.png", conn);
+            adminPage_Install("UberCMS.BasicSiteAuth.Admin", "pageSettings", "Settings", "Core", "Content/Images/bsa_admin/admin_settings.png", conn);
             // No error occurred, return null
             return null;
         }
@@ -231,6 +231,8 @@ namespace UberCMS.Plugins
                 // Set group flag
                 pageElements.setFlag("GROUP_" + data[0]["title"]);
             }
+            // Add CSS file
+            Misc.Plugins.addHeaderCSS("/Content/CSS/BasicSiteAuth.css", ref pageElements);
         }
         #endregion
 
