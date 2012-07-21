@@ -67,23 +67,32 @@ namespace UberCMS.Plugins
                     pageArticles(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
                 default:
-                    pageCreateArticle(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageArticles_Create(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
             }
         }
         public static void pageArticles(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
+            switch (request.QueryString["1"])
+            {
+                default:
+                    pageArticles_Browse(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    break;
+            }
         }
-        public static void pageArticle(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Browse(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
         }
-        public static void pageCreateArticle(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Create(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        {
+        }
+        public static void pageArticle(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
         }
         public static void handleRequestNotFound(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
             if(Core.settings["articles"].getBool("handles_404"))
-                pageCreateArticle(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pageArticles_Create(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
         }
     }
 }
