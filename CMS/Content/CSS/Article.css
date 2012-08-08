@@ -1,0 +1,28 @@
+﻿.UNPUBLISHED
+{
+    margin: 0.5em;
+}
+.UNPUBLISHED div
+{
+    background: red;
+    color: #FFF;
+    padding: 0.5em;
+    border-radius: 0.5em;
+}
+.UNPUBLISHED div div
+{
+    font-size: large;
+    padding: 0em;
+}
+.ARTICLE .BODY
+{
+    min-height: 15em;
+}
+.ARTICLE .PANE
+{
+    margin-top: 2em;
+    border-radius: 0.5em;
+    background: #CCC;
+    color: #333;
+    padding: 0.5em;
+}

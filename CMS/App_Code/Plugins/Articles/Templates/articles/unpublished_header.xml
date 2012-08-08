@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[unpublished_header]]></hkey><description><![CDATA[The header displayed at the top of unpublished articles.]]></description><html><![CDATA[<div class="UNPUBLISHED">
+	<div>
+		<div>Not Public</div>
+		This article is not public since it has not been published! It's most likely your article is awaiting moderation, please be patient.
+	</div>
+</div>]]></html></template>

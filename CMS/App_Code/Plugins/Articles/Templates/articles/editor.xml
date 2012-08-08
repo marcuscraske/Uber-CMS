@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[editor]]></hkey><description><![CDATA[The editor used to create/modify articles.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/article/editor?%PARAMS%">
+	<div class="ROW">
+		<div class="CELL2">
+			Title:
+		</div>
+		<div class="CELL2">
+			<input name="title" type="text" class="TEXTBOX" value="%TITLE%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Relative URL:
+		</div>
+		<div class="CELL2">
+			<input name="relative_url" type="text" class="TEXTBOX" value="%RELATIVE_PATH%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Tags:
+		</div>
+		<div class="CELL2">
+			<input name="tags" type="text" class="TEXTBOX" value="%TAGS%" />
+			<p>
+				Tags should be provided as a comma-separated list e.g. news,article.
+			</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Options:
+		</div>
+		<div class="CELL2">
+			<div class="CHECKBOX">
+				<input type="checkbox" name="allow_html" %ALLOW_HTML% />
+				<div>Allow HTML</div>
+			</div>
+			<div class="CHECKBOX">
+				<input type="checkbox" name="allow_comments" %ALLOW_COMMENTS% />
+				<div>Allow Comments</div>
+			</div>
+			<div class="CHECKBOX">
+				<input type="checkbox" name="show_pane" %SHOW_PANE% />
+				<div>Show Options Pane</div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<textarea class="TEXTAREA" cols="100" rows="12" name="body">%BODY%</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Save" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+%ERROR%]]></html></template>

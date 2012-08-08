@@ -621,5 +621,17 @@ namespace UberCMS.Misc
             if (!pageElements.containsElementKey("HEADER")) pageElements["HEADER"] = string.Empty;
             pageElements["HEADER"] += "<script src=\"" + pageElements["URL"] + path + "\"></script>";
         }
+        /// <summary>
+        /// Validates if a string consists of numeric characters (0 to 9); can accept null.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static bool isNumeric(string text)
+        {
+            if (text == null) return false;
+            foreach (char c in text)
+                if (c < 48 || c > 57) return false;
+            return true;
+        }
     }
 }

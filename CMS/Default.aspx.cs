@@ -86,7 +86,7 @@ public partial class _Default : System.Web.UI.Page
                     if (elements["CONTENT"] != null) break;
                 }
             }
-            else
+            if(elements["CONTENT"] == null)
             {
                 // 404 not found...
                 elements["TITLE"] = "Page Not Found";

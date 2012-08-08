@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article]]></hkey><description><![CDATA[The base page for an article.]]></description><html><![CDATA[<div class="ARTICLE">
+	<div class="BODY">
+		%BODY%
+	</div>
+	<div class="PANE">
+		Published on %DATE% (%DATE_SIMPLE%)
+		<div class="BUTTONS">
+			%BUTTONS%
+		</div>
+	</div>
+	<div class="COMMENTS">
+		%COMMENTS%
+	</div>
+</div>]]></html></template>
