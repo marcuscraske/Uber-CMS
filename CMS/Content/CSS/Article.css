@@ -20,9 +20,73 @@
 }
 .ARTICLE .PANE
 {
-    margin-top: 2em;
-    border-radius: 0.5em;
+    padding: 0.2em 0.5em 0em 0.5em;
+    line-height: 1.5em;
+    font-style: italic;
+    border-bottom: solid 0.2em #360;
     background: #CCC;
     color: #333;
-    padding: 0.5em;
+    margin: -0.5em 0em 0.5em -0.5em;
+    width: 60em;
+}
+.ARTICLE .PANE .BUTTONS
+{
+    float: right;
+}
+.ARTICLE .PANE .BUTTONS .BUTT
+{
+    float: right;
+    display: block;
+    padding: 0.3em 0.5em;
+    border-radius: 0.5em;
+    margin-right: 0.5em;
+    font-size: 0.8em;
+    height: 1.5em;
+    line-height: 1.5em;
+    text-decoration: none;
+    font-style: normal;
+    background: #360;
+    color: #FFF;
+    border-bottom-left-radius: 0em;
+    border-bottom-right-radius: 0em;
+}
+.ARTICLE .PANE .BUTTONS .BUTT:hover, .ARTICLE .PANE .BUTTONS .BUTT:focus
+{
+    background: #333;
+    color: #FFF;
+}
+.ARTICLE .PANE .BUTTONS .BUTT img
+{
+    float: left;
+    margin-right: 0.5em;
+    width: 1.3em;
+    height: 1.3em;
+    border: 0em;
+}
+.ARTICLE .COMMENT
+{
+    margin-bottom: 0.5em;
+}
+.ARTICLE .COMMENT_HEADER
+{
+    background: #CCC;
+    margin: 0em;
+    border-radius: 0.5em;
+    color: #333;
+}
+.ARTICLE .COMMENT_HEADER a
+{
+    color: #333;
+}
+.ARTICLE .COMMENT_HEADER .COMMENT_DELETE img
+{
+    width: 1.1em;
+    height: 1.1em;
+    margin-left: 0.5em;
+    border: 0em;
+}
+.ARTICLE .COMMENT_BODY
+{
+    margin: 0em;
+    overflow: hidden;
 }

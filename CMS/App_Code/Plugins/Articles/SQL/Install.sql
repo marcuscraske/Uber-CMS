@@ -18,10 +18,10 @@ CREATE TABLE IF NOT EXISTS articles
 	body TEXT,
 	moderator_userid INT,
 	FOREIGN KEY(`moderator_userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE SET NULL,
-	published BOOL DEFAULT 0,
-	allow_comments BOOL DEFAULT 0,
-	allow_html BOOL DEFAULT 0,
-	show_pane BOOL DEFAULT 0,
+	published VARCHAR(1) DEFAULT 0,
+	allow_comments VARCHAR(1) DEFAULT 0,
+	allow_html VARCHAR(1) DEFAULT 0,
+	show_pane VARCHAR(1) DEFAULT 0,
 	datetime DATETIME
 );
 CREATE TABLE IF NOT EXISTS articles_tags
@@ -36,4 +36,14 @@ CREATE TABLE IF NOT EXISTS articles_tags_article
 	FOREIGN KEY(`tagid`) REFERENCES `articles_tags`(`tagid`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY(`articleid`) REFERENCES `articles`(`articleid`) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(tagid, articleid)
+);
+CREATE TABLE IF NOT EXISTS articles_thread_comments
+(
+	commentid INT PRIMARY KEY AUTO_INCREMENT,
+	threadid INT,
+	FOREIGN KEY(`threadid`) REFERENCES `articles_thread`(`threadid`) ON UPDATE CASCADE ON DELETE CASCADE,
+	userid INT,
+	FOREIGN KEY(`userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE CASCADE,
+	message TEXT,
+	datetime DATETIME
 );

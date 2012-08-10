@@ -85,22 +85,54 @@ namespace UberCMS.Misc
         public void replaceElements(ref StringBuilder text, int currTree, int treeMax)
         {
             // Find if-statements
-            bool expression;
+            bool expressionValue;
+            bool expressionValueNegated;
+            string expression;
             MatchCollection elseMC;
-            foreach (Match m in Regex.Matches(text.ToString(), @"<!--IF:([a-zA-Z0-9!_]*)-->(.*?)<!--ENDIF(:\1)?-->", RegexOptions.Singleline))
+            bool foundFlag;
+            foreach (Match m in Regex.Matches(text.ToString(), @"<!--IF:([a-zA-Z0-9!_\|\&]*)-->(.*?)<!--ENDIF(:\1)?-->", RegexOptions.Singleline))
             {
-                expression = (m.Groups[1].Value.StartsWith("!") && m.Groups[1].Value.Length > 1 && !flags.Contains(m.Groups[1].Value.Substring(1))) || flags.Contains(m.Groups[1].Value);
+                expression = m.Groups[1].Value.StartsWith("!") && m.Groups[1].Value.Length > 1 ? m.Groups[1].Value.Substring(1) : m.Groups[1].Value;
+                expressionValueNegated = m.Groups[1].Value.StartsWith("!");
+                if (expression.Contains("|"))
+                {
+                    foundFlag = false;
+                    // Iterate each flag inside of an expression like e.g. flag1|flag2|flag3 until we find it
+                    foreach(string s in expression.Split('|'))
+                        if (s.Length > 0 && flags.Contains(s))
+                        {
+                            foundFlag = true;
+                            break;
+                        }
+                    expressionValue = !expressionValueNegated && foundFlag;
+                }
+                else if (expression.Contains("&"))
+                {
+                    foundFlag = true; // We leave this as true until a flag is not found, then we break the iteration since the expression is no longer valid
+                    foreach(string s in expression.Split('&'))
+                        if (s.Length > 0 && !flags.Contains(s))
+                        {
+                            foundFlag = false;
+                            break;
+                        }
+                    expressionValue = !expressionValueNegated && foundFlag;
+                }
+                else
+                    // Expression contains no other operators
+                    expressionValue = !expressionValueNegated && flags.Contains(expression);
+
+                //expressionValue = (m.Groups[1].Value.StartsWith("!") && m.Groups[1].Value.Length > 1 && !flags.Contains(m.Groups[1].Value.Substring(1))) || flags.Contains(m.Groups[1].Value);
                 elseMC = Regex.Matches(m.Groups[2].Value, @"(.*?)<!--ELSE-->(.*$?)", RegexOptions.Singleline);
                 if (elseMC.Count == 1)
                 {
-                    if (expression)
+                    if (expressionValue)
                         text.Replace(m.Value, elseMC[0].Groups[1].Value);
                     else
                         text.Replace(m.Value, elseMC[0].Groups[2].Value);
                 }
                 else
                 {
-                    if (expression)
+                    if (expressionValue)
                         text.Replace(m.Value, m.Groups[2].Value);
                     else
                         text.Replace(m.Value, string.Empty);
