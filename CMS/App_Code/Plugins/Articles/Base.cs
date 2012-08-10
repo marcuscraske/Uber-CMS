@@ -157,7 +157,7 @@ namespace UberCMS.Plugins
             // Check we have an articleid that is not null and greater than zero, else 404
             if (articleid == null || articleid.Length == 0) return;
             // Load the article's data
-            Result articleRaw = conn.Query_Read("SELECT a.*, at.relative_url, at.articleid_current FROM articles AS a, articles_thread AS at WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
+            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.*, at.relative_url, at.articleid_current FROM articles AS a, articles_thread AS at WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
             if (articleRaw.Rows.Count != 1)
                 return; // 404 - no data found - the article is corrupt (thread and article not linked) or the article does not exist
             ResultRow article = articleRaw[0];
@@ -275,6 +275,7 @@ namespace UberCMS.Plugins
             // -- Finalize
             content
                 .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
+                .Replace("%REVISION%", HttpUtility.HtmlEncode(article["revision"]))
                 .Replace("%DATE%", article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "unknown")
                 .Replace("%BUTTONS%", buttons.ToString())
                 ;
@@ -293,7 +294,7 @@ namespace UberCMS.Plugins
         }
         public static void pageArticle_View_Comments(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
         {
-            bool allowComments = article["allow_comments"].Equals("1");
+            bool allowComments = article["allow_comments_thread"].Equals("1");
             if (!allowComments)
                 content.Append(Core.templates["articles"]["comments_disabled"]);
 

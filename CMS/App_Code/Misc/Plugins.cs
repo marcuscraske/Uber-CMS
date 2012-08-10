@@ -595,7 +595,7 @@ namespace UberCMS.Misc
             if (t.TotalSeconds < 60)
                 return t.TotalSeconds < 2 ? "1 second ago" : Math.Round(t.TotalSeconds, 0) + " seconds ago";
             else if (t.TotalMinutes < 60)
-                return t.TotalSeconds < 2 ? "1 minute ago" : Math.Round(t.TotalMinutes, 0) + " minutes ago";
+                return t.TotalMinutes < 2 ?  "1 minute ago" : Math.Round(t.TotalMinutes, 0) + " minutes ago";
             else if (t.TotalHours < 24)
                 return t.TotalHours < 2 ? "1 hour ago" : Math.Round(t.TotalHours, 0) + " hours ago";
             else if (t.TotalDays < 365)
