@@ -90,6 +90,7 @@ namespace UberCMS.Misc
             string expression;
             MatchCollection elseMC;
             bool foundFlag;
+            bool containsFlag;
             foreach (Match m in Regex.Matches(text.ToString(), @"<!--IF:([a-zA-Z0-9!_\|\&]*)-->(.*?)<!--ENDIF(:\1)?-->", RegexOptions.Singleline))
             {
                 expression = m.Groups[1].Value.StartsWith("!") && m.Groups[1].Value.Length > 1 ? m.Groups[1].Value.Substring(1) : m.Groups[1].Value;
@@ -98,30 +99,43 @@ namespace UberCMS.Misc
                 {
                     foundFlag = false;
                     // Iterate each flag inside of an expression like e.g. flag1|flag2|flag3 until we find it
-                    foreach(string s in expression.Split('|'))
-                        if (s.Length > 0 && flags.Contains(s))
+                    foreach (string s in expression.Split('&'))
+                    {
+                        expressionValueNegated = s.StartsWith("!");
+                        if ((expressionValueNegated && s.Length > 1) || (!expressionValueNegated && s.Length > 0))
                         {
-                            foundFlag = true;
-                            break;
+                            containsFlag = flags.Contains(expressionValueNegated ? s.Substring(1) : s);
+                            if ((expressionValueNegated ? !containsFlag : containsFlag))
+                            {
+                                foundFlag = true;
+                                break;
+                            }
                         }
+                    }
                     expressionValue = !expressionValueNegated && foundFlag;
                 }
                 else if (expression.Contains("&"))
                 {
                     foundFlag = true; // We leave this as true until a flag is not found, then we break the iteration since the expression is no longer valid
-                    foreach(string s in expression.Split('&'))
-                        if (s.Length > 0 && !flags.Contains(s))
+                    foreach (string s in expression.Split('&'))
+                    {
+                        expressionValueNegated = s.StartsWith("!");
+                        if((expressionValueNegated && s.Length > 1) || (!expressionValueNegated && s.Length > 0))
                         {
-                            foundFlag = false;
-                            break;
+                            containsFlag = flags.Contains(expressionValueNegated ? s.Substring(1) : s);
+                            if (!(expressionValueNegated ? !containsFlag : containsFlag))
+                            {
+                                foundFlag = false;
+                                break;
+                            }
                         }
-                    expressionValue = !expressionValueNegated && foundFlag;
+                    }
+                    expressionValue = expressionValueNegated ? !foundFlag : foundFlag;
                 }
                 else
                     // Expression contains no other operators
-                    expressionValue = !expressionValueNegated && flags.Contains(expression);
+                    expressionValue = expressionValueNegated ? !flags.Contains(expression) : flags.Contains(expression);
 
-                //expressionValue = (m.Groups[1].Value.StartsWith("!") && m.Groups[1].Value.Length > 1 && !flags.Contains(m.Groups[1].Value.Substring(1))) || flags.Contains(m.Groups[1].Value);
                 elseMC = Regex.Matches(m.Groups[2].Value, @"(.*?)<!--ELSE-->(.*$?)", RegexOptions.Singleline);
                 if (elseMC.Count == 1)
                 {

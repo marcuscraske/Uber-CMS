@@ -90,3 +90,30 @@
     margin: 0em;
     overflow: hidden;
 }
+.ARTICLE .HISTORY_ROW
+{
+    display: block;
+    color: #333;
+    border-bottom: solid 0.2em #CCC;
+    margin: 0em;
+    padding: 0em;
+}
+.ARTICLE .HISTORY_ROW.SELECTED
+{
+    background: #CCC;
+    color: #333;
+}
+.ARTICLE .HISTORY_ROW:hover, .ARTICLE .HISTORY_ROW:focus
+{
+    background: #CCC;
+    color: #333;
+}
+.ARTICLE .HISTORY_ROW .LINE
+{
+    border-right: dotted 0.1em #CCC;
+}
+.ARTICLE .HISTORY_ROW .CELL3
+{
+    width: 30%;
+    padding: 0.5em;
+}
