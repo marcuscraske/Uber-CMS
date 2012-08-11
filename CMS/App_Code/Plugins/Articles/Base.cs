@@ -232,11 +232,10 @@ namespace UberCMS.Plugins
             }
             else
             {
-                // Display a notice if the article is unpublished
-                if(!published)
-                    subpageContent.Append(Core.templates["articles"]["unpublished_header"]);
                 subpageContent.Append(article["body"]);
-                // Render the article's body
+                // Render the article with bbcode
+                Common.BBCode.format(ref subpageContent, true, true);
+                // Set the article's body
                 content.Replace("%BODY%", subpageContent.ToString());
             }
 
@@ -276,7 +275,7 @@ namespace UberCMS.Plugins
             string commentCaptcha = request.Form["comment_captcha"];
             if (commentBody != null && commentCaptcha != null)
             {
-                if (!Plugins.BasicSiteAuth.validCaptcha(commentCaptcha))
+                if (!Common.Validation.validCaptcha(commentCaptcha))
                     commentError = "Incorrect captcha verification code!";
                 else if (commentBody.Length < COMMENTS_LENGTH_MIN || commentBody.Length > COMMENTS_LENGTH_MAX)
                     commentError = "Your comment must be " + COMMENTS_LENGTH_MIN + " to  " + COMMENTS_LENGTH_MAX + " in length!";
@@ -357,7 +356,7 @@ namespace UberCMS.Plugins
             
             if (request.Form["confirm"] != null && captcha != null)
             {
-                if (!Plugins.BasicSiteAuth.validCaptcha(captcha))
+                if (!Common.Validation.validCaptcha(captcha))
                     error = "Incorrect captcha verification code!";
                 else
                 {

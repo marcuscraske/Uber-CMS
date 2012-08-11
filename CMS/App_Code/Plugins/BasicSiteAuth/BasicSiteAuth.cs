@@ -116,7 +116,7 @@ namespace UberCMS.Plugins
             error = Misc.Plugins.contentInstall(basePath + "\\Content");
             if (error != null) return error;
             // Reserve URLs
-            Misc.Plugins.reserveURLs(pluginid, null, new string[] { "login", "logout", "register", "recover", "my_account", "captcha", "log" }, conn);
+            Misc.Plugins.reserveURLs(pluginid, null, new string[] { "login", "logout", "register", "recover", "my_account", "log" }, conn);
             if (error != null) return error;
             // Reserve URL for admin system
 #if BASIC_SITE_AUTH_ADMIN
@@ -195,9 +195,6 @@ namespace UberCMS.Plugins
                     if (!HttpContext.Current.User.Identity.IsAuthenticated) return;
                     pageMyAccount(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
-                case "captcha":
-                    pageCaptcha(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
-                    break;
                 case "log":
                     if (!HttpContext.Current.User.Identity.IsAuthenticated) return;
                     pageLog(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
@@ -256,7 +253,7 @@ namespace UberCMS.Plugins
                 string username = request.Form["username"];
                 string password = request.Form["password"];
                 // Validate
-                if (!validCaptcha(request.Form["captcha"]))
+                if (!Common.Validation.validCaptcha(request.Form["captcha"]))
                     error = "Invalid captcha code!";
                 else if (username.Length < USERNAME_MIN || username.Length > USERNAME_MAX)
                     error = incorrectUserPassword;
@@ -425,7 +422,7 @@ namespace UberCMS.Plugins
                     if (username != null && password != null && confirmPassword != null && email != null && secretQuestion != null && secretAnswer != null)
                     {
                         // Validate
-                        if (!validCaptcha(captcha))
+                        if (!Common.Validation.validCaptcha(captcha))
                             error = "Incorrect captcha code!";
                         else if (username.Length < USERNAME_MIN || username.Length > USERNAME_MAX)
                             error = "Username must be " + USERNAME_MIN + " to " + USERNAME_MAX + " characters in length!";
@@ -453,7 +450,7 @@ namespace UberCMS.Plugins
                                 if (activation)
                                 {
                                     // Generate activation key
-                                    string activationKey = randomText(16);
+                                    string activationKey = Common.Utils.randomText(16);
                                     conn.Query_Execute("INSERT INTO bsa_activations (userid, code) VALUES('" + userid + "', '" + Utils.Escape(activationKey) + "');");
                                     // Generate message
                                     string baseURL = "http://" + request.Url.Host + (request.Url.Port != 80 ? ":" + request.Url.Port : string.Empty);
@@ -564,7 +561,7 @@ namespace UberCMS.Plugins
                 if (username != null && captcha != null)
                 {
                     // Verify captcha
-                    if (!validCaptcha(captcha))
+                    if (!Common.Validation.validCaptcha(captcha))
                         error = "Incorrect captcha code!";
                     else
                         HttpContext.Current.Session["recover_sqa"] = username;
@@ -701,7 +698,7 @@ namespace UberCMS.Plugins
                 string username = request.Form["username"];
                 if (username != null && captcha != null)
                 {
-                    if (!validCaptcha(captcha))
+                    if (!Common.Validation.validCaptcha(captcha))
                         error = "Incorrect captcha code!";
                     else
                     {
@@ -720,7 +717,7 @@ namespace UberCMS.Plugins
                             int attempts = 0;
                             while (attempts < 5)
                             {
-                                code = randomText(16);
+                                code = Common.Utils.randomText(16);
                                 if (conn.Query_Count("SELECT COUNT('') FROM bsa_recovery_email WHERE code LIKE '" + Utils.Escape(code) + "'") == 0)
                                     break;
                                 else
@@ -828,71 +825,6 @@ namespace UberCMS.Plugins
                 .Replace("%SECRET_QUESTION%", HttpUtility.HtmlEncode(secretQuestion ?? userInfo["secret_question"]))
                 .Replace("%SECRET_ANSWER%", HttpUtility.HtmlEncode(secretAnswer ?? userInfo["secret_answer"]))
                 .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : updatedSettings ? Core.templates[baseTemplateParent]["success"].Replace("%SUCCESS%", "Account settings successfully updated!") : string.Empty);
-        }
-        /// <summary>
-        /// Used to verify the user is human.
-        /// </summary>
-        /// <param name="pluginid"></param>
-        /// <param name="conn"></param>
-        /// <param name="pageElements"></param>
-        /// <param name="request"></param>
-        /// <param name="response"></param>
-        private static void pageCaptcha(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
-        {
-            // Set the content-type to an image
-            response.ContentType = "image/png";
-            // Generate random string and store as a session variable
-            string text = randomText(6);
-            // Draw text on a random banner
-            int width = 160;
-            int height = 70;
-            int strikesA = 20;
-            int strikesB = 10;
-            Random R = new Random(DateTime.Now.Millisecond);
-            Bitmap temp = new Bitmap(width, height);
-            Graphics gi = Graphics.FromImage(temp);
-            pageCaptchaStrikeThrough(ref R, strikesA, gi, width, height, 1, 2);
-            string[] fonts = new string[] { "Arial", "Verdana", "Times New Roman", "Tahoma" };
-            Font f = new Font(fonts[R.Next(0, fonts.Length)], (float)R.Next(20, 24), FontStyle.Regular, GraphicsUnit.Pixel);
-            int midY = (height / 2) - (int)(gi.MeasureString(text, f).Height / 2);
-            int offset = R.Next(0, 20);
-            string charr;
-            for (int i = 0; i < text.Length; i++)
-            {
-                charr = text.Substring(i, 1);
-                gi.DrawString(charr, f, new SolidBrush(Color.FromArgb(R.Next(0, 180), R.Next(0, 180), R.Next(0, 180))), new Point(R.Next(0, 5) + offset, midY + R.Next(-10, 10)));
-                offset += (int)gi.MeasureString(charr, f).Width;
-            }
-            pageCaptchaStrikeThrough(ref R, strikesB, gi, width, height, 1, 1);
-            int w2 = width / 2;
-            int h2 = height / 2;
-            gi.FillRectangle(new SolidBrush(Color.FromArgb(R.Next(20, 70), R.Next(0, 255), R.Next(0, 255), R.Next(0, 255))), 0, 0, w2, h2);
-            gi.FillRectangle(new SolidBrush(Color.FromArgb(R.Next(20, 70), R.Next(0, 255), R.Next(0, 255), R.Next(0, 255))), w2, h2, w2, h2);
-            gi.FillRectangle(new SolidBrush(Color.FromArgb(R.Next(20, 70), R.Next(0, 255), R.Next(0, 255), R.Next(0, 255))), w2, 0, w2, h2);
-            gi.FillRectangle(new SolidBrush(Color.FromArgb(R.Next(20, 70), R.Next(0, 255), R.Next(0, 255), R.Next(0, 255))), 0, h2, w2, h2);
-            int w8 = width / 8;
-            int h8 = height / 8;
-            int w4 = width / 4;
-            int h4 = height / 4;
-            for (int i = 0; i < 5; i++)
-                gi.FillRectangle(new SolidBrush(Color.FromArgb(R.Next(10, 40), R.Next(0, 255), R.Next(0, 255), R.Next(0, 255))), R.Next(w8, w2), R.Next(h8, h2), R.Next(w4, width), R.Next(h4, height));
-            gi.Dispose();
-            // Write image to stream
-            using (System.IO.MemoryStream stream = new System.IO.MemoryStream())
-            {
-                temp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                stream.WriteTo(response.OutputStream);
-            }
-            temp.Dispose();
-            // Set to session variable
-            HttpContext.Current.Session["captcha"] = text;
-            // End the response
-            response.End();
-        }
-        private static void pageCaptchaStrikeThrough(ref Random rand, int strikes, Graphics gi, int width, int height, int minLineWidth, int maxLineWidth)
-        {
-            for (int i = 0; i < strikes; i++)
-                gi.DrawLine(new Pen(Color.FromArgb(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255)), rand.Next(minLineWidth, maxLineWidth)), new Point(rand.Next(0, width), rand.Next(0, height)), new Point(rand.Next(0, width), rand.Next(0, height)));
         }
         /// <summary>
         /// Displays logged events of the users actions; this can also be accessed by administrators for all users if the preprocessor
@@ -1082,21 +1014,6 @@ namespace UberCMS.Plugins
 
         #region "Methods"
         /// <summary>
-        /// Checks if a captcha code is correct.
-        /// </summary>
-        /// <param name="captcha"></param>
-        /// <returns></returns>
-        public static bool validCaptcha(string captcha)
-        {
-            if (captcha != null && captcha == (string)HttpContext.Current.Session["captcha"])
-            {
-                HttpContext.Current.Session.Remove("captcha");
-                return true;
-            }
-            else
-                return false;
-        }
-        /// <summary>
         /// Generates a hash for a string, i.e. a password, for securely storing data within a database.
         /// 
         /// This uses SHA512, two salts and a custom shifting algorithm.
@@ -1130,20 +1047,6 @@ namespace UberCMS.Plugins
             Byte[] computedHash = hasher.ComputeHash(rawData);
             // Convert to base64 and return
             return Convert.ToBase64String(computedHash);
-        }
-        /// <summary>
-        /// Generates a string with random alpha-numeric characters of a specified length.
-        /// </summary>
-        /// <param name="length"></param>
-        /// <returns></returns>
-        public static string randomText(int length)
-        {
-            string chars = "abcdefghijklmnopqrstuvwxyz01234567890";
-            StringBuilder text = new StringBuilder();
-            Random ran = new Random(DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + DateTime.Now.Millisecond);
-            for (int i = 0; i < length; i++)
-                text.Append(chars[ran.Next(0, chars.Length - 1)].ToString());
-            return text.ToString();
         }
         /// <summary>
         /// Validates an e-mail address; credit for the regex pattern goes to the following article:
@@ -1208,8 +1111,8 @@ namespace UberCMS.Plugins
             else
             {
                 // Salts do not exist - create them
-                salt1 = randomText(16);
-                salt2 = randomText(16);
+                salt1 = Common.Utils.randomText(16);
+                salt2 = Common.Utils.randomText(16);
                 StringBuilder saltsConfig = new StringBuilder();
                 XmlWriter writer = XmlWriter.Create(saltsConfig);
                 writer.WriteStartDocument();

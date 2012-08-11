@@ -99,7 +99,7 @@ namespace UberCMS.Misc
                 {
                     foundFlag = false;
                     // Iterate each flag inside of an expression like e.g. flag1|flag2|flag3 until we find it
-                    foreach (string s in expression.Split('&'))
+                    foreach (string s in expression.Split('|'))
                     {
                         expressionValueNegated = s.StartsWith("!");
                         if ((expressionValueNegated && s.Length > 1) || (!expressionValueNegated && s.Length > 0))
@@ -112,7 +112,7 @@ namespace UberCMS.Misc
                             }
                         }
                     }
-                    expressionValue = !expressionValueNegated && foundFlag;
+                    expressionValue = foundFlag;
                 }
                 else if (expression.Contains("&"))
                 {
@@ -130,7 +130,7 @@ namespace UberCMS.Misc
                             }
                         }
                     }
-                    expressionValue = expressionValueNegated ? !foundFlag : foundFlag;
+                    expressionValue = foundFlag;
                 }
                 else
                     // Expression contains no other operators
