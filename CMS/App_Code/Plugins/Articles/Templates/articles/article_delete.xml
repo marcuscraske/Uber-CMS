@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article_delete]]></hkey><description><![CDATA[Confirms the deletion of an article.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/article/%ARTICLEID%/delete">
+	<div class="ROW HEADER">
+		<div class="CELL1">
+			Confirm Article Deletion
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			Are you sure you want to delete this article?
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			<img src="<!--URL-->/captcha" alt="Captcha" />
+		</div>
+		<div class="CELL2">
+			Captcha:<br />
+			<input type="text" class="TEXTBOX" name="captcha" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Delete" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<input type="hidden" name="confirm" value="1"/ >
+</form>]]></html></template>

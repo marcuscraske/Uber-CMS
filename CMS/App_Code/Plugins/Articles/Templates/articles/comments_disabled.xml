@@ -1,0 +1,3 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[comments_disabled]]></hkey><description><![CDATA[The header for when an articles comments are disabled.]]></description><html><![CDATA[<p>
+No more comments can be posted, since comments have been disabled by the main article!
+</p>]]></html></template>

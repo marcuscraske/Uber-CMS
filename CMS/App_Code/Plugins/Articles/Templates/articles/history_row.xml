@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[history_row]]></hkey><description><![CDATA[Represents an article on the history tab of an article thread.]]></description><html><![CDATA[<a class="ROW HISTORY_ROW %SELECTED%" href="<!--URL-->/article/%ARTICLEID%">
+	<div class="CELL3 LINE">
+		%TITLE%
+	</div>
+	<div class="CELL3 LINE">
+		%PUBLISHED%
+	</div>
+	<div class="CELL3">
+		%DATETIME% (%DATETIME_SHORT%)
+	</div>
+	<div class="clear"></div>
+</a>]]></html></template>

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article_publish]]></hkey><description><![CDATA[The page used to publish an article.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/article/%ARTICLEID%/publish">
+	<div class="ROW HEADER">
+		<div class="CELL1">
+			Confirm Publishing Article
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			Are you sure you want to publish this article?
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Publish" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<input type="hidden" name="confirm" value="1" />
+</form>]]></html></template>

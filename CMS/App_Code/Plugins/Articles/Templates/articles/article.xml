@@ -1,14 +1,62 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article]]></hkey><description><![CDATA[The base page for an article.]]></description><html><![CDATA[<div class="ARTICLE">
-	<div class="BODY">
-		%BODY%
-	</div>
+<!--IF:ARTICLE_SHOW_PANE-->
 	<div class="PANE">
-		Published on %DATE% (%DATE_SIMPLE%)
+		Published %DATE%, rev. %REVISION%
 		<div class="BUTTONS">
-			%BUTTONS%
+			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/history">
+				<img src="<!--URL-->/Content/Images/articles/history.png" alt="History" />
+				History
+			</a>
+			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/comments">
+				<img src="<!--URL-->/Content/Images/articles/comments.png" alt="Comments" />
+				Comments (%COMMENTS%)
+			</a>
+			<!--IF:ARTICLE_PERM_CREATE-->
+			<a class="BUTT" href="<!--URL-->/article/editor?articleid=%ARTICLEID%">
+				<img src="<!--URL-->/Content/Images/articles/edit.png" alt="Edit" />
+				Edit
+			</a>
+			<!--ENDIF:ARTICLE_PERM_CREATE-->
+			<!--IF:ARTICLE_PERM_DELETE-->
+			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/delete">
+				<img src="<!--URL-->/Content/Images/articles/delete.png" alt="Delete" />
+				Delete
+			</a>
+			<!--ENDIF:ARTICLE_PERM_DELETE-->
+			<!--IF:ARTICLE_PERM_PUBLISH&ARTICLE_PUBLISHED-->
+			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/set">
+				<img src="<!--URL-->/Content/Images/articles/set.png" alt="Set As Current Article" />
+				Set As Current Article
+			</a>
+			<!--ENDIF:ARTICLE_PERM_PUBLISH&ARTICLE_PUBLISHED-->
+			<!--IF:!ARTICLE_PUBLISHED-->
+			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/publish">
+				<img src="<!--URL-->/Content/Images/articles/publish.png" alt="Publish" />
+				Publish
+			</a>
+			<!--ENDIF:!ARTICLE_PUBLISHED-->
+			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%">
+				<img src="<!--URL-->/Content/Images/articles/view.png" alt="View" />
+				View
+			</a>
+			<div class="clear"></div>
 		</div>
 	</div>
-	<div class="COMMENTS">
-		%COMMENTS%
+<!--ELSE-->
+  <!--IF:ARTICLE_PERM_CREATE|ARTICLE_PERM_DELETE|ARTICLE_PERM_PUBLISH-->
+	<a href="<!--URL-->/article/%ARTICLEID%?force_pane=1" class="BUTTON FR">Show Panel</a>
+	<div class="clear"></div>
+  <!--ENDIF:ARTICLE_PERM_CREATE|ARTICLE_PERM_DELETE|ARTICLE_PERM_PUBLISH-->
+<!--ENDIF-->
+	<div class="BODY">
+<!--IF:!ARTICLE_PUBLISHED-->
+		<div class="UNPUBLISHED">
+			<div>
+				<div>Not Public</div>
+				This article is not public since it has not been published! It's most likely your article is awaiting moderation, please be patient.
+			</div>
+		</div>
+<!--ENDIF-->
+		%BODY%
 	</div>
 </div>]]></html></template>

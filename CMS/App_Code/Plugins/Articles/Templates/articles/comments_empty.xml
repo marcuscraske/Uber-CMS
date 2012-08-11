@@ -1,0 +1,3 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[comments_empty]]></hkey><description><![CDATA[Displayed when no comments exist.]]></description><html><![CDATA[<p>
+No further comments have been made.
+</p>]]></html></template>

@@ -167,6 +167,7 @@ namespace UberCMS.Plugins
                 return; // 404 - no data found - the article is corrupt (thread and article not linked) or the article does not exist
             ResultRow article = articleRaw[0];
             // Load the users permissions
+            bool published = article["published"].Equals("1");
             bool permCreate;
             bool permDelete;
             bool permPublish;
@@ -192,7 +193,7 @@ namespace UberCMS.Plugins
             // Create stringbuilder for assembling the article
             StringBuilder content = new StringBuilder();
             // Check the article is published *or* the user is admin/owner of the article
-            if (!article["published"].Equals("1") && (!HttpContext.Current.User.Identity.IsAuthenticated || (!owner && !permPublish)))
+            if (!published && (!HttpContext.Current.User.Identity.IsAuthenticated || (!owner && !permPublish)))
                 return;
             // Append the main body of the article
             content.Append(Core.templates["articles"]["article"]);
@@ -211,7 +212,7 @@ namespace UberCMS.Plugins
                         break;
                     case "delete":
                         // An owner of an unpublished article can delete it
-                        if (!permDelete && !(owner && !article["published"].Equals("1"))) return; // Check the user has sufficient permission
+                        if (!permDelete && !(owner && !published)) return; // Check the user has sufficient permission
                         pageArticle_View_Delete(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
                         break;
                     case "history":
@@ -221,7 +222,7 @@ namespace UberCMS.Plugins
                         pageArticle_View_Comments(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
                         break;
                     case "set":
-                        if (!permPublish || !article["published"].Equals("1")) return;
+                        if (!permPublish || !published) return;
                         pageArticle_View_Set(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
                         break;
                     default:
@@ -232,7 +233,7 @@ namespace UberCMS.Plugins
             else
             {
                 // Display a notice if the article is unpublished
-                if(!article["published"].Equals("1"))
+                if(!published)
                     subpageContent.Append(Core.templates["articles"]["unpublished_header"]);
                 subpageContent.Append(article["body"]);
                 // Render the article's body
@@ -247,11 +248,11 @@ namespace UberCMS.Plugins
                 .Replace("%COMMENTS%", conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE threadid='" + Utils.Escape(article["threadid"]) + "'").ToString())
                 ;
             // Set flag for showing pane - this can be overriden if a querystring force_pane is specified
-            if (article["show_pane"].Equals("1") || !article["published"].Equals("1") || request.QueryString["force_pane"] != null || subpage)
+            if (article["show_pane"].Equals("1") || !published || request.QueryString["force_pane"] != null || subpage)
                 pageElements.setFlag("ARTICLE_SHOW_PANE");
 
             // Set published flag
-            if (article["published"].Equals("1"))
+            if (published)
                 pageElements.setFlag("ARTICLE_PUBLISHED");
 
             // Set permission flags
