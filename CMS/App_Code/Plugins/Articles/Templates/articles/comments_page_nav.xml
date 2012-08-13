@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[comments_page_nav]]></hkey><description><![CDATA[The page navigator for comments on an articles thread.]]></description><html><![CDATA[<div class="ROW">
-	<div class="CELL1 TC">
-		<!--IF:ARTICLE_COMMENTS_PREVIOUS--><a href="<!--URL-->/article/%ARTICLEID%/comments?copg=%PAGE_PREVIOUS%" class="BUTTON FL">Previous</a><!--ENDIF-->
-		Page %PAGE%
-		<!--IF:ARTICLE_COMMENTS_NEXT--><a href="<!--URL-->/article/%ARTICLEID%/comments?copg=%PAGE_NEXT%" class="BUTTON FR">Next</a><!--ENDIF-->
-	</div>
-	<div class="clear"></div>
-</div>]]></html></template>

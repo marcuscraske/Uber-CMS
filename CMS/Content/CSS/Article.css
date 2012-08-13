@@ -1,4 +1,5 @@
-﻿.UNPUBLISHED
+﻿/* Unpublished article header */
+.UNPUBLISHED
 {
     margin: 0.5em;
 }
@@ -14,10 +15,12 @@
     font-size: large;
     padding: 0em;
 }
+/* Container for an article's sub-page body */
 .ARTICLE .BODY
 {
     min-height: 15em;
 }
+/* Options pane at the top of an article */
 .ARTICLE .PANE
 {
     padding: 0.2em 0.5em 0em 0.5em;
@@ -63,6 +66,7 @@
     height: 1.3em;
     border: 0em;
 }
+/* Article comments */
 .ARTICLE .COMMENT
 {
     margin-bottom: 0.5em;
@@ -90,6 +94,7 @@
     margin: 0em;
     overflow: hidden;
 }
+/* Articles history */
 .ARTICLE .HISTORY_ROW
 {
     display: block;
@@ -98,7 +103,7 @@
     margin: 0em;
     padding: 0em;
 }
-.ARTICLE .HISTORY_ROW.SELECTED
+.ARTICLE .HISTORY_ROW.SELECTED /* The article currently selected for the thread */
 {
     background: #CCC;
     color: #333;
@@ -108,12 +113,31 @@
     background: #CCC;
     color: #333;
 }
-.ARTICLE .HISTORY_ROW .LINE
+.ARTICLE .HISTORY_ROW .LINE .ARTICLE_CELL_PADDING
 {
     border-right: dotted 0.1em #CCC;
 }
-.ARTICLE .HISTORY_ROW .CELL3
+.ARTICLE .HISTORY_ROW .ARTICLE_CELL_PADDING
 {
-    width: 30%;
     padding: 0.5em;
+    height: 3em;
+    overflow: hidden;
+}
+.ARTICLE .HISTORY_ROW .CELL4 a
+{
+    text-decoration: none;
+}
+.ARTICLE .HISTORY_ROW .CELL4 img
+{
+    margin-right: 1em;
+    border: 0em;
+}
+.ARTICLE .HISTORY_ROW .PUBLISH
+{
+    font-size: 0.8em;
+}
+.ARTICLE .HISTORY_ROW .PUBLISH a
+{
+    color: #333;
+    font-style: italic;
 }

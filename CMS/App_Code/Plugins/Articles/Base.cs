@@ -22,6 +22,7 @@ namespace UberCMS.Plugins
         public const int COMMENTS_LENGTH_MAX = 512;
         public const int COMMENTS_MAX_PER_HOUR = 8;
         public const int COMMENTS_PER_PAGE = 5;
+        public const int HISTORY_PER_PAGE = 10;
 
         public const string SETTINGS_KEY = "articles";
         public const string SETTINGS_KEY_HANDLES_404 = "handles_404";
@@ -31,6 +32,7 @@ namespace UberCMS.Plugins
         /// </summary>
         public const string QUERY_TAGS_CLEANUP = "DELETE FROM articles_tags WHERE NOT EXISTS (SELECT DISTINCT tagid FROM articles_tags_article WHERE tagid=articles_tags.tagid);";
 
+        #region "Methods - Plugin"
         public static string enable(string pluginid, Connector conn)
         {
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
@@ -98,6 +100,14 @@ namespace UberCMS.Plugins
                     break;
             }
         }
+        public static void handleRequestNotFound(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        {
+            if(Core.settings[SETTINGS_KEY].getBool(SETTINGS_KEY_HANDLES_404))
+                pageArticle_View(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+        }
+        #endregion
+
+        #region "Methods - Page Handlers"
         public static void pageArticles(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
             switch (request.QueryString["1"])
@@ -105,10 +115,14 @@ namespace UberCMS.Plugins
                 default:
                     pageArticles_Browse(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
+                case "delete":
+
+                    break;
+
+                case "pending":
+
+                    break;
             }
-        }
-        public static void pageArticles_Browse(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
-        {
         }
         public static void pageArticle(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
@@ -121,321 +135,16 @@ namespace UberCMS.Plugins
                 case "editor":
                     pageArticle_Editor(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
-                case "delete":
-                    pageArticle_Delete(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
-                    break;
             }
         }
-        public static void pageArticle_View(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        #endregion
+
+        #region "Methods - Pages"
+
+        public static void pageArticles_Browse(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
-            // Retrieve the article ID
-            string articleid;
-            if (request.QueryString["page"] == "article")
-                articleid = request.QueryString["1"];
-            else
-            {
-                // Build the relative URL
-                StringBuilder relativeUrl = new StringBuilder();
-                relativeUrl.Append(request.QueryString["page"]).Append("/"); // The querystring "pg" should never be null, however no null exception will occur with stringbuilder anyhow
-                string chunk;
-                for (int i = 1; i <= RELATIVE_URL_MAXCHUNKS; i++)
-                {
-                    chunk = request.QueryString[i.ToString()];
-                    if (chunk != null)
-                    {
-                        if (chunk.Length > RELATIVE_URL_CHUNK_MAX)
-                            return; // Invalid request - hence 404...
-                        else
-                            relativeUrl.Append(chunk).Append("/");
-                    }
-                    else
-                        break;
-                }
-                // Check if we've grabbed anything
-                if (relativeUrl.Length == 0)
-                    return; // No URL captured - 404...
-                else
-                    relativeUrl.Remove(relativeUrl.Length - 1, 1); // Remove tailing slash
-                // Grab the article ID from the database
-                articleid = (conn.Query_Scalar("SELECT articleid_current FROM articles_thread WHERE relative_url='" + Utils.Escape(relativeUrl.ToString()) + "'") ?? string.Empty).ToString();
-            }
-            // Check we have an articleid that is not null and greater than zero, else 404
-            if (articleid == null || articleid.Length == 0) return;
-            // Load the article's data
-            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.*, at.relative_url, at.articleid_current FROM articles AS a, articles_thread AS at WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
-            if (articleRaw.Rows.Count != 1)
-                return; // 404 - no data found - the article is corrupt (thread and article not linked) or the article does not exist
-            ResultRow article = articleRaw[0];
-            // Load the users permissions
-            bool published = article["published"].Equals("1");
-            bool permCreate;
-            bool permDelete;
-            bool permPublish;
-            bool owner;
-            if (HttpContext.Current.User.Identity.IsAuthenticated)
-            {
-                Result permsRaw = conn.Query_Read("SELECT access_media_create, access_media_delete, access_media_publish FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS g ON g.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
-                if(permsRaw.Rows.Count != 1) return; // Something has gone wrong
-                ResultRow perms = permsRaw[0];
-                permCreate = perms["access_media_create"].Equals("1");
-                permDelete = perms["access_media_delete"].Equals("1");
-                permPublish = perms["access_media_publish"].Equals("1");
-                owner = article["userid"] == HttpContext.Current.User.Identity.Name;
-            }
-            else
-            {
-                permCreate = false;
-                permDelete = false;
-                permPublish = false;
-                owner = false;
-            }
-
-            // Create stringbuilder for assembling the article
-            StringBuilder content = new StringBuilder();
-            // Check the article is published *or* the user is admin/owner of the article
-            if (!published && (!HttpContext.Current.User.Identity.IsAuthenticated || (!owner && !permPublish)))
-                return;
-            // Append the main body of the article
-            content.Append(Core.templates["articles"]["article"]);
-            
-            // Render the body based on the current page
-            bool subpage = request.QueryString["page"] == "article" && request.QueryString["2"] != null;
-            StringBuilder subpageContent = new StringBuilder();
-            if (subpage)
-            {
-                // -- Sub-page
-                switch (request.QueryString["2"])
-                {
-                    case "publish":
-                        if (!permPublish) return; // Check the user has sufficient permission
-                        pageArticle_View_Publish(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
-                        break;
-                    case "delete":
-                        // An owner of an unpublished article can delete it
-                        if (!permDelete && !(owner && !published)) return; // Check the user has sufficient permission
-                        pageArticle_View_Delete(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
-                        break;
-                    case "history":
-                        pageArticle_View_History(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
-                        break;
-                    case "comments":
-                        pageArticle_View_Comments(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
-                        break;
-                    case "set":
-                        if (!permPublish || !published) return;
-                        pageArticle_View_Set(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
-                        break;
-                    default:
-                        return; // 404 - unknown sub-page
-                }
-                content.Replace("%BODY%", subpageContent.ToString());
-            }
-            else
-            {
-                subpageContent.Append(article["body"]);
-                // Render the article with bbcode
-                Common.BBCode.format(ref subpageContent, true, true);
-                // Set the article's body
-                content.Replace("%BODY%", subpageContent.ToString());
-            }
-
-            // Add pane
-            content
-                .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
-                .Replace("%REVISION%", HttpUtility.HtmlEncode(article["revision"]))
-                .Replace("%DATE%", article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "unknown")
-                .Replace("%COMMENTS%", conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE threadid='" + Utils.Escape(article["threadid"]) + "'").ToString())
-                ;
-            // Set flag for showing pane - this can be overriden if a querystring force_pane is specified
-            if (article["show_pane"].Equals("1") || !published || request.QueryString["force_pane"] != null || subpage)
-                pageElements.setFlag("ARTICLE_SHOW_PANE");
-
-            // Set published flag
-            if (published)
-                pageElements.setFlag("ARTICLE_PUBLISHED");
-
-            // Set permission flags
-            if (permCreate) pageElements.setFlag("ARTICLE_PERM_CREATE");
-            if (permDelete) pageElements.setFlag("ARTICLE_PERM_DELETE");
-            if (permPublish) pageElements.setFlag("ARTICLE_PERM_PUBLISH");
-
-            pageElements["TITLE"] = HttpUtility.HtmlEncode(article["title"]);
-            pageElements["CONTENT"] = content.ToString();
-            Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
-        }
-        public static void pageArticle_View_Comments(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
-        {
-            bool allowComments = article["allow_comments_thread"].Equals("1");
-            if (!allowComments)
-                content.Append(Core.templates["articles"]["comments_disabled"]);
-
-            // -- Check for a new comment posted by the user
-            string commentError = null;
-            string commentBody = request.Form["comment_body"];
-            string commentCaptcha = request.Form["comment_captcha"];
-            if (commentBody != null && commentCaptcha != null)
-            {
-                if (!Common.Validation.validCaptcha(commentCaptcha))
-                    commentError = "Incorrect captcha verification code!";
-                else if (commentBody.Length < COMMENTS_LENGTH_MIN || commentBody.Length > COMMENTS_LENGTH_MAX)
-                    commentError = "Your comment must be " + COMMENTS_LENGTH_MIN + " to  " + COMMENTS_LENGTH_MAX + " in length!";
-                else if (conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' AND DATE_SUB(NOW(), INTERVAL 1 HOUR)") >= COMMENTS_MAX_PER_HOUR)
-                    commentError = "You've already posted the maximum of " + COMMENTS_MAX_PER_HOUR + " comments per an hour - try again later!";
-                else
-                {
-                    // Insert the post
-                    conn.Query_Execute("INSERT INTO articles_thread_comments (threadid, userid, message, datetime) VALUES('" + Utils.Escape(article["threadid"]) + "', '" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "', '" + Utils.Escape(commentBody) + "', NOW())");
-                    // Reset comment body
-                    commentBody = null;
-                }
-            }
-            // -- Check if to delete a comment
-            string dcom = request.QueryString["dcom"];
-            if (dcom != null && HttpContext.Current.User.Identity.IsAuthenticated && Misc.Plugins.isNumeric(dcom))
-            {
-                bool canDelete = permDelete;
-                if (!canDelete)
-                {
-                    // -- User cannot delete all comments, check if they're the owner
-                    Result dcomData = conn.Query_Read("SELECT userid FROM articles_thread_comments WHERE commentid='" + Utils.Escape(dcom) + "'");
-                    if (dcomData.Rows.Count == 1 && dcomData[0]["userid"] == HttpContext.Current.User.Identity.Name)
-                        canDelete = true;
-                }
-                if (!canDelete) return;
-                else
-                    conn.Query_Execute("DELETE FROM articles_thread_comments WHERE commentid='" + Utils.Escape(dcom) + "'");
-            }
-            // Build comments body
-            string commentsPageRaw = request.QueryString["copg"];
-            // -- Get the page
-            int commentsPage;
-            if (!int.TryParse(commentsPageRaw, out commentsPage) || commentsPage < 1) commentsPage = 1;
-            // -- Get the comments data associated with that page
-            Result commentsData = conn.Query_Read("SELECT atc.*, u.username FROM articles_thread_comments AS atc LEFT OUTER JOIN bsa_users AS u ON u.userid=atc.userid WHERE threadid='" + Utils.Escape(article["threadid"]) + "' ORDER BY datetime DESC LIMIT " + ((COMMENTS_PER_PAGE * commentsPage) - COMMENTS_PER_PAGE) + "," + COMMENTS_PER_PAGE);
-            // -- Build the data
-            if (commentsData.Rows.Count == 0)
-                content.Append(Core.templates["articles"]["comments_empty"]);
-            else
-                foreach (ResultRow comment in commentsData)
-                {
-                    content.Append(
-                        (HttpContext.Current.User.Identity.IsAuthenticated && (permDelete || HttpContext.Current.User.Identity.Name == comment["userid"]) ? Core.templates["articles"]["comment_delete"] : Core.templates["articles"]["comment"])
-                        .Replace("%USERID%", comment["userid"])
-                        .Replace("%ARTICLEID%", article["articleid"])
-                        .Replace("%COMMENTID%", comment["commentid"])
-                        .Replace("%USERNAME%", HttpUtility.HtmlEncode(comment["username"]))
-                        .Replace("%DATETIME%", HttpUtility.HtmlEncode(comment["datetime"]))
-                        .Replace("%BODY%", HttpUtility.HtmlEncode(comment["message"]))
-                        );
-                }
-            // Set navigator
-            content.Append(
-                Core.templates["articles"]["comments_page_nav"]
-                .Replace("%PAGE%", commentsPage.ToString())
-                .Replace("%PAGE_PREVIOUS%", (commentsPage > 1 ? commentsPage - 1 : 1).ToString())
-                .Replace("%PAGE_NEXT%", (commentsPage < int.MaxValue ? commentsPage + 1 : int.MaxValue).ToString())
-                );
-            // -- Set flags for the previous and next buttons - very simple solution but highly efficient
-            if (commentsPage > 1)
-                pageElements.setFlag("ARTICLE_COMMENTS_PREVIOUS");
-            if (commentsData.Rows.Count == COMMENTS_PER_PAGE)
-                pageElements.setFlag("ARTICLE_COMMENTS_NEXT");
-            // Set the postbox
-            if (HttpContext.Current.User.Identity.IsAuthenticated && allowComments)
-                content.Append(
-                        Core.templates["articles"]["comments_postbox"]
-                    .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
-                    .Replace("%ERROR%", commentError != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", commentError) : string.Empty)
-                    .Replace("%COMMENT_BODY%", HttpUtility.HtmlEncode(commentBody))
-                    );
-        }
-        public static void pageArticle_View_Delete(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
-        {
-            string error = null;
-            string captcha = request.Form["captcha"];
-            
-            if (request.Form["confirm"] != null && captcha != null)
-            {
-                if (!Common.Validation.validCaptcha(captcha))
-                    error = "Incorrect captcha verification code!";
-                else
-                {
-                    // Delete the article
-                    conn.Query_Execute("DELETE FROM articles WHERE articleid='" + Utils.Escape(article["articleid"]) + "'");
-                    // Check if any more articles exist and if a current article is set
-                    ResultRow thread = conn.Query_Read("SELECT (SELECT articleid_current FROM articles_thread WHERE threadid='" + Utils.Escape(article["threadid"]) + "') AS current_article, (SELECT COUNT('') FROM articles WHERE threadid='" + Utils.Escape(article["threadid"]) + "') AS articles_remaining")[0];
-                    StringBuilder finalQuery = new StringBuilder();
-                    if (thread["current_article"].Length == 0)
-                    {
-                        // Set a new article
-                        if (int.Parse(thread["articles_remaining"]) == 0)
-                            // Delete the thread
-                            finalQuery.Append("DELETE FROM articles_thread WHERE threadid='" + Utils.Escape(article["threadid"]) + "';");
-                        else
-                            // Set a new article
-                            finalQuery.Append("UPDATE articles_thread SET articleid_current=(SELECT articleid FROM articles WHERE published='1' AND threadid='" + Utils.Escape(article["threadid"]) + "' ORDER BY articleid DESC LIMIT 1) WHERE threadid='" + Utils.Escape(article["threadid"]) + "';");
-                    }
-                    // Append tags cleanup query
-                    finalQuery.Append(QUERY_TAGS_CLEANUP);
-                    // Finish up
-                    conn.Query_Execute(finalQuery.ToString());
-                    conn.Disconnect();
-                    response.Redirect(pageElements["URL"] + "/articles", true);
-                }
-            }
-            // Display form
-            if (error != null)
-                content.Append(
-                    Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error))
-                    );
-            content.Append(
-                Core.templates["articles"]["article_delete"]
-                .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
-            );
-        }
-        public static void pageArticle_View_History(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
-        {
-            // Append header
-            content.Append(
-                Core.templates["articles"]["history_header"]
-                );
-            // Grab the current selected article
-            string currentArticleID = (conn.Query_Scalar("SELECT articleid_current FROM articles_thread WHERE threadid='" + Utils.Escape(article["threadid"]) + "'") ?? string.Empty).ToString();
-            // Append each article revision
-            foreach (ResultRow a in conn.Query_Read("SELECT a.*, u.username FROM articles AS a LEFT OUTER JOIN bsa_users AS u ON u.userid=a.moderator_userid WHERE a.threadid='" + Utils.Escape(article["threadid"]) + "' ORDER BY a.articleid DESC"))
-            {
-                content.Append(
-                    Core.templates["articles"]["history_row"]
-                    .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(a["articleid"]))
-                    .Replace("%SELECTED%", a["articleid"] == currentArticleID ? "SELECTED" : string.Empty)
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(a["title"]))
-                    .Replace("%PUBLISHED%", a["published"].Equals("1") ? "Published by " + HttpUtility.HtmlEncode(a["username"]) : "Pending publication.")
-                    .Replace("%DATETIME%", a["datetime"].Length > 0 ? a["datetime"] : "Unknown")
-                    .Replace("%DATETIME_SHORT%", a["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(a["datetime"])) : "Unknown")
-                    );
-            }
-        }
-        public static void pageArticle_View_Publish(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
-        {
-            if (request.Form["confirm"] != null)
-            {
-                conn.Query_Execute("UPDATE articles SET published='1', moderator_userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' WHERE articleid='" + Utils.Escape(article["articleid"]) + "'; UPDATE articles_thread SET articleid_current='" + Utils.Escape(article["articleid"]) + "' WHERE threadid='" + Utils.Escape(article["threadid"]) + "';");
-                conn.Disconnect();
-                response.Redirect(pageElements["URL"] + "/article/" + article["articleid"]);
-            }
-            content.Append(
-                Core.templates["articles"]["article_publish"]
-                .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
-                );
         }
 
-        public static void pageArticle_View_Set(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
-        {
-            conn.Query_Execute("UPDATE articles_thread SET articleid_current='" + Utils.Escape(article["articleid"]) + "' WHERE threadid='" + Utils.Escape(article["threadid"]) + "'");
-            conn.Disconnect();
-            response.Redirect(pageElements["URL"] + "/article/" + article["articleid"], true);
-        }
-        
         public static void pageArticle_Editor(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
             // Check the user is logged-in, else redirect to the login page
@@ -577,9 +286,9 @@ namespace UberCMS.Plugins
                 .Replace("%TITLE%", HttpUtility.HtmlEncode(title ?? (preDataRow != null ? preDataRow["title"] : string.Empty)))
                 .Replace("%RELATIVE_PATH%", HttpUtility.HtmlEncode(relativeUrl ?? (preDataRow != null ? preDataRow["relative_url"] : string.Empty)))
                 .Replace("%TAGS%", HttpUtility.HtmlEncode(tags ?? (preDataRow != null ? preDataRow["tags"] : string.Empty)))
-                .Replace("%ALLOW_HTML%", allowHTML ? "checked" : string.Empty)
-                .Replace("%ALLOW_COMMENTS%", allowComments ? "checked" : string.Empty)
-                .Replace("%SHOW_PANE%", showPane ? "checked" : string.Empty)
+                .Replace("%ALLOW_HTML%", allowHTML || (title == null && preDataRow != null && preDataRow["allow_html"].Equals("1")) ? "checked" : string.Empty)
+                .Replace("%ALLOW_COMMENTS%", allowComments || (title == null && preDataRow != null && preDataRow["allow_comments"].Equals("1")) ? "checked" : string.Empty)
+                .Replace("%SHOW_PANE%", showPane || (title == null && preDataRow != null && preDataRow["show_pane"].Equals("1")) ? "checked" : string.Empty)
                 .Replace("%BODY%", HttpUtility.HtmlEncode(body ?? (preDataRow != null ? preDataRow["body"] : string.Empty)))
                 ;
             pageElements["TITLE"] = "Articles - Editor";
@@ -587,13 +296,344 @@ namespace UberCMS.Plugins
         public static void pageArticle_Delete(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
 
-        }
-        public static void handleRequestNotFound(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
-        {
-            if(Core.settings[SETTINGS_KEY].getBool(SETTINGS_KEY_HANDLES_404))
-                pageArticle_View(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
-        }
+        }    
+        #endregion
 
+        #region "Methods - Pages - View Article"
+        public static void pageArticle_View(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        {
+            // Retrieve the article ID
+            string articleid;
+            if (request.QueryString["page"] == "article")
+                articleid = request.QueryString["1"];
+            else
+            {
+                // Build the relative URL
+                StringBuilder relativeUrl = new StringBuilder();
+                relativeUrl.Append(request.QueryString["page"]).Append("/"); // The querystring "pg" should never be null, however no null exception will occur with stringbuilder anyhow
+                string chunk;
+                for (int i = 1; i <= RELATIVE_URL_MAXCHUNKS; i++)
+                {
+                    chunk = request.QueryString[i.ToString()];
+                    if (chunk != null)
+                    {
+                        if (chunk.Length > RELATIVE_URL_CHUNK_MAX)
+                            return; // Invalid request - hence 404...
+                        else
+                            relativeUrl.Append(chunk).Append("/");
+                    }
+                    else
+                        break;
+                }
+                // Check if we've grabbed anything
+                if (relativeUrl.Length == 0)
+                    return; // No URL captured - 404...
+                else
+                    relativeUrl.Remove(relativeUrl.Length - 1, 1); // Remove tailing slash
+                // Grab the article ID from the database
+                articleid = (conn.Query_Scalar("SELECT articleid_current FROM articles_thread WHERE relative_url='" + Utils.Escape(relativeUrl.ToString()) + "'") ?? string.Empty).ToString();
+            }
+            // Check we have an articleid that is not null and greater than zero, else 404
+            if (articleid == null || articleid.Length == 0) return;
+            // Load the article's data
+            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.*, at.relative_url, at.articleid_current FROM articles AS a, articles_thread AS at WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
+            if (articleRaw.Rows.Count != 1)
+                return; // 404 - no data found - the article is corrupt (thread and article not linked) or the article does not exist
+            ResultRow article = articleRaw[0];
+            // Load the users permissions
+            bool published = article["published"].Equals("1");
+            bool permCreate;
+            bool permDelete;
+            bool permPublish;
+            bool owner;
+            if (HttpContext.Current.User.Identity.IsAuthenticated)
+            {
+                Result permsRaw = conn.Query_Read("SELECT access_media_create, access_media_delete, access_media_publish FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS g ON g.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
+                if(permsRaw.Rows.Count != 1) return; // Something has gone wrong
+                ResultRow perms = permsRaw[0];
+                permCreate = perms["access_media_create"].Equals("1");
+                permDelete = perms["access_media_delete"].Equals("1");
+                permPublish = perms["access_media_publish"].Equals("1");
+                owner = article["userid"] == HttpContext.Current.User.Identity.Name;
+            }
+            else
+            {
+                permCreate = false;
+                permDelete = false;
+                permPublish = false;
+                owner = false;
+            }
+
+            // Create stringbuilder for assembling the article
+            StringBuilder content = new StringBuilder();
+            // Check the article is published *or* the user is admin/owner of the article
+            if (!published && (!HttpContext.Current.User.Identity.IsAuthenticated || (!owner && !permPublish)))
+                return;
+            // Append the main body of the article
+            content.Append(Core.templates["articles"]["article"]);
+            
+            // Render the body based on the current page
+            bool subpage = request.QueryString["page"] == "article" && request.QueryString["2"] != null;
+            StringBuilder subpageContent = new StringBuilder();
+            if (subpage)
+            {
+                // -- Sub-page
+                switch (request.QueryString["2"])
+                {
+                    case "publish":
+                        if (!permPublish) return; // Check the user has sufficient permission
+                        pageArticle_View_Publish(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        break;
+                    case "delete":
+                        // An owner of an unpublished article can delete it
+                        if (!permDelete && !(owner && !published)) return; // Check the user has sufficient permission
+                        pageArticle_View_Delete(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        break;
+                    case "history":
+                        pageArticle_View_History(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        break;
+                    case "comments":
+                        pageArticle_View_Comments(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        break;
+                    case "set":
+                        if (!permPublish || !published) return;
+                        pageArticle_View_Set(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        break;
+                    default:
+                        return; // 404 - unknown sub-page
+                }
+                content.Replace("%BODY%", subpageContent.ToString());
+            }
+            else
+            {
+                subpageContent.Append(article["body"]);
+                // Render the article with bbcode
+                Common.BBCode.format(ref subpageContent, ref pageElements, true, true);
+                // Set the article's body
+                content.Replace("%BODY%", subpageContent.ToString());
+            }
+
+            // Add pane
+            content
+                .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
+                .Replace("%REVISION%", HttpUtility.HtmlEncode(article["revision"]))
+                .Replace("%DATE%", article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "unknown")
+                .Replace("%COMMENTS%", conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE threadid='" + Utils.Escape(article["threadid"]) + "'").ToString())
+                ;
+            // Set flag for showing pane - this can be overriden if a querystring force_pane is specified
+            if (article["show_pane"].Equals("1") || !published || request.QueryString["force_pane"] != null || subpage)
+                pageElements.setFlag("ARTICLE_SHOW_PANE");
+
+            // Set published flag
+            if (published)
+                pageElements.setFlag("ARTICLE_PUBLISHED");
+
+            // Set permission flags
+            if (permCreate) pageElements.setFlag("ARTICLE_PERM_CREATE");
+            if (permDelete) pageElements.setFlag("ARTICLE_PERM_DELETE");
+            if (permPublish) pageElements.setFlag("ARTICLE_PERM_PUBLISH");
+
+            pageElements["TITLE"] = HttpUtility.HtmlEncode(article["title"]);
+            pageElements["CONTENT"] = content.ToString();
+            Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
+        }
+        public static void pageArticle_View_Comments(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        {
+            bool allowComments = article["allow_comments_thread"].Equals("1");
+            if (!allowComments)
+                content.Append(Core.templates["articles"]["comments_disabled"]);
+
+            // -- Check for a new comment posted by the user
+            string commentError = null;
+            string commentBody = request.Form["comment_body"];
+            string commentCaptcha = request.Form["comment_captcha"];
+            if (commentBody != null && commentCaptcha != null)
+            {
+                if (!Common.Validation.validCaptcha(commentCaptcha))
+                    commentError = "Incorrect captcha verification code!";
+                else if (commentBody.Length < COMMENTS_LENGTH_MIN || commentBody.Length > COMMENTS_LENGTH_MAX)
+                    commentError = "Your comment must be " + COMMENTS_LENGTH_MIN + " to  " + COMMENTS_LENGTH_MAX + " in length!";
+                else if (conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' AND DATE_SUB(NOW(), INTERVAL 1 HOUR)") >= COMMENTS_MAX_PER_HOUR)
+                    commentError = "You've already posted the maximum of " + COMMENTS_MAX_PER_HOUR + " comments per an hour - try again later!";
+                else
+                {
+                    // Insert the post
+                    conn.Query_Execute("INSERT INTO articles_thread_comments (threadid, userid, message, datetime) VALUES('" + Utils.Escape(article["threadid"]) + "', '" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "', '" + Utils.Escape(commentBody) + "', NOW())");
+                    // Reset comment body
+                    commentBody = null;
+                }
+            }
+            // -- Check if to delete a comment
+            string dcom = request.QueryString["dcom"];
+            if (dcom != null && HttpContext.Current.User.Identity.IsAuthenticated && Misc.Plugins.isNumeric(dcom))
+            {
+                bool canDelete = permDelete;
+                if (!canDelete)
+                {
+                    // -- User cannot delete all comments, check if they're the owner
+                    Result dcomData = conn.Query_Read("SELECT userid FROM articles_thread_comments WHERE commentid='" + Utils.Escape(dcom) + "'");
+                    if (dcomData.Rows.Count == 1 && dcomData[0]["userid"] == HttpContext.Current.User.Identity.Name)
+                        canDelete = true;
+                }
+                if (!canDelete) return;
+                else
+                    conn.Query_Execute("DELETE FROM articles_thread_comments WHERE commentid='" + Utils.Escape(dcom) + "'");
+            }
+            // Build comments body
+            string commentsPageRaw = request.QueryString["apg"];
+            // -- Get the page
+            int commentsPage;
+            if (!int.TryParse(commentsPageRaw, out commentsPage) || commentsPage < 1) commentsPage = 1;
+            // -- Get the comments data associated with that page
+            Result commentsData = conn.Query_Read("SELECT atc.*, u.username FROM articles_thread_comments AS atc LEFT OUTER JOIN bsa_users AS u ON u.userid=atc.userid WHERE threadid='" + Utils.Escape(article["threadid"]) + "' ORDER BY datetime DESC LIMIT " + ((COMMENTS_PER_PAGE * commentsPage) - COMMENTS_PER_PAGE) + "," + COMMENTS_PER_PAGE);
+            // -- Build the data
+            if (commentsData.Rows.Count == 0)
+                content.Append(Core.templates["articles"]["comments_empty"]);
+            else
+                foreach (ResultRow comment in commentsData)
+                {
+                    content.Append(
+                        (HttpContext.Current.User.Identity.IsAuthenticated && (permDelete || HttpContext.Current.User.Identity.Name == comment["userid"]) ? Core.templates["articles"]["comment_delete"] : Core.templates["articles"]["comment"])
+                        .Replace("%USERID%", comment["userid"])
+                        .Replace("%ARTICLEID%", article["articleid"])
+                        .Replace("%COMMENTID%", comment["commentid"])
+                        .Replace("%USERNAME%", HttpUtility.HtmlEncode(comment["username"]))
+                        .Replace("%DATETIME%", HttpUtility.HtmlEncode(comment["datetime"]))
+                        .Replace("%BODY%", HttpUtility.HtmlEncode(comment["message"]))
+                        );
+                }
+            // Set navigator
+            content.Append(
+                Core.templates["articles"]["page_nav"]
+                .Replace("%SUBPAGE%", "comments")
+                .Replace("%PAGE%", commentsPage.ToString())
+                .Replace("%PAGE_PREVIOUS%", (commentsPage > 1 ? commentsPage - 1 : 1).ToString())
+                .Replace("%PAGE_NEXT%", (commentsPage < int.MaxValue ? commentsPage + 1 : int.MaxValue).ToString())
+                );
+            // -- Set flags for the previous and next buttons - very simple solution but highly efficient
+            if (commentsPage > 1)
+                pageElements.setFlag("ARTICLE_PAGE_PREVIOUS");
+            if (commentsData.Rows.Count == COMMENTS_PER_PAGE)
+                pageElements.setFlag("ARTICLE_PAGE_NEXT");
+            // Set the postbox
+            if (HttpContext.Current.User.Identity.IsAuthenticated && allowComments)
+                content.Append(
+                        Core.templates["articles"]["comments_postbox"]
+                    .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
+                    .Replace("%SUBPAGE%", "history")
+                    .Replace("%ERROR%", commentError != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", commentError) : string.Empty)
+                    .Replace("%COMMENT_BODY%", HttpUtility.HtmlEncode(commentBody))
+                    );
+        }
+        public static void pageArticle_View_Delete(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        {
+            string error = null;
+            string captcha = request.Form["captcha"];
+            
+            if (request.Form["confirm"] != null && captcha != null)
+            {
+                if (!Common.Validation.validCaptcha(captcha))
+                    error = "Incorrect captcha verification code!";
+                else
+                {
+                    // Delete the article
+                    conn.Query_Execute("DELETE FROM articles WHERE articleid='" + Utils.Escape(article["articleid"]) + "'");
+                    // Check if any more articles exist and if a current article is set
+                    ResultRow thread = conn.Query_Read("SELECT (SELECT articleid_current FROM articles_thread WHERE threadid='" + Utils.Escape(article["threadid"]) + "') AS current_article, (SELECT COUNT('') FROM articles WHERE threadid='" + Utils.Escape(article["threadid"]) + "') AS articles_remaining")[0];
+                    StringBuilder finalQuery = new StringBuilder();
+                    if (thread["current_article"].Length == 0)
+                    {
+                        // Set a new article
+                        if (int.Parse(thread["articles_remaining"]) == 0)
+                            // Delete the thread
+                            finalQuery.Append("DELETE FROM articles_thread WHERE threadid='" + Utils.Escape(article["threadid"]) + "';");
+                        else
+                            // Set a new article
+                            finalQuery.Append("UPDATE articles_thread SET articleid_current=(SELECT articleid FROM articles WHERE published='1' AND threadid='" + Utils.Escape(article["threadid"]) + "' ORDER BY articleid DESC LIMIT 1) WHERE threadid='" + Utils.Escape(article["threadid"]) + "';");
+                    }
+                    // Append tags cleanup query
+                    finalQuery.Append(QUERY_TAGS_CLEANUP);
+                    // Finish up
+                    conn.Query_Execute(finalQuery.ToString());
+                    conn.Disconnect();
+                    response.Redirect(pageElements["URL"] + "/articles", true);
+                }
+            }
+            // Display form
+            if (error != null)
+                content.Append(
+                    Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error))
+                    );
+            content.Append(
+                Core.templates["articles"]["article_delete"]
+                .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
+            );
+        }
+        public static void pageArticle_View_History(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        {
+            // Setup the page being viewed
+            int page;
+            string rawPage = request.QueryString["apg"];
+            if (rawPage == null || !int.TryParse(rawPage, out page) || page < 1) page = 1;
+            // Append header
+            content.Append(
+                Core.templates["articles"]["history_header"]
+                );
+            // Grab the current selected article
+            string currentArticleID = (conn.Query_Scalar("SELECT articleid_current FROM articles_thread WHERE threadid='" + Utils.Escape(article["threadid"]) + "'") ?? string.Empty).ToString();
+            // Append each article revision
+            Result articles = conn.Query_Read("SELECT a.*, u.username, u2.username AS author FROM articles AS a LEFT OUTER JOIN bsa_users AS u ON u.userid=a.moderator_userid LEFT OUTER JOIN bsa_users AS u2 ON u2.userid=a.userid WHERE a.threadid='" + Utils.Escape(article["threadid"]) + "' ORDER BY a.articleid DESC LIMIT " + ((HISTORY_PER_PAGE * page) - HISTORY_PER_PAGE) + "," + HISTORY_PER_PAGE);
+            foreach (ResultRow a in articles)
+            {
+                content.Append(
+                    Core.templates["articles"]["history_row"]
+                    .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(a["articleid"]))
+                    .Replace("%SELECTED%", a["articleid"] == currentArticleID ? "SELECTED" : string.Empty)
+                    .Replace("%TITLE%", HttpUtility.HtmlEncode(a["title"]))
+                    .Replace("%PUBLISHED%", a["published"].Equals("1") ? "Published by " + HttpUtility.HtmlEncode(a["username"]) : "Pending publication.")
+                    .Replace("%DATETIME%", a["datetime"].Length > 0 ? a["datetime"] : "Unknown")
+                    .Replace("%DATETIME_SHORT%", a["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(a["datetime"])) : "Unknown")
+                    .Replace("%CREATOR_USERID%", HttpUtility.HtmlEncode(a["userid"]))
+                    .Replace("%CREATOR%", HttpUtility.HtmlEncode(a["author"]))
+                    );
+            }
+            // Append navigator
+            content.Append(
+                Core.templates["articles"]["page_nav"]
+                .Replace("%ARTICLEID%", article["articleid"])
+                .Replace("%SUBPAGE%", "history")
+                .Replace("%PAGE%", page.ToString())
+                .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                );
+            // Set navigator flags
+            if (page > 1)
+                pageElements.setFlag("ARTICLE_PAGE_PREVIOUS");
+            if (page < int.MaxValue && articles.Rows.Count == HISTORY_PER_PAGE)
+                pageElements.setFlag("ARTICLE_PAGE_NEXT");
+        }
+        public static void pageArticle_View_Publish(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        {
+            if (request.Form["confirm"] != null)
+            {
+                conn.Query_Execute("UPDATE articles SET published='1', moderator_userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' WHERE articleid='" + Utils.Escape(article["articleid"]) + "'; UPDATE articles_thread SET articleid_current='" + Utils.Escape(article["articleid"]) + "' WHERE threadid='" + Utils.Escape(article["threadid"]) + "';");
+                conn.Disconnect();
+                response.Redirect(pageElements["URL"] + "/article/" + article["articleid"]);
+            }
+            content.Append(
+                Core.templates["articles"]["article_publish"]
+                .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
+                );
+        }
+        public static void pageArticle_View_Set(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        {
+            conn.Query_Execute("UPDATE articles_thread SET articleid_current='" + Utils.Escape(article["articleid"]) + "' WHERE threadid='" + Utils.Escape(article["threadid"]) + "'");
+            conn.Disconnect();
+            response.Redirect(pageElements["URL"] + "/article/" + article["articleid"], true);
+        }
+        #endregion
+
+        #region "Methods - Misc"
         /// <summary>
         /// Validates a URL is relative; path should be in the format of e.g.:
         /// path
@@ -628,6 +668,10 @@ namespace UberCMS.Plugins
             }
             return null;
         }
+        #endregion
+
+        #region "Methods & Classes - Article Tags"
+
         /// <summary>
         /// Parses a string such as "web,cms,ubermeat" (without quotations) to extract tags; the return structure
         /// will contain an array of successfully parsed tags; however if an error occurs, the error variable
@@ -666,5 +710,6 @@ namespace UberCMS.Plugins
             public List<string> tags;
             public string error;
         }
+        #endregion
     }
 }

@@ -60,43 +60,42 @@ public partial class _Default : System.Web.UI.Page
 #if DEBUG
         Core.templates.reloadDb(conn);
 #endif
-
         // Invoke the pre-handler methods
         Result plugins = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_request_start='1' ORDER BY invoke_order ASC LIMIT 1");
         foreach (ResultRow plugin in plugins)
             Plugins.invokeMethod(plugin["classpath"], "requestStart", new object[] { plugin["pluginid"], conn, elements, Request, Response, baseTemplateParent });
-        // Grab the plugin responsible for handling the request and delegate the response to them
-        string[] data = Plugins.getRequestPlugin(conn, Request);
-        if (data != null)
+        
+        // Invoke the plugin responsible for handling the request
+        int i;
+        Plugins.Request.RequestHandler handler;
+        Plugins.Request.RequestHandlers handlers = Plugins.Request.getRequestPlugin(conn, Request);
+        for (i = 0; i < handlers.count() && elements["CONTENT"] == null; i++)
         {
-            // Plugin found - invoke the handler
-            if (!Plugins.invokeMethod(data[1], "handleRequest", new object[] { data[0], conn, elements, Request, Response, baseTemplateParent }))
-                data = null; // We'll cause the request to be treated the same as if the plugin had not been found
+            handler = handlers[i];
+            Plugins.invokeMethod(handler.ClassPath, "handleRequest", new object[] { handler.Pluginid, conn, elements, Request, Response, baseTemplateParent });
         }
-        if (data == null || elements["CONTENT"] == null)
+
+        // If no content has been set, a 404 has occurred - hence find a plugin to handle this issue
+        handlers = Plugins.Request.getRequest404s(conn);
+        for (i = 0; i < handlers.count() && elements["CONTENT"] == null; i++)
         {
-            // Plugin not found - find a plugin to handle the 404 error-code
-            string[][] handlers404 = Plugins.getRequest404s(conn);
-            if (handlers404.Length > 0)
-            {
-                // We'll loop each handler until content is set (useful for e.g. Wiki plugins which take over some URLs when a 404 is thrown)
-                foreach (string[] handler in handlers404)
-                {
-                    Plugins.invokeMethod(handler[1], "handleRequestNotFound", new object[] { handler[0], conn, elements, Request, Response, baseTemplateParent });
-                    if (elements["CONTENT"] != null) break;
-                }
-            }
-            if(elements["CONTENT"] == null)
-            {
-                // 404 not found...
-                elements["TITLE"] = "Page Not Found";
-                elements["CONTENT"] = "<p>The requested page could not be found and a 404 page could not be served...</p>";
-            }
+            handler = handlers[i];
+            Plugins.invokeMethod(handler.ClassPath, "handleRequestNotFound", new object[] { handler.Pluginid, conn, elements, Request, Response, baseTemplateParent });
         }
+
+        // Check if any content has still not been set - if so we'll display a manual error to inform the user/developer/administrator/operator
+        if(elements["CONTENT"] == null)
+        {
+            // 404 not found...
+            elements["TITLE"] = "Page Not Found";
+            elements["CONTENT"] = "<p>The requested page could not be found and a 404 page could not be served...</p>";
+        }
+
         // Invoke the post-handler methods
         plugins = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_request_end='1' ORDER BY invoke_order ASC LIMIT 1");
         foreach (ResultRow plugin in plugins)
             Plugins.invokeMethod(plugin["classpath"], "requestEnd", new object[] { plugin["pluginid"], conn, elements, Request, Response, baseTemplateParent });
+        
         // Format the site template
         StringBuilder content = new StringBuilder(Core.templates.get(baseTemplateParent, "base", null) ?? string.Empty);
         // Stop the timer and set element

@@ -1,0 +1,98 @@
+﻿
+.COMMON_B /* Bold */
+{
+    font-weight: bold;
+}
+.COMMON_I /* Italics */
+{
+    font-style: italic;
+}
+.COMMON_U /* Underlined */
+{
+    text-decoration: underline;
+}
+.COMMON_LT /* Line-through */
+{
+    text-decoration: line-through;
+}
+.COMMON_TAL /* Text-align left */
+{
+    text-align: left;
+}
+.COMMON_TAC /* Text-align center */
+{
+    text-align: center;
+}
+.COMMON_TAR /* Text-align right */
+{
+    text-align: right;
+}
+.COMMON_BP /* Bullet points */
+{
+    margin: 0em;
+    padding: 0em 1.5em;
+}
+.COMMON_FL /* Float left */
+{
+    float: left;
+}
+.COMMON_FR /* Float right */
+{
+    float: right;
+}
+.COMMON_CLEAR /* Clear */
+{
+    clear: both;
+}
+.COMMON_BQ /* Block quote */
+{
+    display: inline-block;
+    margin: 0em;
+    background: #CCC;
+    color: #333;
+    padding: 0.5em;
+    border-radius: 0.5em;
+}
+.COMMON_QS, .COMMON_QE /*Block quote quotation marks */
+{
+    color: #666;
+}
+.COMMON_QS
+{
+    display: block;
+    float: left;
+    margin-right: 0.1em;
+    font-size: 4em;
+    width: 0.5em;
+    height: 0.5em;
+}
+.COMMON_QE
+{
+    display: block;
+    float: right;
+    margin-left: 0.5em;
+    font-size: 4em;
+    width: 0.5em;
+    height: 0.5em;
+}
+.COMMON_QC /* Quote citation/source, within blockquote */
+{
+    clear: both;
+    text-align: right;
+    font-style: italic;
+}
+.COMMON_IMG
+{
+    max-width: 100%;
+    max-height: 30em;
+    border-radius: 0.5em;
+}
+.COMMON_IMG:hover, .COMMON_IMG:focus
+{
+    max-width: none;
+    max-height: none;
+}
+.COMMON_VIDEO
+{
+    width: 100%;
+}

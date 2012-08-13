@@ -25,6 +25,88 @@ namespace UberCMS.Misc
 {
     public static class Plugins
     {
+        #region "Classes - Request Handlers"
+        /// <summary>
+        /// Used for communicating request handler data between Default.aspx.cs and the methods within this class.
+        /// </summary>
+        public class Request
+        {
+            public class RequestHandler
+            {
+                private string pluginid, classPath;
+                public RequestHandler(string pluginid, string classPath)
+                {
+                    this.pluginid = pluginid; this.classPath = classPath;
+                }
+                public string Pluginid
+                {
+                    get { return pluginid; }
+                }
+                public string ClassPath
+                {
+                    get { return classPath; }
+                }
+            }
+            public class RequestHandlers
+            {
+                private List<RequestHandler> handlers;
+                public RequestHandlers()
+                {
+                    handlers = new List<RequestHandler>();
+                }
+                public System.Collections.IEnumerator GetEnumerator()
+                {
+                    return handlers.GetEnumerator();
+                }
+                public RequestHandler this[int index]
+                {
+                    get
+                    {
+                        return handlers[index];
+                    }
+                }
+                public void add(RequestHandler handler)
+                {
+                    handlers.Add(handler);
+                }
+                public int count()
+                {
+                    return handlers.Count;
+                }
+            }
+            #region "Methods"
+            /// <summary>
+            /// Returns the classpath of the plugin responsible for the passed request.
+            /// 
+            /// If a 404 occurs, this method will return a method able to handle the error;
+            /// if no plugin is able to handle a 404, the returned collection will be empty.
+            /// </summary>
+            /// <param name="request"></param>
+            /// <returns></returns>
+            public static RequestHandlers getRequestPlugin(Connector conn, HttpRequest request)
+            {
+                string page = request.QueryString["page"] ?? "home";
+                RequestHandlers handlers = new RequestHandlers();
+                foreach (ResultRow handler in conn.Query_Read("SELECT p.pluginid, p.classpath FROM urlrewriting AS u LEFT OUTER JOIN plugins AS p ON p.pluginid=u.pluginid WHERE u.parent IS NULL AND u.title LIKE '" + Utils.Escape(page.Replace("%", "")) + "' AND p.state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' ORDER BY p.invoke_order ASC LIMIT 1"))
+                    handlers.add(new RequestHandler(handler["pluginid"], handler["classpath"]));
+                return handlers;
+            }
+            /// <summary>
+            /// Returns the class-path for the 404 pages in their invoke order ascending.
+            /// </summary>
+            /// <param name="conn"></param>
+            /// <returns></returns>
+            public static RequestHandlers getRequest404s(Connector conn)
+            {
+                RequestHandlers handlers = new RequestHandlers();
+                foreach (ResultRow handler in conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_404='1' ORDER BY invoke_order ASC"))
+                    handlers.add(new RequestHandler(handler["pluginid"], handler["classpath"]));
+                return handlers;
+            }
+            #endregion
+        }
+        #endregion
+
         /// <summary>
         /// Dynamically invokes a static method.
         /// </summary>
@@ -67,41 +149,6 @@ namespace UberCMS.Misc
             {
                 return null;
             }
-        }
-        /// <summary>
-        /// Returns the classpath of the plugin responsible for the passed request.
-        /// 
-        /// If a 404 occurs, this method will return a method able to handle the error;
-        /// if no plugin is able to handle a 404, null is returned.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        public static string[] getRequestPlugin(Connector conn, HttpRequest request)
-        {
-            string page = request.QueryString["page"] ?? "home";
-            string[] classPath = null;
-            // Lookup the URL rewrite table for a responsible plugin
-            if (page != null)
-            {
-                Result res = conn.Query_Read("SELECT p.pluginid, p.classpath FROM urlrewriting AS u LEFT OUTER JOIN plugins AS p ON p.pluginid=u.pluginid WHERE u.parent IS NULL AND u.title LIKE '" + Utils.Escape(page.Replace("%", "")) + "' AND p.state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' ORDER BY p.invoke_order LIMIT 1");
-                if (res.Rows.Count != 0)
-                    classPath = new string[] { res[0]["pluginid"], res[0]["classpath"] };
-            }
-            // Finsihed...return classpath
-            return classPath;
-        }
-        /// <summary>
-        /// Returns the class-path for the 404 pages in their invoke order ascending.
-        /// </summary>
-        /// <param name="conn"></param>
-        /// <returns></returns>
-        public static string[][] getRequest404s(Connector conn)
-        {
-            List<string[]> handlers = new List<string[]>();
-            Result res = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_404='1' ORDER BY invoke_order ASC");
-            foreach (ResultRow handler in res)
-                handlers.Add(new string[] { handler["pluginid"], handler["classpath"] });
-            return handlers.ToArray();
         }
         /// <summary>
         /// Extracts a zip file to a folder.
