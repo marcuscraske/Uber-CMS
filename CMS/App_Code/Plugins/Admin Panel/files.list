@@ -1,0 +1,6 @@
+﻿// Add all of the files within the plugin
+%LOCAL%\*,\
+
+// Add content files
+%GLOBAL%\Content\CSS\AdminPanel.css,\Content\CSS
+%GLOBAL%\Content\Images\admin_panel\*,\Content\Images\admin_panel

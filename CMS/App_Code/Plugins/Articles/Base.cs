@@ -32,7 +32,7 @@ namespace UberCMS.Plugins
         /// </summary>
         public const string QUERY_TAGS_CLEANUP = "DELETE FROM articles_tags WHERE NOT EXISTS (SELECT DISTINCT tagid FROM articles_tags_article WHERE tagid=articles_tags.tagid);";
 
-        #region "Methods - Plugin"
+        #region "Methods - Plugin Event Handlers"
         public static string enable(string pluginid, Connector conn)
         {
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
@@ -116,7 +116,7 @@ namespace UberCMS.Plugins
                     pageArticles_Browse(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
                 case "delete":
-
+                    pageArticles_Delete(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
 
                 case "pending":
@@ -140,11 +140,13 @@ namespace UberCMS.Plugins
         #endregion
 
         #region "Methods - Pages"
-
         public static void pageArticles_Browse(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
         }
+        public static void pageArticles_Pending(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        {
 
+        }
         public static void pageArticle_Editor(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
             // Check the user is logged-in, else redirect to the login page
@@ -293,10 +295,10 @@ namespace UberCMS.Plugins
                 ;
             pageElements["TITLE"] = "Articles - Editor";
         }
-        public static void pageArticle_Delete(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Delete(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
 
-        }    
+        }
         #endregion
 
         #region "Methods - Pages - View Article"

@@ -20,6 +20,7 @@ using Ionic.Zip;
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Configuration;
 
 namespace UberCMS.Misc
 {
@@ -107,6 +108,7 @@ namespace UberCMS.Misc
         }
         #endregion
 
+        #region "Methods - Reflection"
         /// <summary>
         /// Dynamically invokes a static method.
         /// </summary>
@@ -150,6 +152,9 @@ namespace UberCMS.Misc
                 return null;
             }
         }
+        #endregion
+
+        #region "Methods - Compression"
         /// <summary>
         /// Extracts a zip file to a folder.
         /// </summary>
@@ -172,6 +177,9 @@ namespace UberCMS.Misc
             }
             return null;
         }
+        #endregion
+
+        #region "Methods - SQL"
         /// <summary>
         /// Executes an SQL query file.
         /// </summary>
@@ -208,6 +216,9 @@ namespace UberCMS.Misc
                 return "Failed to execute SQL file '" + path + "' - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
             }
         }
+        #endregion
+
+        #region "Methods - Plugins"
         /// <summary>
         /// Gets the directory of a plugin; returns null if not found.
         /// </summary>
@@ -222,6 +233,9 @@ namespace UberCMS.Misc
             else
                 return Core.basePath + "\\App_Code\\Plugins\\" + basePath;
         }
+        #endregion
+
+        #region "Methods - Content"
         /// <summary>
         /// Installs a plugin content directory into the main /Content directory;
         /// existing files will be over-written!
@@ -286,6 +300,9 @@ namespace UberCMS.Misc
             }
             return null;
         }
+        #endregion
+
+        #region "Methods - Templates"
         /// <summary>
         /// Installs templates within a directory into the database and reloads the templates collection.
         /// </summary>
@@ -324,6 +341,9 @@ namespace UberCMS.Misc
             }
             return null;
         }
+        #endregion
+
+        #region "Methods - URL rewriting"
         /// <summary>
         /// Reserves a specified array of URLs for a plugin.
         /// </summary>
@@ -390,6 +410,70 @@ namespace UberCMS.Misc
             catch { }
             return null;
         }
+        #endregion
+
+        #region "Methods - Pre-processor Directives"
+        public static string preprocessorDirective_Add(string symbol)
+        {
+            return preprocessorDirective_Modify(symbol, true);
+        }
+        public static string preprocessorDirective_Remove(string symbol)
+        {
+            return preprocessorDirective_Modify(symbol, false);
+        }
+        private static string preprocessorDirective_Modify(string symbol, bool addingSymbol)
+        {
+            try
+            {
+                string configPath = getWebConfigPath();
+                XmlDocument webConfig = new XmlDocument();
+                webConfig.Load(configPath);
+                XmlNode compiler;// webConfig["configuration"]["system.codedom"]["compilers"]["compiler"];
+                if ((compiler = webConfig.SelectSingleNode("configuration/system.codedom/compilers/compiler")) == null)
+                    return "The web.config is missing the compiler section and hence directives cannot be added! Please modify your web.config...";
+                else
+                {
+                    if (addingSymbol)
+                    {
+                        if (compiler.Attributes["compilerOptions"].Value.Length == 0)
+                            compiler.Attributes["compilerOptions"].Value = "/d:" + symbol;
+                        else
+                            compiler.Attributes["compilerOptions"].Value += "," + symbol;
+                    }
+                    else
+                    {
+                        string symbols = compiler.Attributes["compilerOptions"].Value;
+                        if (symbols.Length == 0)
+                            return null; // No values to remove, just return
+                        else if (symbols.Length == 3 + symbol.Length)
+                            symbols = string.Empty; // The symbol string must be /d:<symbol> - hence we'll leave it empty
+                        else
+                            // Remove the symbol, which could be like /d:<symbol>, or ,<symbol>
+                            symbols = symbols.Replace("/d:" + symbol + ",", "/d:").Replace("," + symbol, string.Empty);
+                        // -- Update the modified flags
+                        compiler.Attributes["compilerOptions"].Value = symbols;
+                    }
+                    webConfig.Save(configPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Failed to " + (addingSymbol ? "add" : "remove") + " pre-processor directive symbol '" + symbol + "' - " + ex.Message + "!";
+            }
+            return null;
+        }
+        private static string getWebConfigPath()
+        {
+            if (File.Exists(Core.basePath + "\\web.config"))
+                return Core.basePath + "\\web.config";
+            else if(File.Exists(Core.basePath + "\\Web.config"))
+                return Core.basePath + "\\Web.config";
+            else
+                throw new Exception("Could not find web.config file!");
+        }
+        #endregion
+
+        #region "Plugin Installation"
         /// <summary>
         /// Installs a plugin from either a zip-file or from a given path; if the install is from a zip, the zip file
         /// will not be deleted by this process (therefore you'll need to delete it after invoking this method).
@@ -630,6 +714,9 @@ namespace UberCMS.Misc
             conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Disabled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");
             return null;
         }
+        #endregion
+
+        #region "Methods - Misc"
         /// <summary>
         /// Returns how long ago the specified date occurred; this is to make dates
         /// easier to read.
@@ -680,5 +767,6 @@ namespace UberCMS.Misc
                 if (c < 48 || c > 57) return false;
             return true;
         }
+        #endregion
     }
 }

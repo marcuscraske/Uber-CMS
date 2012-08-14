@@ -81,15 +81,6 @@ CREATE TABLE IF NOT EXISTS `bsa_recovery_sqa_attempts`
 	ip TEXT,
 	datetime TIMESTAMP
 );
-CREATE TABLE IF NOT EXISTS `bsa_admin_pages`
-(
-	pageid INT PRIMARY KEY AUTO_INCREMENT,
-	classpath TEXT,
-	method TEXT,
-	title TEXT,
-	category TEXT,
-	menu_icon TEXT
-);
 -- Insert user group permission columns
 INSERT INTO bsa_user_groups_labels (column_title, title)
 VALUES

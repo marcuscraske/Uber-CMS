@@ -1,0 +1,1 @@
+﻿DROP TABLE IF EXISTS `admin_panel_pages`;

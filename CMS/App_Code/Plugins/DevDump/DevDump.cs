@@ -8,10 +8,6 @@ namespace UberCMS.Plugins
 {
     public static class DevDump
     {
-        /// <summary>
-        /// Invoked to enable the plugin.
-        /// </summary>
-        /// <returns></returns>
         public static string enable(string pluginid, Connector conn)
         {
             Misc.Plugins.reserveURLs(pluginid, null, new string[] { "devdump" }, conn);
@@ -22,10 +18,6 @@ namespace UberCMS.Plugins
             Misc.Plugins.unreserveURLs(pluginid, conn);
             return null;
         }
-        /// <summary>
-        /// Invoked when a request is mapped to this plugin.
-        /// </summary>
-        /// <param name="pageElements"></param>
         public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
 #if DEBUG

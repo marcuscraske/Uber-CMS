@@ -15,7 +15,7 @@ namespace UberCMS.Plugins
         public const string SETTINGS_KEY = "common";
         public const string SETTINGS_KEY_CAPTCHA_ENABLED = "captcha_enabled";
 
-        #region "Methods - CMS Methods"
+        #region "Methods - Plugin Event Handlers"
         public static string enable(string pluginid, Connector conn)
         {
             string error = null;
@@ -523,10 +523,6 @@ namespace UberCMS.Plugins
                 }
             }
         }
-        #endregion
-
-        #region "Class - Smileys"
-        
         #endregion
     }
 }

@@ -1,0 +1,6 @@
+﻿// Add all of the files within the plugin
+%LOCAL%\*,\
+
+// Add content files
+%GLOBAL%\Content\CSS\BasicSiteAuth.css,\Content\CSS
+%GLOBAL%\Content\Images\basic_site_auth\*,\Content\Images\basic_site_auth

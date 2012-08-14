@@ -1,5 +1,4 @@
 ﻿SET FOREIGN_KEY_CHECKS=0;
-
 -- Drop tables
 DROP TABLE IF EXISTS `bsa_user_log`;
 DROP TABLE IF EXISTS `bsa_users`;
@@ -10,5 +9,4 @@ DROP TABLE IF EXISTS `bsa_recovery_email`;
 DROP TABLE IF EXISTS `bsa_recovery_sqa_attempts`;
 DROP TABLE IF EXISTS `bsa_user_bans`;
 DROP TABLE IF EXISTS `bsa_failed_logins`;
-DROP TABLE IF EXISTS `bsa_admin_pages`;
 SET FOREIGN_KEY_CHECKS=1;

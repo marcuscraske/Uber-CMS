@@ -1,0 +1,6 @@
+﻿// Add all of the files within the plugin
+%LOCAL%\*,\
+
+// You can use comments! :D
+
+	// And tabulation - nothing advanced, just nice :3
