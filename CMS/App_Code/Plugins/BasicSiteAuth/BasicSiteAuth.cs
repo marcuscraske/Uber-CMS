@@ -233,6 +233,7 @@ namespace UberCMS.Plugins
         {
             const string incorrectUserPassword = "Incorrect username or password!";
             string error = null;
+            string referral = request.Form["referral"];
             // Check for login
             if (request.Form["username"] != null && request.Form["password"] != null)
             {
@@ -286,8 +287,8 @@ namespace UberCMS.Plugins
                             logEvent(res[0]["userid"], LogEvents.Login_Authenticated, request.UserHostAddress + " - " + request.UserAgent, conn);
                             // Check if a ref-url exists, if so redirect to it
                             conn.Disconnect();
-                            if (request.UrlReferrer != null && !request.Url.AbsolutePath.EndsWith("login"))
-                                response.Redirect(request.UrlReferrer.AbsoluteUri);
+                            if (referral != null && referral.Length > 0)
+                                response.Redirect(referral);
                             else
                                 response.Redirect(pageElements["URL"]);
                         }
@@ -297,6 +298,7 @@ namespace UberCMS.Plugins
             // Display page
             pageElements["TITLE"] = "Login";
             pageElements["CONTENT"] = Core.templates["basic_site_auth"]["login"]
+                .Replace("%REFERRAL%", HttpUtility.HtmlEncode(referral != null ? referral : request.UrlReferrer != null ? request.UrlReferrer.AbsoluteUri : pageElements["URL"] + "/home"))
                 .Replace("%USERNAME%", request.Form["username"] ?? string.Empty)
                 .Replace("%PERSIST%", request.Form["persist"] != null ? "checked" : string.Empty)
                 .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", error) : string.Empty);
