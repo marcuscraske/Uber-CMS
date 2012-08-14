@@ -57,6 +57,17 @@ namespace UberCMS.Misc
             return int.Parse(settings[key]);
         }
         /// <summary>
+        /// Returns a double for a specified key; if the value is not numeric or cannot be parsed, FormatException is thrown.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <exception cref="KeyNotFoundException">Thrown if the key is not found.</exception>
+        /// <returns></returns>
+        public double getDouble(string key)
+        {
+            if (!settings.ContainsKey(key)) throw new KeyNotFoundException("Settings key '" + key + "' does not exist!");
+            return double.Parse(settings[key]);
+        }
+        /// <summary>
         /// Returns a boolean stating if the collection contains a key.
         /// </summary>
         /// <param name="key"></param>
