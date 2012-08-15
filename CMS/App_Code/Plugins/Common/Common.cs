@@ -524,5 +524,64 @@ namespace UberCMS.Plugins
             }
         }
         #endregion
+
+        #region "Class - Anti-CSRF Protection"
+        public static class AntiCSRF
+        {
+            private const string ANTI_CSRF_KEY = "COMMON_CSRF_TOKEN";
+            /// <summary>
+            /// Use this method to fetch a token you can embed in a form; then when the form is submitted,
+            /// use the isValidToken method within this class to validate the submitted token is the
+            /// same as the one embedded. This is almost the same as a captcha, except less hassle and can
+            /// be utilized much more heavily around the CMS without annoying users.
+            /// </summary>
+            /// <returns></returns>
+            public static string getFormToken()
+            {
+                string token = Utils.randomText(32);
+                HttpContext.Current.Session[ANTI_CSRF_KEY] = token;
+                return token;
+            }
+            /// <summary>
+            /// Sets a cookie on the client with a token. You can then use the isValidToken method to
+            /// validate the users request as genuine; the cookie will expire in ten minutes.
+            /// </summary>
+            /// <param name="response"></param>
+            public static void setCookieToken(HttpResponse response)
+            {
+                string token = Utils.randomText(32);
+                HttpContext.Current.Session[ANTI_CSRF_KEY] = token;
+                HttpCookie cookie = new HttpCookie(ANTI_CSRF_KEY, token);
+                cookie.Expires = DateTime.Now.AddMinutes(10);
+                response.Cookies.Add(cookie);
+            }
+            /// <summary>
+            /// Validates the specified token.
+            /// </summary>
+            /// <param name="value"></param>
+            /// <returns></returns>
+            public static bool isValidTokenForm(string token)
+            {
+                if (HttpContext.Current.Session[ANTI_CSRF_KEY] == null)
+                    return false;
+                string storedToken = (string)HttpContext.Current.Session[ANTI_CSRF_KEY];
+                HttpContext.Current.Session[ANTI_CSRF_KEY] = null;
+                return storedToken == token;
+            }
+            /// <summary>
+            /// Validates the request has a valid anti-CSRF cookie.
+            /// </summary>
+            /// <param name="request"></param>
+            /// <returns></returns>
+            public static bool isValidTokenCookie(HttpRequest request)
+            {
+                HttpCookie cookie;
+                if (HttpContext.Current.Session[ANTI_CSRF_KEY] == null || (cookie = request.Cookies[ANTI_CSRF_KEY]) == null)
+                    return false;
+                else
+                    return (string)HttpContext.Current.Session[ANTI_CSRF_KEY] == cookie.Value;
+            }
+        }
+        #endregion
     }
 }
