@@ -1,5 +1,6 @@
 ﻿// Add all of the files within the plugin
 %LOCAL%\*,\
+-%LOCAL%\Salts.xml
 
 // Add content files
 %GLOBAL%\Content\CSS\BasicSiteAuth.css,\Content\CSS

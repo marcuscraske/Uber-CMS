@@ -42,21 +42,3 @@
     width: 48em;
     margin-left: 0.5em;
 }
-.ADMIN_USERGROUP
-{
-    margin-bottom: 0.5em;
-}
-.ADMIN_USERGROUP .TITLE
-{
-    background: #333;
-    color: #FFF;
-    padding: 0.25em;
-}
-.ADMIN_USERGROUP .TITLE a
-{
-    color: #FFF;
-}
-.ADMIN_USERGROUP .PERMISSIONS
-{
-    border: solid 0.1em #333;
-}

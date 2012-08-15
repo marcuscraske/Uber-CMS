@@ -3,6 +3,11 @@
 {
 	clear: both;
 }
+::selection
+{
+    background: #000;
+    color: #FFF;
+}
 body
 {
 	margin: 0em;
@@ -272,23 +277,22 @@ h3
 /* Checkbox */
 .CHECKBOX
 {
+    display: inline-block;
     color: #333;
-    background: #333;
     margin: 0.5em;
-    width: 14em;
     height: 2em;
     line-height: 2em;
+    border: solid 0.1em #CCC;
 }
 .CHECKBOX div
 {
     float: right;
-    width: 11em;
     background: #CCC;
-    padding-left: 0.5em;
+    padding: 0em 0.5em;
 }
 .CHECKBOX input[type=checkbox]
 {
-    width: 1em;
+    float: left;
     margin: 0.5em;
     padding: 0em;
 }

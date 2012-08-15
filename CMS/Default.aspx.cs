@@ -61,7 +61,7 @@ public partial class _Default : System.Web.UI.Page
         Core.templates.reloadDb(conn);
 #endif
         // Invoke the pre-handler methods
-        Result plugins = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_request_start='1' ORDER BY invoke_order ASC LIMIT 1");
+        Result plugins = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_request_start='1' ORDER BY invoke_order ASC");
         foreach (ResultRow plugin in plugins)
             Plugins.invokeMethod(plugin["classpath"], "requestStart", new object[] { plugin["pluginid"], conn, elements, Request, Response, baseTemplateParent });
         
@@ -92,10 +92,9 @@ public partial class _Default : System.Web.UI.Page
         }
 
         // Invoke the post-handler methods
-        plugins = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_request_end='1' ORDER BY invoke_order ASC LIMIT 1");
+        plugins = conn.Query_Read("SELECT pluginid, classpath FROM plugins WHERE state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' AND handles_request_end='1' ORDER BY invoke_order ASC");
         foreach (ResultRow plugin in plugins)
             Plugins.invokeMethod(plugin["classpath"], "requestEnd", new object[] { plugin["pluginid"], conn, elements, Request, Response, baseTemplateParent });
-        
         // Format the site template
         StringBuilder content = new StringBuilder(Core.templates.get(baseTemplateParent, "base", null) ?? string.Empty);
         // Stop the timer and set element

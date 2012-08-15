@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[profile_upload]]></hkey><description><![CDATA[The page used by users to change their display picture.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/profile/upload?userid=%USERID%" enctype="multipart/form-data">
+	<div class="ROW">
+		<div class="CELL2">
+			Image:
+		</div>
+		<div class="CELL2">
+			<input type="file" name="profile_picture" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON" value="Upload" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+%ERROR%]]></html></template>

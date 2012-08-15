@@ -9,11 +9,17 @@ namespace UberCMS.Plugins
 {
     public static class AdminPanel
     {
+        #region "Constants"
+        private const string CSRF_FAILURE_MESSAGE = "Client security check failed; try your request again! You should not visit any other pages in-between resubmitting your request.";
+        #endregion
+
         #region "Methods - Plugin Event Handlers"
         public static string enable(string pluginid, Connector conn)
         {
             string error = null;
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
+            // Install pre-processor directive
+            Misc.Plugins.preprocessorDirective_Add("ADMIN_PANEL");
             // Install SQL
             if ((error = Misc.Plugins.executeSQL(basePath + "\\SQL\\Install.sql", conn)) != null)
                 return error;
@@ -41,6 +47,8 @@ namespace UberCMS.Plugins
 #if DEBUG
             string error = null;
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
+            // Uninstall preprocessor directive
+            Misc.Plugins.preprocessorDirective_Remove("ADMIN_PANEL");
             // Unreserve URLs
             if ((error = Misc.Plugins.unreserveURLs(pluginid, conn)) != null)
                 return error;
@@ -67,6 +75,10 @@ namespace UberCMS.Plugins
             switch (request.QueryString["page"])
             {
                 case "admin":
+                    // Ensure the request is legit against XSS attacks by checking the referring URL
+                    if (request.UrlReferrer != null && request.UrlReferrer.Host != request.Url.Host)
+                        return; // The page doesn't exist...which helps if the request was made by a bot
+                    // Delegate the request
                     pageAdmin(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
             }
@@ -260,9 +272,27 @@ namespace UberCMS.Plugins
                     pluginidData = conn.Query_Read("SELECT * FROM plugins WHERE pluginid='" + Utils.Escape(pluginid) + "'");
                 if (pluginidData != null && pluginidData.Rows.Count != 1)
                     error = "Invalid pluginid specified!";
+                else if (pluginidData != null && action == "install")
+                {
+                    if (!Common.AntiCSRF.isValidTokenCookie(request))
+                        error = CSRF_FAILURE_MESSAGE;
+                    else if ((Plugins.Base.State)Enum.Parse(typeof(Plugins.Base.State), pluginidData[0]["state"]) != Plugins.Base.State.Uninstalled)
+                        error = "Plugin is already installed.";
+                    else
+                    {
+                        error = Misc.Plugins.install(pluginidData[0]["pluginid"], Misc.Plugins.getPluginBasePath(pluginidData[0]["pluginid"], conn), false, conn);
+                        if (error == null) // Operation successful
+                        {
+                            conn.Disconnect();
+                            response.Redirect(pageElements["ADMIN_URL"], true);
+                        }
+                    }
+                }
                 else if (pluginidData != null && action == "enable")
                 {
-                    if ((Plugins.Base.State)Enum.Parse(typeof(Plugins.Base.State), pluginidData[0]["state"]) == Plugins.Base.State.Enabled)
+                    if (!Common.AntiCSRF.isValidTokenCookie(request))
+                        error = CSRF_FAILURE_MESSAGE;
+                    else if ((Plugins.Base.State)Enum.Parse(typeof(Plugins.Base.State), pluginidData[0]["state"]) == Plugins.Base.State.Enabled)
                         error = "Plugin is already enabled.";
                     else
                     {
@@ -276,7 +306,9 @@ namespace UberCMS.Plugins
                 }
                 else if (pluginidData != null && action == "disable")
                 {
-                    if ((Plugins.Base.State)Enum.Parse(typeof(Plugins.Base.State), pluginidData[0]["state"]) == Plugins.Base.State.Disabled)
+                    if (!Common.AntiCSRF.isValidTokenCookie(request))
+                        error = CSRF_FAILURE_MESSAGE;
+                    else if ((Plugins.Base.State)Enum.Parse(typeof(Plugins.Base.State), pluginidData[0]["state"]) == Plugins.Base.State.Disabled)
                         error = "Plugin is already disabled.";
                     else
                     {
@@ -291,19 +323,26 @@ namespace UberCMS.Plugins
                 else if (pluginidData != null && action == "uninstall")
                 {
                     // Get the user to confirm the uninstallation
-                    string confirm = request.QueryString["confirm"];
+                    string confirm = request.Form["confirm"];
+                    string csrf = request.Form["csrf"];
                     if (confirm != null)
                     {
-                        // Uninstall the plugin
-                        error = Misc.Plugins.uninstall(pluginidData[0]["pluginid"], true, conn);
-                        if (error == null) // Operation successful
+                        if (!Common.AntiCSRF.isValidTokenForm(csrf))
+                            error = CSRF_FAILURE_MESSAGE;
+                        else
                         {
-                            conn.Disconnect();
-                            response.Redirect(pageElements["ADMIN_URL"], true);
+                            // Uninstall the plugin
+                            error = Misc.Plugins.uninstall(pluginidData[0]["pluginid"], request.Form["delete_path"] != null, conn);
+                            if (error == null) // Operation successful
+                            {
+                                conn.Disconnect();
+                                response.Redirect(pageElements["ADMIN_URL"], true);
+                            }
                         }
                     }
                     // Display confirmation form
                     pageElements["ADMIN_CONTENT"] = Core.templates["admin_panel"]["plugin_uninstall"]
+                        .Replace("%CSRF%", HttpUtility.HtmlEncode(Common.AntiCSRF.getFormToken()))
                         .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
                         .Replace("%PLUGINID%", HttpUtility.HtmlEncode(pluginidData[0]["pluginid"]))
                         .Replace("%TITLE%", HttpUtility.HtmlEncode(pluginidData[0]["title"]));
@@ -313,7 +352,9 @@ namespace UberCMS.Plugins
                 else if (action == "upload")
                 {
                     HttpPostedFile upload = request.Files["plugin_upload"];
-                    if (upload == null || upload.ContentLength == 0 || (upload.ContentType != "application/zip" && upload.ContentType != "application/x-zip" && upload.ContentType != "application/x-zip-compressed"))
+                    if (!Common.AntiCSRF.isValidTokenCookie(request))
+                        error = CSRF_FAILURE_MESSAGE;
+                    else if (upload == null || upload.ContentLength == 0 || (upload.ContentType != "application/zip" && upload.ContentType != "application/x-zip" && upload.ContentType != "application/x-zip-compressed"))
                         error = "Invalid plugin zip archive specified!";
                     else
                     {
@@ -321,7 +362,7 @@ namespace UberCMS.Plugins
                         string zipPath = Core.basePath + "\\Cache\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + new Random().Next(1, int.MaxValue) + ".zip";
                         upload.SaveAs(zipPath);
                         // Attempt to install it
-                        error = Misc.Plugins.install(zipPath, true, conn);
+                        error = Misc.Plugins.install(null, zipPath, true, conn);
                         if (error != null)
                             try
                             {
@@ -333,21 +374,28 @@ namespace UberCMS.Plugins
                 else
                     error = "Unhandled action!";
             }
+            else
+                // Set an anti-csrf protection cookie for the above actions to verify the process is genuine
+                Common.AntiCSRF.setCookieToken(response);
             // List the plugins
             StringBuilder pluginsList = new StringBuilder();
             string state;
             string buttons;
             foreach (ResultRow plugin in conn.Query_Read("SELECT * FROM plugins ORDER BY title ASC"))
             {
-                switch ((Plugins.Base.State)Enum.Parse(typeof(Plugins.Base.State), plugin["state"]))
+                switch ((Base.State)Enum.Parse(typeof(Plugins.Base.State), plugin["state"]))
                 {
-                    case Plugins.Base.State.Disabled:
+                    case Base.State.Disabled:
                         state = "Disabled";
                         buttons = Core.templates["admin_panel"]["plugin_buttdisabled"].Replace("%PLUGINID%", HttpUtility.HtmlEncode(plugin["pluginid"])); ;
                         break;
-                    case Plugins.Base.State.Enabled:
+                    case Base.State.Enabled:
                         state = "Enabled";
                         buttons = Core.templates["admin_panel"]["plugin_buttenabled"].Replace("%PLUGINID%", HttpUtility.HtmlEncode(plugin["pluginid"]));
+                        break;
+                    case Base.State.Uninstalled:
+                        state = "Uninstalled";
+                        buttons = Core.templates["admin_panel"]["plugin_buttinstall"].Replace("%PLUGINID%", HttpUtility.HtmlEncode(plugin["pluginid"]));
                         break;
                     default:
                         state = "Unknown";

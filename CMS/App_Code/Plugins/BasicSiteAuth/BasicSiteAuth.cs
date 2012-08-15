@@ -201,7 +201,7 @@ namespace UberCMS.Plugins
                 // Set base flag(s)
                 pageElements.setFlag("AUTHENTICATED");
                 // Select username and check for bans
-                Result data = conn.Query_Read("SELECT u.username, COUNT(b.banid) AS active_bans, g.title, g.access_login FROM bsa_users AS u LEFT OUTER JOIN bsa_user_bans AS b ON (b.userid=u.userid AND ((b.unban_date IS NULL) OR (b.unban_date > NOW()) )) LEFT OUTER JOIN bsa_user_groups AS g ON g.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
+                Result data = conn.Query_Read("SELECT u.userid, u.username, COUNT(b.banid) AS active_bans, g.title, g.access_login FROM bsa_users AS u LEFT OUTER JOIN bsa_user_bans AS b ON (b.userid=u.userid AND ((b.unban_date IS NULL) OR (b.unban_date > NOW()) )) LEFT OUTER JOIN bsa_user_groups AS g ON g.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
                 if (data.Rows.Count != 1 || int.Parse(data[0]["active_bans"]) > 0 || !data[0]["access_login"].Equals("1"))
                 {
                     // Dispose the current session - now invalid
@@ -211,7 +211,10 @@ namespace UberCMS.Plugins
                     response.Redirect(pageElements["URL"] + "/logout/banned", true);
                 }
                 else
+                {
                     pageElements["USERNAME"] = data[0]["username"];
+                    pageElements["USERID"] = data[0]["userid"];
+                }
                 // Set group flag
                 pageElements.setFlag("GROUP_" + data[0]["title"]);
             }
@@ -866,31 +869,31 @@ namespace UberCMS.Plugins
                 {
                     case LogEvents.Registered:
                         item.Replace("%EVENT_TITLE%", "Registration")
-                            .Replace("%EVENT_ICON%", "Content/Images/Log/Registered.png");
+                            .Replace("%EVENT_ICON%", "Content/Images/basic_site_auth/log/Registered.png");
                         break;
                     case LogEvents.Login_Incorrect:
                         item.Replace("%EVENT_TITLE%", "Login: Incorrect")
-                            .Replace("%EVENT_ICON%", "Content/Images/Log/Login_Incorrect.png");
+                            .Replace("%EVENT_ICON%", "Content/Images/basic_site_auth/log/Login_Incorrect.png");
                         break;
                     case LogEvents.Login_Authenticated:
                         item.Replace("%EVENT_TITLE%", "Login: Authenticated")
-                            .Replace("%EVENT_ICON%", "Content/Images/Log/Login_Success.png");
+                            .Replace("%EVENT_ICON%", "Content/Images/basic_site_auth/log/Login_Success.png");
                         break;
                     case LogEvents.AccountRecovery_SQA_Incorrect:
                         item.Replace("%EVENT_TITLE%", "Recovery: Secret Answer Incorrect")
-                            .Replace("%EVENT_ICON%", "Content/Images/Log/Recovery_Secret_Incorrect.png");
+                            .Replace("%EVENT_ICON%", "Content/Images/basic_site_auth/log/Recovery_Secret_Incorrect.png");
                         break;
                     case LogEvents.AccountRecovered_Email:
                         item.Replace("%EVENT_TITLE%", "Recovery: Successful via E-mail")
-                            .Replace("%EVENT_ICON%", "Content/Images/Log/Recovery_Email.png");
+                            .Replace("%EVENT_ICON%", "Content/Images/basic_site_auth/log/Recovery_Email.png");
                         break;
                     case LogEvents.AccountRecovered_SQA:
                         item.Replace("%EVENT_TITLE%", "Recovery: Successful via Secret Answer")
-                            .Replace("%EVENT_ICON%", "Content/Images/Log/Recovery_Secret.png");
+                            .Replace("%EVENT_ICON%", "Content/Images/basic_site_auth/log/Recovery_Secret.png");
                         break;
                     case LogEvents.MyAccountUpdated:
                         item.Replace("%EVENT_TITLE%", "Account Details Updated")
-                            .Replace("%EVENT_ICON%", "Content/Images/Log/Account_Details.png");
+                            .Replace("%EVENT_ICON%", "Content/Images/basic_site_auth/log/Account_Details.png");
                         break;
                 }
                 eventItems.Append(item.ToString());

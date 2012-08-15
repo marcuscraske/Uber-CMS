@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[cc128]]></pkey><hkey><![CDATA[power]]></hkey><description><![CDATA[Displays the current power usage.]]></description><html><![CDATA[<div class="CC128_METER">
+	<div class="BAR_CONTAINER">
+		<div id="BAR">
+		&nbsp;
+		</div>
+	</div>
+	<div class="USAGE">
+		<div id="USAGE">0000</div>
+		<div class="WATTS">watts</div>
+		<div class="UPDATED">Last updated: <span id="UPDATED">never.</span></div>
+	</div>
+<div class="clear"></div>
+</div>]]></html></template>

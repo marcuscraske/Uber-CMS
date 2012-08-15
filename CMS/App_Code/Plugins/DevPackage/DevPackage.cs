@@ -30,6 +30,7 @@ namespace UberCMS.Plugins
                 string cmsBasePath = Core.basePath;
                 // Retrieve base path of plugin - we'll use the top-directory as the zip name
                 string basePath = Misc.Plugins.getPluginBasePath(targetPluginid, conn);
+                if (basePath == null) return;
                 // Open the files list and add each file to the zip
                 if (!File.Exists(basePath + "\\files.list"))
                 {
@@ -37,18 +38,21 @@ namespace UberCMS.Plugins
                     return;
                 }
                 // Iterate each file in the list and ensure it exists - else stop the process and warn the developer
+                List<string> filesExcluded = new List<string>();
                 List<string[]> files = new List<string[]>();
                 List<string> filesMissing = new List<string>();
                 string[] file;
                 foreach (string rawFile in File.ReadAllText(basePath + "\\files.list").Replace("\r", string.Empty).Split('\n'))
                 {
                     file = rawFile.Trim().Split(',');
-                    if (file.Length == 2 && !file[0].StartsWith("//"))
+                    if ((file.Length == 2 || (file.Length == 1 && file[0].StartsWith("-"))) && !file[0].StartsWith("//"))
                     {
                         // Format the file
                         file[0] = file[0].Replace("%LOCAL%", basePath).Replace("%GLOBAL%", cmsBasePath);
-                        file[1] = file[1].Replace("%LOCAL%", basePath).Replace("%GLOBAL%", cmsBasePath);
-                        if (file[0].EndsWith("\\*"))
+                        if(file.Length == 2) file[1] = file[1].Replace("%LOCAL%", basePath).Replace("%GLOBAL%", cmsBasePath);
+                        if(file[0].StartsWith("-") && file[0].Length > 1)
+                            filesExcluded.Add(file[0].Substring(1));
+                        else if (file[0].EndsWith("\\*"))
                         {
                             file[0] = file[0].Remove(file[0].Length - 2, 2);
                             // A path has been specified, not a file
@@ -69,6 +73,10 @@ namespace UberCMS.Plugins
                         }
                     }
                 }
+                // Remove the excluded filees from the files array
+                for (int i = 0; i < files.Count; i++)
+                    if (filesExcluded.Contains(files[i][0]))
+                        files.RemoveAt(i);
                 // If missing files have been found, inform the dev and abort
                 if (filesMissing.Count > 0)
                 {
@@ -100,7 +108,10 @@ namespace UberCMS.Plugins
                 }
                 // Inform the dev of the success
                 StringBuilder output = new StringBuilder("Successfully packaged zip:<br />");
-                output.Append(zipPath).Append("<br /><br />Files:");
+                output.Append(zipPath).Append("<br /><br />Files excluded:");
+                foreach (string f in filesExcluded)
+                    output.Append("<br />").Append(f);
+                output.Append("<br /><br />Files included:");
                 foreach (string[] f in files)
                     output.Append("<br />").Append(f[0]);
                 pageElements["CONTENT"] =  output.ToString();

@@ -1,0 +1,8 @@
+﻿// Add all of the files within the plugin
+%LOCAL%\*,\
+-%LOCAL%\Unknown.psd
+
+// Add content files
+%GLOBAL%\Content\CSS\BSA_Profiles.css,\Content\CSS
+%GLOBAL%\Content\JS\bsa_profiles\*,\Content\JS\bsa_profiles
+%GLOBAL%\Content\Images\bsa_profiles\*,\Content\Images\bsa_profiles

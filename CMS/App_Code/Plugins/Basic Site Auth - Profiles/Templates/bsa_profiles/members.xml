@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[members]]></hkey><description><![CDATA[The page used for finding members.]]></description><html><![CDATA[<div class="BSA_PROFILES_MEMBERS">
+	<div class="ALPHABET">
+		<a href="<!--URL-->/members/A">A</a>
+		<a href="<!--URL-->/members/B">B</a>
+		<a href="<!--URL-->/members/C">C</a>
+		<a href="<!--URL-->/members/D">D</a>
+		<a href="<!--URL-->/members/E">E</a>
+		<a href="<!--URL-->/members/F">F</a>
+		<a href="<!--URL-->/members/G">G</a>
+		<a href="<!--URL-->/members/H">H</a>
+		<a href="<!--URL-->/members/I">I</a>
+		<a href="<!--URL-->/members/J">J</a>
+		<a href="<!--URL-->/members/K">K</a>
+		<a href="<!--URL-->/members/L">L</a>
+		<a href="<!--URL-->/members/M">M</a>
+		<a href="<!--URL-->/members/N">N</a>
+		<a href="<!--URL-->/members/O">O</a>
+		<a href="<!--URL-->/members/P">P</a>
+		<a href="<!--URL-->/members/Q">Q</a>
+		<a href="<!--URL-->/members/R">R</a>
+		<a href="<!--URL-->/members/S">S</a>
+		<a href="<!--URL-->/members/T">T</a>
+		<a href="<!--URL-->/members/U">U</a>
+		<a href="<!--URL-->/members/V">V</a>
+		<a href="<!--URL-->/members/W">W</a>
+		<a href="<!--URL-->/members/X">X</a>
+		<a href="<!--URL-->/members/Y">Y</a>
+		<a href="<!--URL-->/members/Z">Z</a>
+		<div class="clear"></div>
+	</div>
+	<div class="SEARCH">
+		<form method="get" action="<!--URL-->/members">
+			<input type="text" name="search" value="%SEARCH%" class="TEXTBOX" /> <input type="submit" value="Search" class="BUTTON" />
+		</form>
+	</div>
+	<div class="MEMBERS">
+		%MEMBERS%
+	</div>
+	<div class="PAGE">
+		<a href="<!--URL-->/members/%LETTER%?p=%PAGE_PREV%" class="BUTTON FL">Previous</a>
+		Page: %PAGE%
+		<a href="<!--URL-->/members/%LETTER%?p=%PAGE_NEXT%" class="BUTTON FR">Next</a>
+		<div class="clear"></div>
+	</div>
+</div>]]></html></template>

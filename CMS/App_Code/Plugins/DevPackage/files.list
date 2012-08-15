@@ -4,3 +4,5 @@
 // You can use comments! :D
 
 	// And tabulation - nothing advanced, just nice :3
+
+	// You can also exclude files by starting the line with -, hence -<path> e.g. -%LOCAL%\file.txt

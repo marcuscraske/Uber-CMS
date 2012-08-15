@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[profile_settings]]></hkey><description><![CDATA[The page used to change the profile settings of a user.]]></description><html><![CDATA[%ERROR%
+<form method="post" action="<!--URL-->/profile/settings?userid=%USERID%">
+	<div class="ROW HEADER">
+		<div class="CELL1">Profile</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Profile enabled:
+		</div>
+		<div class="CELL2">
+			<select name="profile_enabled" class="TEXTBOX">%ENABLED%</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Frame background URL:
+		</div>
+		<div class="CELL2">
+			<input type="text" name="frame_bg_url" class="TEXTBOX" value="%FRAME_BG_URL%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Frame background colour:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX color" name="frame_bg_colour" value="%FRAME_BG_COLOUR%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Pane background colour:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX color" name="pane_bg_colour" value="%PANE_BG_COLOUR%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Pane text colour:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX color" name="pane_text_colour" value="%PANE_TEXT_COLOUR%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="ROW HEADER">
+		<div class="CELL1">About You</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			Nutshell:
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<textarea name="nutshell" class="TEXTAREA" cols="70" rows="3">%NUTSHELL%</textarea>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Country:
+		</div>
+		<div class="CELL2">
+			<select class="TEXTBOX" name="country">%COUNTRY%</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Gender:
+		</div>
+		<div class="CELL2">
+			<select name="gender" class="TEXTBOX">%GENDER%</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Occupation:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="occupation" value="%OCCUPATION%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="ROW HEADER">
+		<div class="CELL1">Contact Details</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Github:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_github" value="%CONTACT_GITHUB%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Website:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_website" value="%CONTACT_WEBSITE%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			E-mail:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_email" value="%CONTACT_EMAIL%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Facebook:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_facebook" value="%CONTACT_FACEBOOK%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Google Plus:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_googleplus" value="%CONTACT_GOOGLEPLUS%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Steam:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_steam" value="%CONTACT_STEAM%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Windows Live:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_wlm" value="%CONTACT_WLM%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Skype:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_skype" value="%CONTACT_SKYPE%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			YouTube:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_youtube" value="%CONTACT_YOUTUBE%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Soundcloud:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_soundcloud" value="%CONTACT_SOUNDCLOUD%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Xbox Live:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_xbox" value="%CONTACT_XBOX%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			PlayStation Network:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_psn" value="%CONTACT_PSN%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Flickr:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_flickr" value="%CONTACT_FLICKR%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Twitter:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_twitter" value="%CONTACT_TWITTER%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Xfire:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_xfire" value="%CONTACT_XFIRE%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Deviant Art:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_deviantart" value="%CONTACT_DEVIANTART%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Save" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>]]></html></template>

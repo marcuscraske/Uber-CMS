@@ -20,7 +20,6 @@ using Ionic.Zip;
 using System.IO;
 using System.Xml;
 using System.Text;
-using System.Configuration;
 
 namespace UberCMS.Misc
 {
@@ -428,17 +427,21 @@ namespace UberCMS.Misc
                 string configPath = getWebConfigPath();
                 XmlDocument webConfig = new XmlDocument();
                 webConfig.Load(configPath);
-                XmlNode compiler;// webConfig["configuration"]["system.codedom"]["compilers"]["compiler"];
+                XmlNode compiler;
                 if ((compiler = webConfig.SelectSingleNode("configuration/system.codedom/compilers/compiler")) == null)
                     return "The web.config is missing the compiler section and hence directives cannot be added! Please modify your web.config...";
                 else
                 {
                     if (addingSymbol)
                     {
-                        if (compiler.Attributes["compilerOptions"].Value.Length == 0)
-                            compiler.Attributes["compilerOptions"].Value = "/d:" + symbol;
+                        string symbols = compiler.Attributes["compilerOptions"].Value;
+                        if (symbols.Length == 0)
+                            symbols = "/d:" + symbol;
+                        else if (symbols.Contains("/d:" + symbol + ",") || symbols.Contains("," + symbol + ",") || symbols.EndsWith("," + symbol))
+                            return null; // Contains pre-processor already
                         else
-                            compiler.Attributes["compilerOptions"].Value += "," + symbol;
+                            symbols += "," + symbol;
+                        compiler.Attributes["compilerOptions"].Value = symbols;
                     }
                     else
                     {
@@ -447,9 +450,11 @@ namespace UberCMS.Misc
                             return null; // No values to remove, just return
                         else if (symbols.Length == 3 + symbol.Length)
                             symbols = string.Empty; // The symbol string must be /d:<symbol> - hence we'll leave it empty
+                        else if (symbols.EndsWith("," + symbol))
+                            symbols = symbols.Remove(symbols.Length - (symbol.Length + 1), symbol.Length + 1);
                         else
-                            // Remove the symbol, which could be like /d:<symbol>, or ,<symbol>
-                            symbols = symbols.Replace("/d:" + symbol + ",", "/d:").Replace("," + symbol, string.Empty);
+                            // Remove the symbol, which could be like /d:<symbol>, *or* ,<symbol>,
+                            symbols = symbols.Replace("/d:" + symbol + ",", "/d:").Replace("," + symbol + ",", string.Empty);
                         // -- Update the modified flags
                         compiler.Attributes["compilerOptions"].Value = symbols;
                     }
@@ -473,16 +478,17 @@ namespace UberCMS.Misc
         }
         #endregion
 
-        #region "Plugin Installation"
+        #region "Methods - Plugin Installation"
         /// <summary>
         /// Installs a plugin from either a zip-file or from a given path; if the install is from a zip, the zip file
         /// will not be deleted by this process (therefore you'll need to delete it after invoking this method).
         /// </summary>
         /// <param name="basePath"></param>
-        /// <param name="pathIsZipFile"></param>
+        /// <param name="pathIsZipFile">Specifies if the basePath parameter is a path of a directory (if false) or a zip file (if true).</param>
         /// <param name="conn"></param>
+        /// <param name="pluginid">Specify this parameter as null if the plugin is new; if this is specified, the existing plugin entry will be updated.</param>
         /// <returns></returns>
-        public static string install(string basePath, bool pathIsZipFile, Connector conn)
+        public static string install(string pluginid, string basePath, bool pathIsZipFile, Connector conn)
         {
             string error, tempPath = null, pluginDir = null;
             if (pathIsZipFile)
@@ -546,7 +552,7 @@ namespace UberCMS.Misc
                     return "Could not load plugin configuration - " + ex.Message + "!";
                 }
             }
-            // Read config values
+            // Read config values if pluginid is null
             string directory;
             string title;
             string classpath;
@@ -555,24 +561,30 @@ namespace UberCMS.Misc
             bool handles404;
             bool handlesRequestStart;
             bool handlesRequestEnd;
-            try
+            if (pluginid == null)
+                try
+                {
+                    directory = doc["settings"]["directory"].InnerText;
+                    title = doc["settings"]["title"].InnerText;
+                    classpath = doc["settings"]["classpath"].InnerText;
+                    cycleInterval = doc["settings"]["cycle_interval"].InnerText;
+                    invokeOrder = doc["settings"]["invoke_order"].InnerText;
+                    handles404 = doc["settings"]["handles_404"].InnerText.Equals("1");
+                    handlesRequestStart = doc["settings"]["handles_request_start"].InnerText.Equals("1");
+                    handlesRequestEnd = doc["settings"]["handles_request_end"].InnerText.Equals("1");
+                }
+                catch (Exception ex)
+                {
+                    if (pathIsZipFile)
+                        try { Directory.Delete(tempPath, true); }
+                        catch { }
+                    return "Could not read configuration, it's most likely a piece of data is missing; this could be a plugin designed for a different version of Uber CMS - " + ex.Message + "!";
+                }
+            else
             {
-                directory = doc["settings"]["directory"].InnerText;
-                title = doc["settings"]["title"].InnerText;
-                classpath = doc["settings"]["classpath"].InnerText;
-                cycleInterval = doc["settings"]["cycle_interval"].InnerText;
-                invokeOrder = doc["settings"]["invoke_order"].InnerText;
-                handles404 = doc["settings"]["handles_404"].InnerText.Equals("1");
-                handlesRequestStart = doc["settings"]["handles_request_start"].InnerText.Equals("1");
-                handlesRequestEnd = doc["settings"]["handles_request_end"].InnerText.Equals("1");
+                directory = title = classpath = cycleInterval = invokeOrder = null;
+                handles404 = handlesRequestStart = handlesRequestEnd = false;
             }
-            catch(Exception ex)
-            {
-                if(pathIsZipFile)
-                    try { Directory.Delete(tempPath, true); }
-                    catch { }
-                return "Could not read configuration, it's most likely a piece of data is missing; this could be a plugin designed for a different version of Uber CMS - " + ex.Message + "!";
-            }    
             if (pathIsZipFile)
             {
                 // Check plugin directory doesn't exist
@@ -595,10 +607,13 @@ namespace UberCMS.Misc
                     return "Failed to move extracted directory '" + tempPath + "' to '" + pluginDir + "' - " + ex.Message + "!";
                 }
             }
-            // Insert into the database
+            // Update the database
             try
             {
-                conn.Query_Execute("INSERT INTO plugins (title, directory, classpath, cycle_interval, invoke_order, state, handles_404, handles_request_start, handles_request_end) VALUES('" + Utils.Escape(title) + "', '" + Utils.Escape(directory) + "', '" + Utils.Escape(classpath) + "', '" + Utils.Escape(cycleInterval) + "', '" + Utils.Escape(invokeOrder) + "', '" + (int)(UberCMS.Plugins.Base.State.Disabled) + "', '" + (handles404 ? "1" : "0") + "', '" + (handlesRequestStart ? "1" : "0") + "', '" + (handlesRequestEnd ? "1" : "0") + "')");
+                if (pluginid == null) // Insert if the pluginid is null, else we'll just update the status
+                    conn.Query_Execute("INSERT INTO plugins (title, directory, classpath, cycle_interval, invoke_order, state, handles_404, handles_request_start, handles_request_end) VALUES('" + Utils.Escape(title) + "', '" + Utils.Escape(directory) + "', '" + Utils.Escape(classpath) + "', '" + Utils.Escape(cycleInterval) + "', '" + Utils.Escape(invokeOrder) + "', '" + (int)(UberCMS.Plugins.Base.State.Disabled) + "', '" + (handles404 ? "1" : "0") + "', '" + (handlesRequestStart ? "1" : "0") + "', '" + (handlesRequestEnd ? "1" : "0") + "')");
+                else
+                    conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Disabled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");
             }
             catch (Exception ex)
             {
@@ -615,10 +630,12 @@ namespace UberCMS.Misc
             }
             return null;
         }
+
         /// <summary>
         /// Completely uninstalls a plugin.
         /// </summary>
         /// <param name="pluginid"></param>
+        /// <param name="deletePath">If true, the physical files for the plugin will be removed; if false, the plugin's database entry will remain for later installation with the physical files.</param>
         /// <param name="conn"></param>
         /// <returns></returns>
         public static string uninstall(string pluginid, bool deletePath, Connector conn)
@@ -655,9 +672,9 @@ namespace UberCMS.Misc
             {
                 return "Failed to uninstall plugin - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
             }
-            // Remove folder
             if (deletePath)
             {
+                // Remove folder and database entry
                 try
                 {
                     Directory.Delete(Core.basePath + "\\App_Code\\Plugins\\" + info[0]["directory"], true);
@@ -666,9 +683,13 @@ namespace UberCMS.Misc
                 {
                     return "Critical failure - failed to delete directory - " + ex.Message + "!";
                 }
+                conn.Query_Execute("DELETE FROM plugins WHERE pluginid='" + Utils.Escape(pluginid) + "'");
             }
-            // Remove database entry
-            conn.Query_Execute("DELETE FROM plugins WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+            else
+            {
+                // Update the plugin to uninstalled
+                conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Uninstalled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+            }
             return null;
         }
         public static string enable(string pluginid, Connector conn)

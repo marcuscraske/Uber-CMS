@@ -21,6 +21,7 @@ namespace UberCMS.Plugins
     {
         public enum State
         {
+            Uninstalled = 0,
             Disabled = 1,
             Enabled = 2
         }
