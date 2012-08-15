@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[devpackage]]></pkey><hkey><![CDATA[home_plugin]]></hkey><description><![CDATA[A plugin item on the home page.]]></description><html><![CDATA[	<div class="ROW">
+		<div class="CELL1">
+			%TITLE%
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<a href="<!--URL-->/devpackage/package/%PLUGINID%" class="BUTTON">Package Zip</a>
+			<a href="<!--URL-->/devpackage/sync/%PLUGINID%" class="BUTTON">Sync Global Files</a>
+			<a href="<!--URL-->/devpackage/dump/%PLUGINID%" class="BUTTON">Dump Templates</a>
+			<a href="<!--URL-->/devpackage/dump/%PLUGINID%" class="BUTTON">Upload Templates</a>
+		</div>
+		<div class="clear"></div>
+	</div>]]></html></template>

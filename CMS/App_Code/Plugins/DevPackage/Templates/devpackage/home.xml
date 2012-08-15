@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[devpackage]]></pkey><hkey><![CDATA[home]]></hkey><description><![CDATA[The base home page.]]></description><html><![CDATA[<div clas="TABLE">
+	<div class="ROW HEADER">
+		<div class="CELL1">Global Options</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<a href="<!--URL-->/devpackage/dump/all" class="BUTTON">Dump Installer Templates</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW HEADER">
+		<div class="CELL1">Plugins</div>
+		<div class="clear"></div>
+	</div>
+	%PLUGINS%
+</div>]]></html></template>

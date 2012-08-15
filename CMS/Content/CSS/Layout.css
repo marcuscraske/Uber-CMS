@@ -242,6 +242,7 @@ h3
 /* Button */
 .BUTTON
 {
+    display: inline-block;
     background: #CCC;
     color: #333;
     border: none;
