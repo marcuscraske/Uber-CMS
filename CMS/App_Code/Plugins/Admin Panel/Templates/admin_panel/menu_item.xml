@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[admin_panel]]></pkey><hkey><![CDATA[menu_item]]></hkey><description><![CDATA[Item for the admin menu.]]></description><html><![CDATA[<a class="ADMIN_MENU_ITEM" href="%URL%">
+<img src="<!--URL-->/%ICON%" alt="%TEXT%" />
+%TEXT%
+</a>]]></html></template>

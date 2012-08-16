@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[admin_panel]]></pkey><hkey><![CDATA[plugin_buttinstall]]></hkey><description><![CDATA[The install button for a plugin.]]></description><html><![CDATA[<a href="<!--ADMIN_URL-->?action=install&amp;pluginid=%PLUGINID%" class="BUTTON">Install</a>]]></html></template>

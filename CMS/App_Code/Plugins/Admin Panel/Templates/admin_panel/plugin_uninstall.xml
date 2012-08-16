@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_plugin_uninstall]]></hkey><description><![CDATA[Uninstall confirmation page.]]></description><html><![CDATA[<form method="get" action="<!--ADMIN_URL-->">
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[admin_panel]]></pkey><hkey><![CDATA[plugin_uninstall]]></hkey><description><![CDATA[Uninstall confirmation page.]]></description><html><![CDATA[<form method="post" action="<!--ADMIN_URL-->">
 	<div class="ROW HEADER">
 		<div class="CELL1">Uninstall Plugin - Confirm</div>
 		<div class="clear"></div>
@@ -21,6 +21,19 @@
 		</div>
 		<div class="clear"></div>
 	</div>
+	<div class="ROW SUB_HEADER">
+		<div class="CELL1">Options</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<div class="CHECKBOX">
+				<input type="checkbox" name="delete_path" />
+				<div>Delete physical plugin files</div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
 	<div class="ROW">
 		<div class="CELL1">
 			<input type="submit" class="BUTTON FR" value="Uninstall" />
@@ -30,5 +43,6 @@
 	<input type="hidden" name="action" value="uninstall" />
 	<input type="hidden" name="pluginid" value="%PLUGINID%" />
 	<input type="hidden" name="confirm" value="1" />
+	<input type="hidden" name="csrf" value="%CSRF%" />
 </form>
 %ERROR%]]></html></template>

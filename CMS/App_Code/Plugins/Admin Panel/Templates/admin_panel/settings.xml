@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin_settings]]></hkey><description><![CDATA[Base page for admin settings.]]></description><html><![CDATA[%ERROR%
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[admin_panel]]></pkey><hkey><![CDATA[settings]]></hkey><description><![CDATA[Base page for admin settings.]]></description><html><![CDATA[%ERROR%
 %SUCCESS%
 <form method="post" action="<!--ADMIN_URL-->">
 	<div class="ROW HEADER">

@@ -11,7 +11,7 @@
 <div class="BSA_PROFILES_FRAME" style="background: %BACKGROUND%; background-size: 100%;">
 	<div class="LEFT">
 		<div class="PANE CENTER BSAPCBG BSAPCT">
-			<a href="<!--URL-->/profile/upload?userid=%USERID%"><img alt="Profile picture" src="<!--URL-->/%PROFILE_PICTURE%" class="PROFILE_PICTURE" /></a>
+			<a href="<!--URL-->/profile/upload?userid=%USERID%"><img alt="Profile picture" src="<!--URL-->/profile_image/%USERID%" class="PROFILE_PICTURE" /></a>
 			<div>%USERNAME%</div>
 		</div>
 		<div class="PANE BSAPCBG BSAPCT">

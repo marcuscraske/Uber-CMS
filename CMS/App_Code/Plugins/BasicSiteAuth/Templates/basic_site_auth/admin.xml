@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[basic_site_auth]]></pkey><hkey><![CDATA[admin]]></hkey><description><![CDATA[Base for the admin page.]]></description><html><![CDATA[<h3><!--ADMIN_TITLE--></h3>
-<div class="ADMIN_MENU">
-%MENU%
-</div>
-<div class="ADMIN_CONTENT">
-<!--ADMIN_CONTENT-->
-</div>]]></html></template>

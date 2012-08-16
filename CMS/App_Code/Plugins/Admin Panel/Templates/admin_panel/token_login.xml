@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[admin_panel]]></pkey><hkey><![CDATA[token_login]]></hkey><description><![CDATA[The login page for when no authentication system can be used by the admin panel.]]></description><html><![CDATA[%ERROR%
+<form method="post" action="<!--URL-->/admin">
+	<div class="ROW">
+		<div class="CELL1">
+			To login to the admin panel, you need to copy and paste the token stored in <i>Login Token.txt</i> in the plugin's directory.
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Token:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="token" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			<img src="<!--URL-->/captcha" alt="Captcha" />
+		</div>
+		<div class="CELL2">
+			Captcha:<br />
+			<input type="text" class="TEXTBOX" name="captcha" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Login" />
+		</div>
+	</div>
+</form>]]></html></template>

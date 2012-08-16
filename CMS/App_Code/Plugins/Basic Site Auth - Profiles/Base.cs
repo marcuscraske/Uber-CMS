@@ -541,14 +541,13 @@ namespace UberCMS.Plugins
                 alphabet = rawAlphabet;
             string search = request.QueryString["search"];
             StringBuilder members = new StringBuilder();
-            foreach (ResultRow member in conn.Query_Read("SELECT u.userid, u.username, g.title, p.profile_picture_url FROM bsa_users AS u LEFT OUTER JOIN bsa_profiles AS p ON p.userid=u.userid LEFT OUTER JOIN bsa_user_groups AS g ON g.groupid=u.groupid WHERE disabled='0'" + (search != null ? " AND username LIKE '%" + Utils.Escape(search.Replace("%", "")) + "%'" : alphabet != null ? " AND username LIKE '" + Utils.Escape(alphabet) + "%'" : string.Empty) + " ORDER BY u.username ASC LIMIT " + ((page * itemsPerPage) - itemsPerPage) + "," + itemsPerPage))
+            foreach (ResultRow member in conn.Query_Read("SELECT u.userid, u.username, g.title FROM bsa_users AS u LEFT OUTER JOIN bsa_profiles AS p ON p.userid=u.userid LEFT OUTER JOIN bsa_user_groups AS g ON g.groupid=u.groupid WHERE disabled='0'" + (search != null ? " AND username LIKE '%" + Utils.Escape(search.Replace("%", "")) + "%'" : alphabet != null ? " AND username LIKE '" + Utils.Escape(alphabet) + "%'" : string.Empty) + " ORDER BY u.username ASC LIMIT " + ((page * itemsPerPage) - itemsPerPage) + "," + itemsPerPage))
             {
                 members.Append(
                     Core.templates["bsa_profiles"]["member"]
                     .Replace("%USERID%", HttpUtility.HtmlEncode(member["userid"]))
                     .Replace("%USERNAME%", HttpUtility.HtmlEncode(member["username"]))
                     .Replace("%GROUP_TITLE%", HttpUtility.HtmlEncode(member["title"]))
-                    .Replace("%PROFILE_PICTURE%", member["profile_picture_url"].Length > 0 ? HttpUtility.HtmlEncode(member["profile_picture_url"]) : "Content/Images/bsa_profiles/unknown.png")
                     );
             }
             pageElements["CONTENT"] = Core.templates["bsa_profiles"]["members"]
