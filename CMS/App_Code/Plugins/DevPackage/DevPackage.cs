@@ -269,6 +269,9 @@ namespace UberCMS.Plugins
         /// <param name="filesExcluded"></param>
         private static void pagePackage_addFile(string fileOrigin, string fileDestPath, ref Dictionary<string, string> files, ref List<string> filesExcluded)
         {
+            // Apply destination suffix of .file if ending is .js to avoid web-server compile issues
+            if (fileDestPath.EndsWith(".js"))
+                fileDestPath += ".file";
             // Validate the destination path does not exist already, if not add the file
             bool fileUnique = true;
             if (files.ContainsValue(fileDestPath))
