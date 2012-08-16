@@ -1,6 +1,4 @@
-﻿#define BASIC_SITE_AUTH
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Text;
@@ -73,6 +71,8 @@ namespace UberCMS.Plugins
         {
             string error = null;
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
+            // Add pre-processor directive
+            Misc.Plugins.preprocessorDirective_Add("BASIC_SITE_AUTH");
             // Install SQL
             error = Misc.Plugins.executeSQL(basePath + "\\SQL\\Enable.sql", conn);
             if (error != null) return error;
@@ -130,6 +130,8 @@ namespace UberCMS.Plugins
         {
             string error = null;
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
+            // Remove pre-processor directive
+            Misc.Plugins.preprocessorDirective_Remove("BASIC_SITE_AUTH");
             // Remove templates
             error = Misc.Plugins.templatesUninstall("basic_site_auth", conn);
             if (error != null) return error;
@@ -161,6 +163,7 @@ namespace UberCMS.Plugins
         }
         public static string cmsStart(string pluginid, Connector conn)
         {
+            // Initialize the authentication salts
             initSalts(pluginid, conn);
             return null;
         }

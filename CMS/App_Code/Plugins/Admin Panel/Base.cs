@@ -13,6 +13,10 @@ namespace UberCMS.Plugins
         private const string CSRF_FAILURE_MESSAGE = "Client security check failed; try your request again! You should not visit any other pages in-between resubmitting your request.";
         #endregion
 
+        #region "Variables"
+        public static string currentToken = null;
+        #endregion
+
         #region "Methods - Plugin Event Handlers"
         public static string enable(string pluginid, Connector conn)
         {
@@ -83,6 +87,32 @@ namespace UberCMS.Plugins
                     break;
             }
         }
+        public static string cmsStart(string pluginid, Connector conn)
+        {
+#if !BASIC_SITE_AUTH
+            generateAuthToken(pluginid, conn);
+#else
+            // Check if the login token exists, if so delete it - no need for it
+            string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
+            if(File.Exists(basePath + "\\Login Token.txt"))
+                try
+                {
+                    File.Delete(basePath + "\\Login Token.txt");
+                }
+                catch { }
+#endif
+            return null;
+        }
+        private static void generateAuthToken(string pluginid, Connector conn)
+        {
+            currentToken = Common.Utils.randomText(24);
+            // Write the token to file
+            try
+            {
+                File.WriteAllText(Misc.Plugins.getPluginBasePath(pluginid, conn) + "\\Login Token.txt", currentToken);
+            }
+            catch { }
+        }
         #endregion
 
         #region "Methods - Pages"
@@ -99,9 +129,43 @@ namespace UberCMS.Plugins
             // Attach CSS file
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/AdminPanel.css", ref pageElements);
             // Check user has admin access
+#if BASIC_SITE_AUTH // We'll use BSA's authentication if available
             Result authCheck = conn.Query_Read("SELECT g.access_admin FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS g ON g.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
             if (authCheck.Rows.Count != 1 || !authCheck[0]["access_admin"].Equals("1"))
                 return;
+#else // No authentication available; we'll require the user to login using the token stored in the local directory
+            if (currentToken == null) generateAuthToken(pluginid, conn);
+            // Check the user has been authenticated
+            if (HttpContext.Current.Session["ADMIN_PANEL_AUTH"] == null || (string)HttpContext.Current.Session["ADMIN_PANEL_AUTH"] != currentToken)
+            {
+                // Check for postback
+                string error = null;
+                string captcha = request.Form["captcha"];
+                string token = request.Form["token"];
+                if (captcha != null && token != null)
+                {
+                    if (!Common.Validation.validCaptcha(captcha))
+                        error = "Incorrect captcha verification code!";
+                    else if (token != currentToken)
+                        error = "Incorrect token!";
+                    else
+                    {
+                        // Redirect back to this page - for security
+                        HttpContext.Current.Session["ADMIN_PANEL_AUTH"] = token;
+                        conn.Disconnect();
+                        response.Redirect(pageElements["URL"] + "/admin");
+                    }
+                }
+                // Display form
+                pageElements["TITLE"] = "Admin - Token Authentication";
+                pageElements["CONTENT"] = Core.templates["admin_panel"]["token_login"]
+                    .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
+                return;
+            }
+#endif
+
+
+
             // Handle the request and build the content based on the selected page
             string pageid = request.QueryString["1"];
             if (pageid == null)
