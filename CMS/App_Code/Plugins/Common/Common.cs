@@ -473,8 +473,10 @@ namespace UberCMS.Plugins
                 }
                 public static void formatImage(ref StringBuilder text)
                 {
-                    foreach (Match m in Regex.Matches(text.ToString(), @"\[img\]([a-zA-Z0-9]+)\:\/\/([a-zA-Z0-9\/\._\-]+)\[\/img\]", RegexOptions.Multiline))
-                        text.Replace(m.Value, "<a title=\"Click to open the image...\" href=\"" + m.Groups[1].Value + "://" + m.Groups[2].Value + "\"><img class=\"COMMON_IMG\" src=\"" + m.Groups[1].Value + "://" + m.Groups[2].Value + "\" /></a>");
+                    foreach (Match m in Regex.Matches(text.ToString(), @"\[img\]([a-zA-Z0-9]+)\:\/\/([a-zA-Z0-9\/\._\-\+]+)\[\/img\]", RegexOptions.Multiline))
+                        text.Replace(m.Value, "<a title=\"Click to open the image...\" href=\"" + m.Groups[1].Value + "://" + m.Groups[2].Value + "\" class=\"COMMON_IMG\"><img src=\"" + m.Groups[1].Value + "://" + m.Groups[2].Value + "\" /></a>");
+                    foreach (Match m in Regex.Matches(text.ToString(), @"\[img=([0-9]{4}|[0-9]{3}|[0-9]{2}|[0-9]{1}),([0-9]{4}|[0-9]{3}|[0-9]{2}|[0-9]{1})\]([a-zA-Z0-9]+)\:\/\/([a-zA-Z0-9\/\._\-\+]+)\[\/img\]", RegexOptions.Multiline))
+                        text.Replace(m.Value, "<a title=\"Click to open the image...\" href=\"" + m.Groups[3].Value + "://" + m.Groups[4].Value + "\" class=\"COMMON_IMG\"><img style=\"width: " + m.Groups[1].Value + "px; height: " + m.Groups[2].Value + "px;\" src=\"" + m.Groups[3].Value + "://" + m.Groups[4].Value + "\" /></a>");
                 }
                 public static void formatTable(ref StringBuilder text)
                 {
