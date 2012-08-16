@@ -1,0 +1,4 @@
+﻿%LOCAL%\*,\
+%GLOBAL%\Content\CSS\CC128.css,%LOCAL%\Content\CSS
+%GLOBAL%\Content\Images\CC128\*,%LOCAL%\Content\Images\CC128
+%GLOBAL%\Content\JS\CC128.js,%LOCAL%\Content\JS

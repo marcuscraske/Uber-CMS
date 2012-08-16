@@ -19,7 +19,7 @@ namespace UberCMS.Plugins
         public static EnergyMonitor monitor = null;
         #endregion
 
-        #region "Methods - CMS"
+        #region "Methods - Plugin Event Handlers"
         public static string enable(string pluginid, Connector conn)
         {
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
@@ -27,14 +27,14 @@ namespace UberCMS.Plugins
             // Install SQL
             if ((error = Misc.Plugins.executeSQL(basePath + "\\SQL\\Install.sql", conn)) != null)
                 return error;
-            // Reserve URLs
-            if ((error = Misc.Plugins.reserveURLs(pluginid, null, new string[] { "power" }, conn)) != null)
-                return error;
             // Install templates
             if((error = Misc.Plugins.templatesInstall(basePath + "\\Templates\\CC128", conn)) != null)
                 return error;
             // Install content
             if ((error = Misc.Plugins.contentInstall(basePath + "\\Content")) != null)
+                return error;
+            // Reserve URLs
+            if ((error = Misc.Plugins.reserveURLs(pluginid, null, new string[] { "power" }, conn)) != null)
                 return error;
 
             return null;
