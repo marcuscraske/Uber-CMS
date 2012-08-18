@@ -469,6 +469,10 @@ namespace UberCMS.Plugins
             if (published)
                 pageElements.setFlag("ARTICLE_PUBLISHED");
 
+            //Set current article flag
+            if (article["articleid_current"] == article["articleid"])
+                pageElements.setFlag("ARTICLE_CURRENT");
+
             // Set permission flags
             if (permCreate) pageElements.setFlag("ARTICLE_PERM_CREATE");
             if (permDelete) pageElements.setFlag("ARTICLE_PERM_DELETE");
@@ -494,7 +498,7 @@ namespace UberCMS.Plugins
                     commentError = "Incorrect captcha verification code!";
                 else if (commentBody.Length < COMMENTS_LENGTH_MIN || commentBody.Length > COMMENTS_LENGTH_MAX)
                     commentError = "Your comment must be " + COMMENTS_LENGTH_MIN + " to  " + COMMENTS_LENGTH_MAX + " in length!";
-                else if (conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' AND DATE_SUB(NOW(), INTERVAL 1 HOUR)") >= COMMENTS_MAX_PER_HOUR)
+                else if (conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' AND datetime >= DATE_SUB(NOW(), INTERVAL 1 HOUR)") >= COMMENTS_MAX_PER_HOUR)
                     commentError = "You've already posted the maximum of " + COMMENTS_MAX_PER_HOUR + " comments per an hour - try again later!";
                 else
                 {

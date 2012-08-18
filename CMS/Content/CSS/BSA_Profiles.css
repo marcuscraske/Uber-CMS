@@ -14,6 +14,7 @@
     padding: 0.5em;
     margin-bottom: 0.5em;
     border-radius: 0.5em;
+    box-shadow: 0em 0em 0.5em #CCC;
 }
 .BSA_PROFILES_FRAME .LEFT .PANE.CENTER
 {
@@ -42,7 +43,7 @@
 {
     float: left;
     display: block;
-    padding: 0.3em 0.8em;
+    padding: 0.25em 0.8em;
     text-decoration: none;
     font-size: larger;
     border-top-left-radius: 0.5em;
@@ -64,6 +65,7 @@
     padding: 0.5em;
     border-radius: 0.5em;
     border-top-left-radius: 0em;
+    box-shadow: 0em 0em 0.5em #CCC;
 }
 .BSA_PROFILES_FRAME .RIGHT .PROFILE_CONTENT .HEADER
 {

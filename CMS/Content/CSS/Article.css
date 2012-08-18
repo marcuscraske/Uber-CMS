@@ -69,6 +69,8 @@
 /* Article tags */
 .TAGS
 {
+    border-top: dotted 0.1em #CCC;
+    padding: 0.25em;
 }
 .TAGS span
 {
@@ -94,7 +96,8 @@
 }
 .ARTICLE .COMMENT_HEADER a
 {
-    color: #333;
+    color: inherit;
+    text-decoration: none;
 }
 .ARTICLE .COMMENT_HEADER .COMMENT_DELETE img
 {
@@ -140,6 +143,7 @@
 .ARTICLE .HISTORY_ROW .CELL4 a
 {
     text-decoration: none;
+    color: inherit;
 }
 .ARTICLE .HISTORY_ROW .CELL4 img
 {
@@ -152,6 +156,5 @@
 }
 .ARTICLE .HISTORY_ROW .PUBLISH a
 {
-    color: #333;
     font-style: italic;
 }
