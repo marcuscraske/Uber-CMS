@@ -324,6 +324,12 @@ namespace UberCMS.Plugins
                     templatesPath = dumpPath + "\\templates.list";
                     dumpPath += "\\Templates";
                     break;
+                case "all_default":
+                    dumpPath = Core.basePath + "\\Installer\\Templates";
+                    templates.Add(string.Empty);
+                    if (File.Exists(Core.basePath + "\\Installer\\templates.list"))
+                        templatesPath = Core.basePath + "\\Installer\\templates.list";
+                    break;
                 case "all":
                     // Dump all templates (unless a templates.list file exists) to the installation directory
                     dumpPath = Core.basePath + "\\Installer\\Templates";
@@ -334,15 +340,18 @@ namespace UberCMS.Plugins
             StringBuilder output = new StringBuilder("Dumped templates:<br />");
             if (dumpPath != null)
             {
-                if (templatesPath != null)
+                if (templatesPath != null || templates.Count > 0)
                 {
-                    // Load the templates to be dumped
-                    string formatted;
-                    foreach (string line in File.ReadAllText(templatesPath).Replace("\r", "").Split('\n'))
+                    if (templatesPath != null)
                     {
-                        formatted = line.Trim();
-                        if (!formatted.StartsWith("//") && formatted.Length != 0)
-                            templates.Add(formatted);
+                        // Load the templates to be dumped
+                        string formatted;
+                        foreach (string line in File.ReadAllText(templatesPath).Replace("\r", "").Split('\n'))
+                        {
+                            formatted = line.Trim();
+                            if (!formatted.StartsWith("//") && formatted.Length != 0)
+                                templates.Add(formatted == "default" ? string.Empty : formatted);
+                        }
                     }
                     // Ensure the dump path exists
                     if (!Directory.Exists(dumpPath))

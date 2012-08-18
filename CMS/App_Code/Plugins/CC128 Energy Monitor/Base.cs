@@ -152,7 +152,7 @@ namespace UberCMS.Plugins
                         if (rawDay != null && int.TryParse(rawDay, out day) && day != -1 && day < 1 && day > 31)
                             day = -1;
                         Result maxVal = conn.Query_Read("SELECT MAX(watts) AS watts FROM cc128_readings WHERE DATE(datetime) = " + (year != -1 && month != -1 && day != -1 ? "'" + year + "-" + month + "-" + day + "'" : "CURDATE()"));
-                        if (maxVal.Rows.Count != 1)
+                        if (maxVal.Rows.Count != 1 || maxVal[0]["watts"].Length == 0)
                         {
                             g.FillRectangle(new SolidBrush(Color.Red), 0, 0, graphWidth, graphHeight);
                             g.DrawString("No data available...check the CC128 is operational!\r\n\r\nIs it on COM1?\r\nDid you unplug it?\r\nIs there an issue with the database or server?", new Font("Times New Roman", 20.0f, FontStyle.Regular), new SolidBrush(Color.White), 5, 5);
@@ -232,7 +232,6 @@ namespace UberCMS.Plugins
                                 lastX = newX;
                                 lasty = newY;
                             }
-
                         }
                         g.Dispose();
                         response.ContentType = "image/png";

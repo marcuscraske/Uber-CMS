@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title>Ubermeat - <!--TITLE--></title>
+	<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 	<link href="<!--URL-->/Content/CSS/Layout.css" type="text/css" rel="Stylesheet" />
 	<!--HEADER-->
 </head>
@@ -30,13 +31,13 @@
 			<div class="ITEM">
 				<a href="<!--URL-->/home">
 					<span>
-						Projects
+						Dropdown Menu
 					</span>
 				</a>
 				<div>
 					<a href="./test sub item">
 						<span>
-							test
+							<img src="<!--URL-->/Content/Images/inbox.png" alt="Test" />test
 						</span>
 					</a>
 					<a href="./test sub item">
@@ -66,7 +67,7 @@
 						<div>
 						<a href="<!--URL-->/admin">
 								<span>
-									<img src="<!--URL-->/Content/Images/bsa_admin/admin.png" alt="Admin" />
+									<img src="<!--URL-->/Content/Images/admin_panel/admin.png" alt="Admin" />
 									Admin
 								</span>
 							</a>
@@ -104,6 +105,7 @@
 					</a>
 					<div class="NAV_SEP"></div>
 					<a href="<!--URL-->/profile" class="NAV_BUTTON">
+						<!--IF:BSA_PROFILES--><img src="<!--URL-->/profile_image/<!--USERID-->" alt="Profile picture" /><!--ENDIF:BSA_PROFILES-->
 						<!--USERNAME-->
 					</a>
 				<!--ELSE-->

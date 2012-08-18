@@ -87,7 +87,7 @@
 }
 .COMMON_IMG:hover img, .COMMON_IMG:focus img
 {
-    box-shadow: 0em 0em 1em #000;
+    box-shadow: 0em 0em 1em #333;
 }
 .COMMON_IMG img
 {

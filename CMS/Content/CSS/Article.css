@@ -66,6 +66,20 @@
     height: 1.3em;
     border: 0em;
 }
+/* Article tags */
+.TAGS
+{
+}
+.TAGS span
+{
+    font-size: 1.25em;
+}
+.TAGS a
+{
+    display: inline-block;
+    margin: 0.25em;
+    color: inherit;
+}
 /* Article comments */
 .ARTICLE .COMMENT
 {

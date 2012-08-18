@@ -16,7 +16,10 @@ namespace UberCMS.Plugins
         public const int RELATIVE_URL_CHUNK_MAX = 32;
         public const int RELATIVE_URL_MAXCHUNKS = 8;
         public const int TAGS_TITLE_MIN = 1;
-        public const int TAGS_TITLE_MAX = 24;
+        /// <summary>
+        /// Remember to update the SQL; keywords are varchars set to this max char length.
+        /// </summary>
+        public const int TAGS_TITLE_MAX = 30;
         public const int TAGS_MAX = 20;
         public const int COMMENTS_LENGTH_MIN = 2;
         public const int COMMENTS_LENGTH_MAX = 512;
@@ -147,6 +150,15 @@ namespace UberCMS.Plugins
         {
 
         }
+        /// <summary>
+        /// Used to create/modify an article.
+        /// </summary>
+        /// <param name="pluginid"></param>
+        /// <param name="conn"></param>
+        /// <param name="pageElements"></param>
+        /// <param name="request"></param>
+        /// <param name="response"></param>
+        /// <param name="baseTemplateParent"></param>
         public static void pageArticle_Editor(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
             // Check the user is logged-in, else redirect to the login page
@@ -302,6 +314,15 @@ namespace UberCMS.Plugins
         #endregion
 
         #region "Methods - Pages - View Article"
+        /// <summary>
+        /// Used to view an article.
+        /// </summary>
+        /// <param name="pluginid"></param>
+        /// <param name="conn"></param>
+        /// <param name="pageElements"></param>
+        /// <param name="request"></param>
+        /// <param name="response"></param>
+        /// <param name="baseTemplateParent"></param>
         public static void pageArticle_View(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
             // Retrieve the article ID
@@ -338,7 +359,7 @@ namespace UberCMS.Plugins
             // Check we have an articleid that is not null and greater than zero, else 404
             if (articleid == null || articleid.Length == 0) return;
             // Load the article's data
-            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.*, at.relative_url, at.articleid_current FROM articles AS a, articles_thread AS at WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
+            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.*, at.relative_url, at.articleid_current, u.username FROM (articles AS a, articles_thread AS at) LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
             if (articleRaw.Rows.Count != 1)
                 return; // 404 - no data found - the article is corrupt (thread and article not linked) or the article does not exist
             ResultRow article = articleRaw[0];
@@ -411,8 +432,26 @@ namespace UberCMS.Plugins
                 subpageContent.Append(article["body"]);
                 // Render the article with bbcode
                 Common.BBCode.format(ref subpageContent, ref pageElements, true, true);
+                // Generate tags
+                StringBuilder tags = new StringBuilder();
+                StringBuilder metaTags = new StringBuilder("<meta name=\"keywords\" content=\"");
+                foreach (ResultRow tag in conn.Query_Read("SELECT at.keyword FROM articles_tags_article AS ata LEFT OUTER JOIN articles_tags AS at ON at.tagid=ata.tagid WHERE ata.articleid='" + Utils.Escape(article["articleid"]) + "'"))
+                {
+                    // Append tag for the bottom of the article
+                    tags.Append(
+                        Core.templates["articles"]["article_tag"].Replace("%TITLE%", HttpUtility.HtmlEncode(tag["keyword"]))
+                        );
+                    // Append tag for meta
+                    metaTags.Append(HttpUtility.HtmlEncode(tag["keyword"])).Append(",");
+                }
+                metaTags.Remove(metaTags.Length - 1, 1);
+                // -- Append meta keywords
+                pageElements["HEADER"] += metaTags.Append("\">").ToString();
+                // -- Append meta author
+                pageElements["HEADER"] += "<meta name=\"author\" content=\"" + article["username"] + "\" />";
                 // Set the article's body
-                content.Replace("%BODY%", subpageContent.ToString());
+                content.Replace("%BODY%", subpageContent.ToString())
+                    .Append(Core.templates["articles"]["article_tags"].Replace("%TAGS%", tags.ToString()));
             }
 
             // Add pane
@@ -701,7 +740,7 @@ namespace UberCMS.Plugins
                     }
                     else if (tagCollection.tags.Count + 1 > TAGS_MAX)
                         tagCollection.error = "Maximum tags of " + TAGS_MAX + " exceeded!";
-                    else
+                    else if(!tagCollection.tags.Contains(tag))
                         tagCollection.tags.Add(tag);
                 }
             }
