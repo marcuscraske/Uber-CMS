@@ -334,7 +334,7 @@ namespace UberCMS.Plugins
                 // -- About You
                 else if (nutshell.Length > maxNutshell)
                     error = "Nutshell cannot be greater than 800 characters in length!";
-                else if ((country.Length != 0 && country.Length != 2) || Common.Country.getCountryTitle(country, conn) == null)
+                else if ((country.Length != 0 && country.Length != 2) || (country.Length != 0 && Common.Country.getCountryTitle(country, conn) == null))
                     error = "Invalid country!";
                 else if (gender != "0" && gender != "1" && gender != "2")
                     error = "Invalid gender!";
@@ -379,32 +379,32 @@ namespace UberCMS.Plugins
                     try
                     {
                         StringBuilder query = new StringBuilder("UPDATE bsa_profiles SET ")
-                        .Append("disabled='").Append(profileEnabled).Append("',")
-                        .Append("background_url='").Append(frameBgURL).Append("',")
-                        .Append("background_colour='").Append(frameBgColour).Append("',")
-                        .Append("colour_background='").Append(paneBgColour).Append("',")
-                        .Append("colour_text='").Append(paneTextColour).Append("',")
-                        .Append("nutshell='").Append(nutshell).Append("',")
-                        .Append("gender='").Append(gender).Append("',")
-                        .Append("country_code='").Append(country).Append("',")
-                        .Append("occupation='").Append(occupation).Append("',")
-                        .Append("contact_github='").Append(contactGithub).Append("',")
-                        .Append("contact_website='").Append(contactWebsite).Append("',")
-                        .Append("contact_email='").Append(contactEmail).Append("',")
-                        .Append("contact_facebook='").Append(contactFacebook).Append("',")
-                        .Append("contact_googleplus='").Append(contactGooglePlus).Append("',")
-                        .Append("contact_steam='").Append(contactSteam).Append("',")
-                        .Append("contact_wlm='").Append(contactWlm).Append("',")
-                        .Append("contact_skype='").Append(contactSkype).Append("',")
-                        .Append("contact_youtube='").Append(contactYouTube).Append("',")
-                        .Append("contact_soundcloud='").Append(contactSoundcloud).Append("',")
-                        .Append("contact_xbox='").Append(contactXbox).Append("',")
-                        .Append("contact_psn='").Append(contactPsn).Append("',")
-                        .Append("contact_flickr='").Append(contactFlickr).Append("',")
-                        .Append("contact_twitter='").Append(contactTwitter).Append("',")
-                        .Append("contact_xfire='").Append(contactXfire).Append("',")
-                        .Append("contact_deviantart='").Append(contactDeviantArt).Append("'")
-                        .Append(" WHERE profileid='").Append(profileData["profileid"]).Append("'")
+                        .Append("disabled='").Append(Utils.Escape(profileEnabled)).Append("',")
+                        .Append("background_url='").Append(Utils.Escape(frameBgURL)).Append("',")
+                        .Append("background_colour='").Append(Utils.Escape(frameBgColour)).Append("',")
+                        .Append("colour_background='").Append(Utils.Escape(paneBgColour)).Append("',")
+                        .Append("colour_text='").Append(Utils.Escape(paneTextColour)).Append("',")
+                        .Append("nutshell='").Append(Utils.Escape(nutshell)).Append("',")
+                        .Append("gender='").Append(Utils.Escape(gender)).Append("',")
+                        .Append("country_code=").Append(country.Length == 0 ? "NULL" : "'" + Utils.Escape(country) + "'").Append(",")
+                        .Append("occupation='").Append(Utils.Escape(occupation)).Append("',")
+                        .Append("contact_github='").Append(Utils.Escape(contactGithub)).Append("',")
+                        .Append("contact_website='").Append(Utils.Escape(contactWebsite)).Append("',")
+                        .Append("contact_email='").Append(Utils.Escape(contactEmail)).Append("',")
+                        .Append("contact_facebook='").Append(Utils.Escape(contactFacebook)).Append("',")
+                        .Append("contact_googleplus='").Append(Utils.Escape(contactGooglePlus)).Append("',")
+                        .Append("contact_steam='").Append(Utils.Escape(contactSteam)).Append("',")
+                        .Append("contact_wlm='").Append(Utils.Escape(contactWlm)).Append("',")
+                        .Append("contact_skype='").Append(Utils.Escape(contactSkype)).Append("',")
+                        .Append("contact_youtube='").Append(Utils.Escape(contactYouTube)).Append("',")
+                        .Append("contact_soundcloud='").Append(Utils.Escape(contactSoundcloud)).Append("',")
+                        .Append("contact_xbox='").Append(Utils.Escape(contactXbox)).Append("',")
+                        .Append("contact_psn='").Append(Utils.Escape(contactPsn)).Append("',")
+                        .Append("contact_flickr='").Append(Utils.Escape(contactFlickr)).Append("',")
+                        .Append("contact_twitter='").Append(Utils.Escape(contactTwitter)).Append("',")
+                        .Append("contact_xfire='").Append(Utils.Escape(contactXfire)).Append("',")
+                        .Append("contact_deviantart='").Append(Utils.Escape(contactDeviantArt)).Append("'")
+                        .Append(" WHERE profileid='").Append(Utils.Escape(profileData["profileid"])).Append("'")
                         ;
                         conn.Query_Execute(query.ToString());
                         updatedProfile = true;
@@ -423,9 +423,10 @@ namespace UberCMS.Plugins
             profileEnabledItems.Append("<option value=\"1\"").Append("1" == (profileEnabled ?? profileData["disabled"]) ? " selected=\"selected\"" : string.Empty).Append(">Disabled</option>");
             
             StringBuilder countryItems = new StringBuilder();
+            countryItems.Append("<option value=\"\">Unknown</option>");
             foreach (Common.Country c in Common.Country.getCountries(conn))
                 countryItems.Append("<option value=\"").Append(c.countryCode).Append("\"").Append(c.countryCode == (country ?? profileData["country_code"]) ? " selected=\"selected\"" : string.Empty).Append(">").Append(HttpUtility.HtmlEncode(c.countryTitle)).Append("</option>");
-            
+
             StringBuilder genderItems = new StringBuilder();
             genderItems.Append("<option value=\"0\"").Append("0" == (gender ?? profileData["gender"]) ? " selected=\"selected\"" : string.Empty).Append(">Not Specified</option>");
             genderItems.Append("<option value=\"1\"").Append("1" == (gender ?? profileData["gender"]) ? " selected=\"selected\"" : string.Empty).Append(">Male</option>");
