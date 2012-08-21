@@ -18,6 +18,7 @@ namespace UberCMS.Plugins
         public const string SETTINGS_KEY = "bsa_profiles";
         public const string SETTINGS_KEY_PICTURE_MAX_WIDTH = "picture_max_width";
         public const string SETTINGS_KEY_PICTURE_MAX_HEIGHT = "picture_max_height";
+        public const string SETTINGS_KEY_PICTURE_MAX_SIZE = "picture_max_size";
         #endregion
 
         public static string enable(string pluginid, Connector conn)
@@ -39,6 +40,7 @@ namespace UberCMS.Plugins
             // Install settings
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_KEY_PICTURE_MAX_WIDTH, "144", "The maximum width of profile pictures.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_KEY_PICTURE_MAX_HEIGHT, "144", "The maximum height of profile pictures.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_KEY_PICTURE_MAX_SIZE, "1048576", "The maximum size of an uploaded image.", false);
 
             return null;
         }
@@ -204,6 +206,12 @@ namespace UberCMS.Plugins
                     .Replace("%URL%", "https://plus.google.com/" + profileData["contact_googleplus"])
                     .Replace("%IMAGE%", "http://plus.google.com/favicon.ico")
                     .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_googleplus"])));
+            // -- Reddit
+            if (profileData["contact_reddit"].Length > 0)
+                contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
+                    .Replace("%URL%", "http://www.reddit.com/user/" + HttpUtility.UrlEncode(profileData["contact_reddit"]))
+                    .Replace("%IMAGE%", "http://www.reddit.com/favicon.ico")
+                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_reddit"])));
             // -- Steam
             if (profileData["contact_steam"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
@@ -301,6 +309,7 @@ namespace UberCMS.Plugins
             string contactEmail = request.Form["contact_email"];
             string contactFacebook = request.Form["contact_facebook"];
             string contactGooglePlus = request.Form["contact_googleplus"];
+            string contactReddit = request.Form["contact_reddit"];
             string contactSteam = request.Form["contact_steam"];
             string contactWlm = request.Form["contact_wlm"];
             string contactSkype = request.Form["contact_skype"];
@@ -314,7 +323,7 @@ namespace UberCMS.Plugins
             string contactDeviantArt = request.Form["contact_deviantart"];
             if (profileEnabled != null && frameBgURL != null && frameBgColour != null && paneBgColour != null && paneTextColour != null && nutshell != null &&
                 country != null && gender != null && occupation != null && contactGithub != null && contactWebsite != null && contactEmail != null && contactFacebook != null &&
-                contactGooglePlus != null && contactSteam != null && contactWlm != null && contactSkype != null && contactYouTube != null && contactSoundcloud != null &&
+                contactGooglePlus != null && contactReddit != null && contactSteam != null && contactWlm != null && contactSkype != null && contactYouTube != null && contactSoundcloud != null &&
                 contactXbox != null && contactPsn != null && contactFlickr != null && contactTwitter != null && contactXfire != null && contactDeviantArt != null)
             {
                 // Validate form data
@@ -351,6 +360,8 @@ namespace UberCMS.Plugins
                     error = "Contact Facebook cannot exceed " + maxContactItem + " characters!";
                 else if (contactGooglePlus.Length > maxContactItem)
                     error = "Contact Google Plus cannot exceed " + maxContactItem + " characters!";
+                else if (contactReddit.Length > maxContactItem)
+                    error = "Contact Reddit cannot exceed " + maxContactItem + " characters!";
                 else if (contactSteam.Length > maxContactItem)
                     error = "Contact Steam cannot exceed " + maxContactItem + " characters!";
                 else if (contactWlm.Length > maxContactItem)
@@ -392,6 +403,7 @@ namespace UberCMS.Plugins
                         .Append("contact_website='").Append(Utils.Escape(contactWebsite)).Append("',")
                         .Append("contact_email='").Append(Utils.Escape(contactEmail)).Append("',")
                         .Append("contact_facebook='").Append(Utils.Escape(contactFacebook)).Append("',")
+                        .Append("contact_reddit='").Append(Utils.Escape(contactReddit)).Append("',")
                         .Append("contact_googleplus='").Append(Utils.Escape(contactGooglePlus)).Append("',")
                         .Append("contact_steam='").Append(Utils.Escape(contactSteam)).Append("',")
                         .Append("contact_wlm='").Append(Utils.Escape(contactWlm)).Append("',")
@@ -450,6 +462,7 @@ namespace UberCMS.Plugins
                 .Replace("%CONTACT_EMAIL%", HttpUtility.HtmlEncode(profileData["contact_email"]))
                 .Replace("%CONTACT_FACEBOOK%", HttpUtility.HtmlEncode(profileData["contact_facebook"]))
                 .Replace("%CONTACT_GOOGLEPLUS%", HttpUtility.HtmlEncode(profileData["contact_googleplus"]))
+                .Replace("%CONTACT_REDDIT%", HttpUtility.HtmlEncode(profileData["contact_reddit"]))
                 .Replace("%CONTACT_STEAM%", HttpUtility.HtmlEncode(profileData["contact_steam"]))
                 .Replace("%CONTACT_WLM%", HttpUtility.HtmlEncode(profileData["contact_wlm"]))
                 .Replace("%CONTACT_SKYPE%", HttpUtility.HtmlEncode(profileData["contact_skype"]))
@@ -470,8 +483,9 @@ namespace UberCMS.Plugins
             HttpPostedFile image = request.Files["profile_picture"];
             if(image != null)
             {
-                if (image.ContentLength > 1048576)
-                    error = "Picture cannot exceed 1 megabyte!";
+                int maxSize = Core.settings[SETTINGS_KEY].getInt(SETTINGS_KEY_PICTURE_MAX_SIZE);
+                if (image.ContentLength > maxSize)
+                    error = "Picture cannot exceed " + maxSize + " bytes (" + Misc.Plugins.getBytesString(maxSize) + ") !";
                 else if (image.ContentType != "image/gif" && image.ContentType != "image/jpeg" && image.ContentType != "image/png" && image.ContentType != "image/jpg")
                     error = "Invalid file format!";
                 else
@@ -579,10 +593,10 @@ namespace UberCMS.Plugins
             }
             // Check if a userid was specified, if so we'll try to get the actual image and output it
             string userid = request.QueryString["1"];
-            if (userid != null)
+            if (userid != null && userid.Length > 0)
             {
                 Result filename = conn.Query_Read("SELECT profile_picture FROM bsa_profiles WHERE userid='" + Utils.Escape(userid) + "'");
-                if (filename.Rows.Count == 1)
+                if (filename.Rows.Count == 1 && filename[0].ColumnsByteArray != null)
                 {
                     try
                     {

@@ -21,6 +21,7 @@
 	contact_email TEXT,
 	contact_facebook TEXT,
 	contact_googleplus TEXT,
+	contact_reddit TEXT,
 	contact_steam TEXT,
 	contact_wlm TEXT,
 	contact_skype TEXT,
