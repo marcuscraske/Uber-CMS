@@ -338,7 +338,7 @@ namespace UberCMS.Plugins
                     error = "Invalid pluginid specified!";
                 else if (pluginidData != null && action == "install")
                 {
-                    if (!Common.AntiCSRF.isValidTokenCookie(request))
+                    if (!Common.AntiCSRF.isValidTokenCookie(request, response))
                         error = CSRF_FAILURE_MESSAGE;
                     else if ((Plugins.Base.State)Enum.Parse(typeof(Plugins.Base.State), pluginidData[0]["state"]) != Plugins.Base.State.Uninstalled)
                         error = "Plugin is already installed.";
@@ -354,7 +354,7 @@ namespace UberCMS.Plugins
                 }
                 else if (pluginidData != null && action == "enable")
                 {
-                    if (!Common.AntiCSRF.isValidTokenCookie(request))
+                    if (!Common.AntiCSRF.isValidTokenCookie(request, response))
                         error = CSRF_FAILURE_MESSAGE;
                     else if ((Plugins.Base.State)Enum.Parse(typeof(Plugins.Base.State), pluginidData[0]["state"]) == Plugins.Base.State.Enabled)
                         error = "Plugin is already enabled.";
@@ -370,7 +370,7 @@ namespace UberCMS.Plugins
                 }
                 else if (pluginidData != null && action == "disable")
                 {
-                    if (!Common.AntiCSRF.isValidTokenCookie(request))
+                    if (!Common.AntiCSRF.isValidTokenCookie(request, response))
                         error = CSRF_FAILURE_MESSAGE;
                     else if ((Plugins.Base.State)Enum.Parse(typeof(Plugins.Base.State), pluginidData[0]["state"]) == Plugins.Base.State.Disabled)
                         error = "Plugin is already disabled.";
@@ -416,7 +416,7 @@ namespace UberCMS.Plugins
                 else if (action == "upload")
                 {
                     HttpPostedFile upload = request.Files["plugin_upload"];
-                    if (!Common.AntiCSRF.isValidTokenCookie(request))
+                    if (!Common.AntiCSRF.isValidTokenCookie(request, response))
                         error = CSRF_FAILURE_MESSAGE;
                     else if (upload == null || upload.ContentLength == 0 || (upload.ContentType != "application/zip" && upload.ContentType != "application/x-zip" && upload.ContentType != "application/x-zip-compressed"))
                         error = "Invalid plugin zip archive specified!";

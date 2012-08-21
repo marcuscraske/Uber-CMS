@@ -788,6 +788,32 @@ namespace UberCMS.Misc
                 if (c < 48 || c > 57) return false;
             return true;
         }
+        /// <summary>
+        /// Returns a string with 2 d.p which converts bytes into e.g. megabytes or gigabytes.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static string getBytesString(long bytes)
+        {
+            const long kiolobyte = 1024;
+            const long megabyte = 1048576;
+            const long gigabyte = 1073741824;
+            const long terrabyte = 1099511627776;
+            const long petabyte = 1125899906842624;
+
+            if (bytes < kiolobyte)
+                return bytes + " B";
+            else if (bytes < megabyte)
+                return (bytes / kiolobyte).ToString("0.##") + " KB";
+            else if (bytes < gigabyte)
+                return (bytes / megabyte).ToString("0.##") + " MB";
+            else if (bytes < terrabyte)
+                return (bytes /gigabyte).ToString("0.##") + " GB";
+            else if (bytes < petabyte)
+                return (bytes / terrabyte).ToString("0.##") + "TB";
+            else
+                return (bytes / petabyte).ToString("0.##") + " PB";
+        }
         #endregion
     }
 }

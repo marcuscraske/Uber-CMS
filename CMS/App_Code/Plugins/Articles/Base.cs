@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Web;
 using System.Text;
 using UberLib.Connector;
+using System.Drawing;
+using System.IO;
 
 namespace UberCMS.Plugins
 {
@@ -21,11 +23,17 @@ namespace UberCMS.Plugins
         /// </summary>
         public const int TAGS_TITLE_MAX = 30;
         public const int TAGS_MAX = 20;
+        public const int THUMBNAIL_MAXSIZE = 2097152; // Two megabytes
+        public const int THUMBNAIL_MAXWIDTH = 240;
+        public const int THUMBNAIL_MAXHEIGHT = 180;
         public const int COMMENTS_LENGTH_MIN = 2;
         public const int COMMENTS_LENGTH_MAX = 512;
         public const int COMMENTS_MAX_PER_HOUR = 8;
         public const int COMMENTS_PER_PAGE = 5;
         public const int HISTORY_PER_PAGE = 10;
+        public const int PENDING_PER_PAGE = 10;
+        public const int ARTICLES_EDIT_PER_HOUR = 4;
+        public const int ARTICLES_EDIT_PER_DAY = 10;
 
         public const string SETTINGS_KEY = "articles";
         public const string SETTINGS_KEY_HANDLES_404 = "handles_404";
@@ -34,6 +42,10 @@ namespace UberCMS.Plugins
         /// When an article is modified or deleted, some of the tags may not be in-use by any other articles - therefore we can remove them with the below cleanup query.
         /// </summary>
         public const string QUERY_TAGS_CLEANUP = "DELETE FROM articles_tags WHERE NOT EXISTS (SELECT DISTINCT tagid FROM articles_tags_article WHERE tagid=articles_tags.tagid);";
+        /// <summary>
+        /// When an article (thread) is edited/deleted, the following query is used to cleanup any thumbnails no longer in-use; this structure is far more efficient for storage.
+        /// </summary>
+        public const string QUERY_THUMBNAIL_CLEANUP = "DELETE FROM articles_thumbnails WHERE NOT EXISTS (SELECT DISTINCT thumbnailid FROM articles WHERE thumbnailid=articles_thumbnails.thumbnailid);";
 
         #region "Methods - Plugin Event Handlers"
         public static string enable(string pluginid, Connector conn)
@@ -115,15 +127,14 @@ namespace UberCMS.Plugins
         {
             switch (request.QueryString["1"])
             {
-                default:
+                case null:
                     pageArticles_Browse(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
                 case "delete":
                     pageArticles_Delete(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
-
                 case "pending":
-
+                    pageArticles_Pending(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
             }
         }
@@ -138,6 +149,9 @@ namespace UberCMS.Plugins
                 case "editor":
                     pageArticle_Editor(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
+                case "thumbnail":
+                    pageArticle_Thumbnail(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    break;
             }
         }
         #endregion
@@ -148,7 +162,44 @@ namespace UberCMS.Plugins
         }
         public static void pageArticles_Pending(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
-
+            // Check the user has publishing permissions
+            if (!HttpContext.Current.User.Identity.IsAuthenticated || !conn.Query_Scalar("SELECT ug.access_media_publish FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS ug ON ug.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'").ToString().Equals("1"))
+                return;
+            // Get the current page
+            int page;
+            if(!int.TryParse(request.QueryString["pg"], out page) || page < 1) page = 1;
+            // Build a list of pending articles
+            StringBuilder articlesPending = new StringBuilder();
+            Result pending = conn.Query_Read("SELECT a.articleid, a.title, u.username, a.userid, a.datetime, a.allow_html FROM articles AS a LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.published='0' ORDER BY a.datetime ASC LIMIT " + ((page * PENDING_PER_PAGE) - PENDING_PER_PAGE) + "," + PENDING_PER_PAGE);
+            if (pending.Rows.Count > 0)
+                foreach (ResultRow article in pending)
+                    articlesPending.Append(
+                        Core.templates["articles"]["articles_pending_row"]
+                        .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
+                        .Replace("%TITLE%", HttpUtility.HtmlEncode(article["title"]))
+                        .Replace("%USERNAME%", HttpUtility.HtmlEncode(article["username"]))
+                        .Replace("%USERID%", HttpUtility.HtmlEncode(article["userid"]))
+                        .Replace("%CREATED%", HttpUtility.HtmlEncode(article["datetime"]))
+                        .Replace("%WARNINGS%", article["allow_html"].Equals("1") ? "HTML" : "&nbsp;")
+                        );
+            else
+                articlesPending.Append("No pending articles.");
+            // Append navigation
+            articlesPending.Append(
+                Core.templates["articles"]["pending_nav"]
+                .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("%PAGE%", page.ToString())
+                .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                );
+            // Set navigation flags
+            if (page > 1) pageElements.setFlag("ARTICLE_PAGE_PREVIOUS");
+            if (page < int.MaxValue && pending.Rows.Count == PENDING_PER_PAGE) pageElements.setFlag("ARTICLE_PAGE_NEXT");
+            // Output the page
+            Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
+            pageElements["CONTENT"] = Core.templates["articles"]["articles_pending"]
+                .Replace("%PENDING%", articlesPending.ToString())
+                ;
+            pageElements["TITLE"] = "Articles - Pending";
         }
         /// <summary>
         /// Used to create/modify an article.
@@ -186,6 +237,8 @@ namespace UberCMS.Plugins
             bool allowHTML = request.Form["allow_html"] != null;
             bool allowComments = request.Form["allow_comments"] != null;
             bool showPane = request.Form["show_pane"] != null;
+            bool inheritThumbnail = request.Form["inherit_thumbnail"] != null;
+            HttpPostedFile thumbnail = request.Files["thumbnail"];
             if (title != null && body != null && relativeUrl != null && tags != null)
             {
                 // Validate
@@ -193,6 +246,10 @@ namespace UberCMS.Plugins
                     error = "Title must be " + TITLE_MIN + " to " + TITLE_MAX + " characters in length!";
                 else if (body.Length < BODY_MIN || body.Length > BODY_MAX)
                     error = "Body must be " + BODY_MIN + " to " + BODY_MAX + " characters in length!";
+                else if (thumbnail != null && thumbnail.ContentLength > THUMBNAIL_MAXSIZE)
+                    error = "Thumbnail cannot exceed " + THUMBNAIL_MAXSIZE + " bytes (" + Misc.Plugins.getBytesString(THUMBNAIL_MAXSIZE) + ")!";
+                else if (thumbnail != null && thumbnail.ContentLength > 0 && thumbnail.ContentType != "image/gif" && thumbnail.ContentType != "image/jpeg" && thumbnail.ContentType != "image/png" && thumbnail.ContentType != "image/jpg")
+                    error = "Invalid thumbnail image format!";
                 else if ((error = validRelativeUrl(relativeUrl)) != null)
                     ;
                 else
@@ -202,94 +259,164 @@ namespace UberCMS.Plugins
                     if (parsedTags.error != null) error = parsedTags.error;
                     else
                     {
-                        // Posted data is valid, check if the thread exists - else create it
-                        bool updateArticle = false; // If the article is being modified and it has not been published and it's owned by the same user -> update it (user may make a small change)
-                        string threadid;
-                        Result threadCheck = conn.Query_Read("SELECT threadid FROM articles_thread WHERE relative_url='" + Utils.Escape(relativeUrl) + "'");
-                        if (threadCheck.Rows.Count == 1)
+                        // Check if we're inserting, else perhaps inheriting, a thumbnail
+                        string thumbnailid = null;
+                        if (thumbnail != null && thumbnail.ContentLength > 0)
                         {
-                            // -- Thread exists
-                            threadid = threadCheck[0]["threadid"];
-                            // -- Check if to update the article if the articleid has been specified
-                            if (articleid != null)
+                            try
                             {
-                                Result updateCheck = conn.Query_Read("SELECT userid, published FROM articles WHERE articleid='" + Utils.Escape(articleid) + "' AND threadid='" + Utils.Escape(threadid) + "'");
-                                if (updateCheck.Rows.Count == 1 && updateCheck[0]["userid"] == HttpContext.Current.User.Identity.Name && !updateCheck[0]["published"].Equals("1"))
-                                    updateArticle = true;
+                                // Compress the image
+                                Image image = Image.FromStream(thumbnail.InputStream);
+                                int newWidth;
+                                int newHeight;
+                                int maxWidth = THUMBNAIL_MAXWIDTH;
+                                int maxHeight = THUMBNAIL_MAXHEIGHT;
+                                if (image.Width < maxWidth && image.Height < maxHeight)
+                                {
+                                    // We won't bother with any transformations, we'll just draw a new compressed image instead
+                                    newWidth = image.Width;
+                                    newHeight = image.Height;
+                                }
+                                else
+                                {
+                                    // We'll need to transform the size to fit the maximum size bounds
+                                    if (image.Width > maxWidth)
+                                    {
+                                        newWidth = maxWidth;
+                                        newHeight = (int)((double)image.Height / ((double)image.Width / (double)maxWidth));
+                                    }
+                                    else
+                                    {
+                                        newHeight = maxHeight;
+                                        newWidth = (int)((double)image.Width / ((double)image.Height / (double)maxHeight));
+                                    }
+                                }
+                                Bitmap compressedImage = new Bitmap(newWidth, newHeight);
+                                Graphics g = Graphics.FromImage(compressedImage);
+                                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                                g.DrawImage(image, 0, 0, newWidth, newHeight);
+                                g.Dispose();
+                                g = null;
+                                image.Dispose();
+                                image = null;
+                                MemoryStream ms = new MemoryStream();
+                                compressedImage.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                compressedImage.Dispose();
+                                compressedImage = null;
+                                byte[] thumbRawData = ms.ToArray();
+                                ms.Dispose();
+                                ms = null;
+                                // Insert thumbnail and get thumbnailid
+                                Dictionary<string, object> thumbParams = new Dictionary<string, object>();
+                                thumbParams.Add("thumb", thumbRawData);
+                                thumbnailid = conn.Query_Scalar_Parameters("INSERT INTO articles_thumbnails (data) VALUES(@thumb); SELECT LAST_INSERT_ID();", thumbParams).ToString();
+                            }
+                            catch
+                            {
+                                error = "Failed to compress thumbnail image, please try again or report this to the site administrator!";
                             }
                         }
-                        else
-                            // -- Create thread
-                            threadid = conn.Query_Scalar("INSERT INTO articles_thread (relative_url) VALUES('" + Utils.Escape(relativeUrl) + "'); SELECT LAST_INSERT_ID();").ToString();
-                        
-                        // Check if to insert or update the article
-                        if (updateArticle)
+                        else if (inheritThumbnail && preDataRow != null && preDataRow["thumbnailid"].Length != 0)
                         {
-                            StringBuilder query = new StringBuilder();
-                            // Update the article
-                            query
-                                .Append("UPDATE articles SET title='").Append(title)
-                                .Append("', body='").Append(body)
-                                .Append("', allow_comments='").Append(allowComments ? "1" : "0")
-                                .Append("', allow_html='").Append(allowHTML ? "1" : "0")
-                                .Append("', show_pane='").Append(showPane).Append("' WHERE articleid='").Append(articleid).Append("';");
-                            // Delete the previous tags
-                            query.Append("DELETE FROM articles_tags_article WHERE articleid='" + Utils.Escape(articleid) + "';");
-                            // -- Execute query
-                            conn.Query_Execute(query.ToString());
+                            // Grab pre-existing thumbnailid
+                            thumbnailid = preDataRow["thumbnailid"];
                         }
-                        else
+                        // Ensure no thumbnail processing errors occur, else do not continue
+                        if (error == null)
                         {
-                            // Check if the user is able to publish articles, if so we'll just publish it automatically
-                            Result userPerm = conn.Query_Read("SELECT ug.access_media_publish FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS ug ON ug.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
-                            if (userPerm.Rows.Count != 1) return; // Something is critically wrong with basic-site-auth
-                            bool publishAuto = userPerm[0]["access_media_publish"].Equals("1"); // If true, this will also set the new article as the current article for the thread
-                            // Insert article and link to the thread
-                            StringBuilder query = new StringBuilder();
-                            query
-                                .Append("INSERT INTO articles (threadid, title, userid, body, moderator_userid, published, allow_comments, allow_html, show_pane, datetime) VALUES('")
-                                .Append(Utils.Escape(threadid))
-                                .Append("', '").Append(Utils.Escape(title))
-                                .Append("', '").Append(Utils.Escape(HttpContext.Current.User.Identity.Name))
-                                .Append("', '").Append(Utils.Escape(body))
-                                .Append("', ").Append(publishAuto ? "'" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'" : "NULL")
-                                .Append(", '").Append(publishAuto ? "1" : "0")
-                                .Append("', '").Append(allowComments ? "1" : "0")
-                                .Append("', '").Append(allowHTML ? "1" : "0")
-                                .Append("', '").Append(showPane ? "1" : "0")
-                                .Append("', NOW()); SELECT LAST_INSERT_ID();");
-                            articleid = conn.Query_Scalar(query.ToString()).ToString();
-                            // If this was automatically published, set it as the current article for the thread
-                            if (publishAuto)
-                                conn.Query_Execute("UPDATE articles_thread SET articleid_current='" + Utils.Escape(articleid) + "' WHERE relative_url='" + Utils.Escape(relativeUrl) + "'");
-                        }
-                        // Add the new tags and delete any tags not used by any other articles
-                        StringBuilder finalQuery = new StringBuilder();
-                        if(parsedTags.tags.Count > 0)
-                        {
-                            StringBuilder tagsInsertQuery = new StringBuilder();
-                            StringBuilder tagsArticleQuery = new StringBuilder();
-                            foreach(string tag in parsedTags.tags)
+                            // Posted data is valid, check if the thread exists - else create it
+                            bool updateArticle = false; // If the article is being modified and it has not been published and it's owned by the same user -> update it (user may make a small change)
+                            string threadid;
+                            Result threadCheck = conn.Query_Read("SELECT threadid FROM articles_thread WHERE relative_url='" + Utils.Escape(relativeUrl) + "'");
+                            if (threadCheck.Rows.Count == 1)
                             {
-                                // -- Attempt to insert the tags - if they exist, they wont be inserted
-                                tagsInsertQuery.Append("('" + Utils.Escape(tag) + "'),");
-                                tagsArticleQuery.Append("((SELECT tagid FROM articles_tags WHERE keyword='" + Utils.Escape(tag) + "'), '" + Utils.Escape(articleid) + "'),");
+                                // -- Thread exists
+                                threadid = threadCheck[0]["threadid"];
+                                // -- Check if to update the article if the articleid has been specified
+                                if (articleid != null)
+                                {
+                                    Result updateCheck = conn.Query_Read("SELECT userid, published FROM articles WHERE articleid='" + Utils.Escape(articleid) + "' AND threadid='" + Utils.Escape(threadid) + "'");
+                                    if (updateCheck.Rows.Count == 1 && updateCheck[0]["userid"] == HttpContext.Current.User.Identity.Name && !updateCheck[0]["published"].Equals("1"))
+                                        updateArticle = true;
+                                }
                             }
-                            // -- Build final query
-                            
-                            finalQuery.Append("INSERT IGNORE INTO articles_tags (keyword) VALUES")
-                                .Append(tagsInsertQuery.Remove(tagsInsertQuery.Length - 1, 1).ToString())
-                                .Append("; INSERT IGNORE INTO articles_tags_article (tagid, articleid) VALUES")
-                                .Append(tagsArticleQuery.Remove(tagsArticleQuery.Length - 1, 1).ToString())
-                                .Append(";");                            
+                            else
+                                // -- Create thread
+                                threadid = conn.Query_Scalar("INSERT INTO articles_thread (relative_url) VALUES('" + Utils.Escape(relativeUrl) + "'); SELECT LAST_INSERT_ID();").ToString();
+
+                            // Check if to insert or update the article
+                            if (updateArticle)
+                            {
+                                StringBuilder query = new StringBuilder();
+                                // Update the article
+                                query
+                                    .Append("UPDATE articles SET title='").Append(Utils.Escape(title))
+                                    .Append("', thumbnailid=").Append(thumbnailid != null ? "'" + Utils.Escape(thumbnailid) + "'" : "NULL")
+                                    .Append(", body='").Append(Utils.Escape(body))
+                                    .Append("', allow_comments='").Append(allowComments ? "1" : "0")
+                                    .Append("', allow_html='").Append(allowHTML ? "1" : "0")
+                                    .Append("', show_pane='").Append(showPane).Append("' WHERE articleid='").Append(articleid).Append("';");
+                                // Delete the previous tags
+                                query.Append("DELETE FROM articles_tags_article WHERE articleid='" + Utils.Escape(articleid) + "';");
+                                // -- Execute query
+                                conn.Query_Execute(query.ToString());
+                            }
+                            else
+                            {
+                                // Check if the user is able to publish articles, if so we'll just publish it automatically
+                                Result userPerm = conn.Query_Read("SELECT ug.access_media_publish FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS ug ON ug.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
+                                if (userPerm.Rows.Count != 1) return; // Something is critically wrong with basic-site-auth
+                                bool publishAuto = userPerm[0]["access_media_publish"].Equals("1"); // If true, this will also set the new article as the current article for the thread
+                                // Insert article and link to the thread
+                                StringBuilder query = new StringBuilder();
+                                query
+                                    .Append("INSERT INTO articles (threadid, title, userid, body, moderator_userid, published, allow_comments, allow_html, show_pane, thumbnailid, datetime) VALUES('")
+                                    .Append(Utils.Escape(threadid))
+                                    .Append("', '").Append(Utils.Escape(title))
+                                    .Append("', '").Append(Utils.Escape(HttpContext.Current.User.Identity.Name))
+                                    .Append("', '").Append(Utils.Escape(body))
+                                    .Append("', ").Append(publishAuto ? "'" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'" : "NULL")
+                                    .Append(", '").Append(publishAuto ? "1" : "0")
+                                    .Append("', '").Append(allowComments ? "1" : "0")
+                                    .Append("', '").Append(allowHTML ? "1" : "0")
+                                    .Append("', '").Append(showPane ? "1" : "0")
+                                    .Append("', ").Append(thumbnailid != null ? "'" + Utils.Escape(thumbnailid) + "'" : "NULL")
+                                    .Append(", NOW()); SELECT LAST_INSERT_ID();");
+                                articleid = conn.Query_Scalar(query.ToString()).ToString();
+                                // If this was automatically published, set it as the current article for the thread
+                                if (publishAuto)
+                                    conn.Query_Execute("UPDATE articles_thread SET articleid_current='" + Utils.Escape(articleid) + "' WHERE relative_url='" + Utils.Escape(relativeUrl) + "'");
+                            }
+                            // Add the new tags and delete any tags not used by any other articles, as well as cleanup unused thumbnails
+                            StringBuilder finalQuery = new StringBuilder();
+                            if (parsedTags.tags.Count > 0)
+                            {
+                                StringBuilder tagsInsertQuery = new StringBuilder();
+                                StringBuilder tagsArticleQuery = new StringBuilder();
+                                foreach (string tag in parsedTags.tags)
+                                {
+                                    // -- Attempt to insert the tags - if they exist, they wont be inserted
+                                    tagsInsertQuery.Append("('" + Utils.Escape(tag) + "'),");
+                                    tagsArticleQuery.Append("((SELECT tagid FROM articles_tags WHERE keyword='" + Utils.Escape(tag) + "'), '" + Utils.Escape(articleid) + "'),");
+                                }
+                                // -- Build final query
+                                finalQuery.Append("INSERT IGNORE INTO articles_tags (keyword) VALUES")
+                                    .Append(tagsInsertQuery.Remove(tagsInsertQuery.Length - 1, 1).ToString())
+                                    .Append("; INSERT IGNORE INTO articles_tags_article (tagid, articleid) VALUES")
+                                    .Append(tagsArticleQuery.Remove(tagsArticleQuery.Length - 1, 1).ToString())
+                                    .Append(";");
+                            }
+                            // -- This will delete any tags in the main table no longer used in the articles tags table
+                            finalQuery.Append(QUERY_TAGS_CLEANUP);
+                            // -- This will delete any unused thumbnail images
+                            finalQuery.Append(QUERY_THUMBNAIL_CLEANUP);
+                            // -- Execute final query
+                            conn.Query_Execute(finalQuery.ToString());
+                            // Redirect to the new article
+                            conn.Disconnect();
+                            response.Redirect(pageElements["URL"] + "/article/" + articleid, true);
                         }
-                        // -- This will delete any tags in the main table no longer used in the articles tags table
-                        finalQuery.Append(QUERY_TAGS_CLEANUP);
-                        // -- Execute final query
-                        conn.Query_Execute(finalQuery.ToString());
-                        // Redirect to the new article
-                        conn.Disconnect();
-                        response.Redirect(pageElements["URL"] + "/article/" + articleid, true);
                     }
                 }
             }
@@ -303,13 +430,87 @@ namespace UberCMS.Plugins
                 .Replace("%ALLOW_HTML%", allowHTML || (title == null && preDataRow != null && preDataRow["allow_html"].Equals("1")) ? "checked" : string.Empty)
                 .Replace("%ALLOW_COMMENTS%", allowComments || (title == null && preDataRow != null && preDataRow["allow_comments"].Equals("1")) ? "checked" : string.Empty)
                 .Replace("%SHOW_PANE%", showPane || (title == null && preDataRow != null && preDataRow["show_pane"].Equals("1")) ? "checked" : string.Empty)
+                .Replace("%INHERIT%", inheritThumbnail || (title == null && preDataRow != null && preDataRow["thumbnailid"].Length > 0) ? "checked" : string.Empty)
                 .Replace("%BODY%", HttpUtility.HtmlEncode(body ?? (preDataRow != null ? preDataRow["body"] : string.Empty)))
                 ;
             pageElements["TITLE"] = "Articles - Editor";
         }
         public static void pageArticles_Delete(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
-
+            string threadid = request.QueryString["2"];
+            if (threadid == null || !HttpContext.Current.User.Identity.IsAuthenticated) return;
+            // Attempt to retrieve information about the article thread, as well as the users permissions
+            Result threadData = conn.Query_Read("SELECT at.*, COUNT(a.articleid) AS article_count, ug.access_media_delete AS perm_delete, a2.title FROM (articles_thread AS at, bsa_users AS u) LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current LEFT OUTER JOIN articles AS a2 ON a2.articleid=at.articleid_current LEFT OUTER JOIN bsa_user_groups AS ug ON ug.groupid=u.groupid WHERE at.threadid='" + Utils.Escape(threadid) + "' AND u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
+            if (threadData.Rows.Count != 1 || threadData[0]["threadid"] != threadid || !threadData[0]["perm_delete"].Equals("1")) return;
+            // Check if the user has posted a confirmation to delete the thread
+            string error = null;
+            string csrf = request.Form["csrf"];
+            string captcha = request.Form["captcha"];
+            if (request.Form["confirm"] != null && csrf != null && captcha != null)
+            {
+                // Validate CSRF
+                if (!Common.AntiCSRF.isValidTokenForm(csrf))
+                    error = "Invalid security verification, please try your request again!";
+                else if (!Common.Validation.validCaptcha(captcha))
+                    error = "Incorrect captcha verification code!";
+                else
+                {
+                    // Delete the thread, clear unused tags and clear unused thumbnail images
+                    conn.Query_Execute("DELETE FROM articles_thread WHERE threadid='" + Utils.Escape(threadid) + "'; " + QUERY_TAGS_CLEANUP + QUERY_THUMBNAIL_CLEANUP);
+                    // Redirect to articles home
+                    conn.Disconnect();
+                    response.Redirect(pageElements["URL"] + "/articles");
+                }
+            }
+            // Display confirmation/security-verification form
+            pageElements["CONTENT"] = Core.templates["articles"]["thread_delete"]
+                .Replace("%THREADID%", HttpUtility.HtmlEncode(threadData[0]["threadid"]))
+                .Replace("%CSRF%", HttpUtility.HtmlEncode(Common.AntiCSRF.getFormToken()))
+                .Replace("%TITLE%", HttpUtility.HtmlEncode(threadData[0]["title"]))
+                .Replace("%ARTICLE_COUNT%", HttpUtility.HtmlEncode(threadData[0]["article_count"]))
+                .Replace("%RELATIVE_URL%", HttpUtility.HtmlEncode(threadData[0]["relative_url"]))
+                ;
+            pageElements["TITLE"] = "Articles - Delete Thread";
+        }
+        public static byte[] pageArticle_Thumbnail_Unknown = null;
+        public static void pageArticle_Thumbnail(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        {
+            response.ContentType = "image/jpeg";
+            // Cache the unknown image - spam/bot or failed responses will be a lot easier on the web server in terms of I/O
+            if (pageArticle_Thumbnail_Unknown == null)
+            {
+                Image unknownImage = Image.FromFile(Core.basePath + "\\Content\\Images\\articles\\unknown.jpg");
+                MemoryStream ms = new MemoryStream();
+                unknownImage.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                pageArticle_Thumbnail_Unknown = ms.ToArray();
+                ms.Dispose();
+                ms = null;
+                unknownImage.Dispose();
+                unknownImage = null;
+            }
+            // Check if an articleid was specified, if so we'll try to get the actual image and output it
+            string articleid = request.QueryString["2"];
+            if (articleid != null && articleid.Length > 0)
+            {
+                Result thumb = conn.Query_Read("SELECT at.data FROM articles AS a LEFT OUTER JOIN articles_thumbnails AS at ON at.thumbnailid=a.thumbnailid WHERE a.articleid='" + Utils.Escape(articleid) + "'");
+                if (thumb.Rows.Count == 1 && thumb[0].ColumnsByteArray != null)
+                {
+                    try
+                    {
+                        response.BinaryWrite(thumb[0].GetByteArray("data"));
+                        conn.Disconnect();
+                        response.End();
+                        return;
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            // The response has not ended, write the unknown image
+            response.BinaryWrite(pageArticle_Thumbnail_Unknown);
+            conn.Disconnect();
+            response.End();
         }
         #endregion
 
@@ -359,7 +560,7 @@ namespace UberCMS.Plugins
             // Check we have an articleid that is not null and greater than zero, else 404
             if (articleid == null || articleid.Length == 0) return;
             // Load the article's data
-            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.*, at.relative_url, at.articleid_current, u.username FROM (articles AS a, articles_thread AS at) LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
+            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.articleid, a.threadid, a.title, a.userid, a.body, a.moderator_userid, a.published, a.allow_comments, a.allow_html, a.show_pane, a.datetime, at.relative_url, at.articleid_current, u.username FROM (articles AS a, articles_thread AS at) LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
             if (articleRaw.Rows.Count != 1)
                 return; // 404 - no data found - the article is corrupt (thread and article not linked) or the article does not exist
             ResultRow article = articleRaw[0];

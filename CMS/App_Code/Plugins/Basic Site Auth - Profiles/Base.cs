@@ -21,6 +21,7 @@ namespace UberCMS.Plugins
         public const string SETTINGS_KEY_PICTURE_MAX_SIZE = "picture_max_size";
         #endregion
 
+        #region "Methods - Plugin Handlers"
         public static string enable(string pluginid, Connector conn)
         {
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
@@ -95,6 +96,9 @@ namespace UberCMS.Plugins
                     break;
             }
         }
+        #endregion
+
+        #region "Methods - Pages"
         public static void pageProfile_Profile(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
             // Decide which user to display
@@ -615,5 +619,6 @@ namespace UberCMS.Plugins
             conn.Disconnect();
             response.End();
         }
+        #endregion
     }
 }

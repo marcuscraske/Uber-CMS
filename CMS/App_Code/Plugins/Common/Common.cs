@@ -575,13 +575,17 @@ namespace UberCMS.Plugins
             /// </summary>
             /// <param name="request"></param>
             /// <returns></returns>
-            public static bool isValidTokenCookie(HttpRequest request)
+            public static bool isValidTokenCookie(HttpRequest request, HttpResponse response)
             {
                 HttpCookie cookie;
                 if (HttpContext.Current.Session[ANTI_CSRF_KEY] == null || (cookie = request.Cookies[ANTI_CSRF_KEY]) == null)
                     return false;
                 else
+                {
+                    cookie.Expires = DateTime.Now.AddDays(-1); // Expires the cookie, no longer needed
+                    response.Cookies.Add(cookie);
                     return (string)HttpContext.Current.Session[ANTI_CSRF_KEY] == cookie.Value;
+                }
             }
         }
         #endregion

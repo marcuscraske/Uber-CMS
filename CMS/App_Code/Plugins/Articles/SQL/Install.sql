@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS articles
 	title TEXT,
 	userid INT,
 	FOREIGN KEY(`userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE SET NULL,
+	thumbnailid FOREIGN KEY(`thumbnailid`) REFERENCES `articles_thumbnails`(`thumbnailid`) ON UPDATE CASCADE ON DELETE SET NULL,
 	body TEXT,
 	moderator_userid INT,
 	FOREIGN KEY(`moderator_userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE SET NULL,
@@ -23,6 +24,11 @@ CREATE TABLE IF NOT EXISTS articles
 	allow_html VARCHAR(1) DEFAULT 0,
 	show_pane VARCHAR(1) DEFAULT 0,
 	datetime DATETIME
+);
+CREATE TABLE IF NOT EXISTS articles_thumbnails
+(
+	thumbnailid INT PRIMARY KEY AUTO_INCREMENT,
+	data BLOB
 );
 CREATE TABLE IF NOT EXISTS articles_tags
 (
