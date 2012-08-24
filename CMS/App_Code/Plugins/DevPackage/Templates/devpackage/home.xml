@@ -6,6 +6,7 @@
 	<div class="ROW">
 		<div class="CELL1">
 			<a href="<!--URL-->/devpackage/dump/all" class="BUTTON">Dump Installer Templates</a>
+			<a href="<!--URL-->/devpackage/dump/all_default" class="BUTTON">Dump Default Installer Templates</a>
 		</div>
 		<div class="clear"></div>
 	</div>

@@ -145,6 +145,15 @@
 	</div>
 	<div class="ROW">
 		<div class="CELL2">
+			Reddit:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="contact_reddit" value="%CONTACT_REDDIT%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
 			Steam:
 		</div>
 		<div class="CELL2">
