@@ -143,7 +143,7 @@ namespace UberCMS.Misc
         {
             lock (categories)
             {
-                if (categories.ContainsKey(category) && categories[category].contains(key))
+                if (!categories.ContainsKey(category) || !categories[category].contains(key))
                     conn.Query_Execute("INSERT INTO settings (category, keyname, pluginid, value" + (description != null ? ", description" : string.Empty) + ") VALUES('" + Utils.Escape(category) + "', '" + Utils.Escape(key) + "', '" + Utils.Escape(pluginid) + "', '" + Utils.Escape(value) + "'" + (description != null ? ", '" + Utils.Escape(description) + "'" : string.Empty) + ")");
                 else if(updateIfExists)
                     conn.Query_Execute("UPDATE settings SET value='" + Utils.Escape(value) + "'" + (description != null ? ", description='" + Utils.Escape(description) + "'" : string.Empty) + " WHERE category='" + Utils.Escape(category) + "' AND keyname='" + Utils.Escape(key) + "'");

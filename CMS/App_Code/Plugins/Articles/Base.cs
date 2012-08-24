@@ -10,23 +10,23 @@ namespace UberCMS.Plugins
 {
     public static class Articles
     {
-        public const int TITLE_MAX = 45;
-        public const int TITLE_MIN = 1;
-        public const int BODY_MIN = 1;
-        public const int BODY_MAX = 8000; // Consider making this a setting
-        public const int RELATIVE_URL_CHUNK_MIN = 1;
-        public const int RELATIVE_URL_CHUNK_MAX = 32;
-        public const int RELATIVE_URL_MAXCHUNKS = 8;
-        public const int TAGS_TITLE_MIN = 1;
+        //public const int TITLE_MAX = 45;
+        //public const int TITLE_MIN = 1;
+        //public const int BODY_MIN = 1;
+        //public const int BODY_MAX = 8000; // Consider making this a setting
+        //public const int RELATIVE_URL_CHUNK_MIN = 1;
+        //public const int RELATIVE_URL_CHUNK_MAX = 32;
+        //public const int RELATIVE_URL_MAXCHUNKS = 8;
+        //public const int TAGS_TITLE_MIN = 1;
         /// <summary>
         /// Remember to update the SQL; keywords are varchars set to this max char length.
         /// </summary>
-        public const int TAGS_TITLE_MAX = 30;
-        public const int TAGS_MAX = 20;
-        public const int THUMBNAIL_MAXSIZE = 2097152; // Two megabytes
-        public const int THUMBNAIL_MAXWIDTH = 240;
-        public const int THUMBNAIL_MAXHEIGHT = 180;
-        public const int COMMENTS_LENGTH_MIN = 2;
+        //public const int TAGS_TITLE_MAX = 30;
+        //public const int TAGS_MAX = 20;
+        //public const int THUMBNAIL_MAXSIZE = 2097152; // Two megabytes
+        //public const int THUMBNAIL_MAXWIDTH = 240;
+        //public const int THUMBNAIL_MAXHEIGHT = 180;
+        /*public const int COMMENTS_LENGTH_MIN = 2;
         public const int COMMENTS_LENGTH_MAX = 512;
         public const int COMMENTS_MAX_PER_HOUR = 8;
         public const int COMMENTS_PER_PAGE = 5;
@@ -34,9 +34,36 @@ namespace UberCMS.Plugins
         public const int PENDING_PER_PAGE = 10;
         public const int ARTICLES_EDIT_PER_HOUR = 4;
         public const int ARTICLES_EDIT_PER_DAY = 10;
+        public const int BROWSE_TAG_CATEGORIES = 15;
+        public const int BROWSE_ARTICLES_SECTION = 5;
+        public const int BROWSE_ARTICLES_PAGE = 10;*/
 
         public const string SETTINGS_KEY = "articles";
         public const string SETTINGS_KEY_HANDLES_404 = "handles_404";
+        public const string SETTINGS_TITLE_MAX = "title_max";
+        public const string SETTINGS_TITLE_MIN = "title_min";
+        public const string SETTINGS_BODY_MIN = "body_min";
+        public const string SETTINGS_BODY_MAX = "body_max";
+        public const string SETTINGS_RELATIVE_URL_CHUNK_MIN = "relative_url_chunk_min";
+        public const string SETTINGS_RELATIVE_URL_CHUNK_MAX = "relative_url_chunk_max";
+        public const string SETTINGS_RELATIVE_URL_MAXCHUNKS = "relative_url_maxchunks";
+        public const string SETTINGS_TAGS_TITLE_MIN = "tags_title_min";
+        public const string SETTINGS_TAGS_TITLE_MAX = "tags_title_max";
+        public const string SETTINGS_TAGS_MAX = "tags_max";
+        public const string SETTINGS_THUMBNAIL_MAXSIZE = "thumbnail_maxsize";
+        public const string SETTINGS_THUMBNAIL_MAXWIDTH = "thumbnail_maxwidth";
+        public const string SETTINGS_THUMBNAIL_MAXHEIGHT = "thumbnail_maxheight";
+        public const string SETTINGS_COMMENTS_LENGTH_MIN = "comments_length_min";
+        public const string SETTINGS_COMMENTS_LENGTH_MAX = "comments_length_max";
+        public const string SETTINGS_COMMENTS_MAX_PER_HOUR = "comments_max_per_hour";
+        public const string SETTINGS_COMMENTS_PER_PAGE = "comments_per_page";
+        public const string SETTINGS_HISTORY_PER_PAGE = "history_per_page";
+        public const string SETTINGS_PENDING_PER_PAGE = "pending_per_page";
+        public const string SETTINGS_ARTICLES_EDIT_PER_HOUR = "articles_edit_per_hour";
+        public const string SETTINGS_ARTICLES_EDIT_PER_DAY = "articles_edit_per_day";
+        public const string SETTINGS_BROWSE_TAG_CATEGORIES = "browse_tag_categories";
+        public const string SETTINGS_BROWSE_ARTICLES_SECTION = "browse_articles_section";
+        public const string SETTINGS_BROWSE_ARTICLES_PAGE = "browse_articles_page";
 
         /// <summary>
         /// When an article is modified or deleted, some of the tags may not be in-use by any other articles - therefore we can remove them with the below cleanup query.
@@ -66,6 +93,30 @@ namespace UberCMS.Plugins
                 return error;
             // Install settings
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_KEY_HANDLES_404, "1", "Any 404/unhandled pages will be handled by article create - like Wikis.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_TITLE_MAX, "45", "The maximum length of an article title.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_TITLE_MIN, "1", "The minimum length of an article title.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_BODY_MIN, "1", "The minimum length of an article's body.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_BODY_MAX, "8000", "The maximum length of an articles body.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_RELATIVE_URL_CHUNK_MIN, "1", "The minimum length of a URL chunk/directory.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_RELATIVE_URL_CHUNK_MAX, "32", "The maximum length of a URL chunk/directory.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_RELATIVE_URL_MAXCHUNKS, "8", "The maximum number of chunks/directories.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_TAGS_TITLE_MIN, "1", "The minimum length of a tag.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_TAGS_TITLE_MAX, "30", "The maximum length of a tag.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_TAGS_MAX, "20", "The maximum amount of tags per an article.", false); // Remember to update the SQL; keywords are varchars set to this max char length.
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_THUMBNAIL_MAXSIZE, "2097152", "The maximum size of an article thumbnail.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_THUMBNAIL_MAXWIDTH, "240", "The maximum width of an article thumbnail.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_THUMBNAIL_MAXHEIGHT, "180", "The maximum height of an article thumbnail.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_COMMENTS_LENGTH_MIN, "2", "The minimum length of a comment.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_COMMENTS_LENGTH_MAX, "512", "The maximum length of a comment.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_COMMENTS_MAX_PER_HOUR, "8", "The maximum amount of comments per an hour.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_COMMENTS_PER_PAGE, "5", "The number of comments displayed per a page on an article.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_HISTORY_PER_PAGE, "10", "The number of history entries displayed on an article.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_PENDING_PER_PAGE, "10", "The number of pending articles displayed on the pending page.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_ARTICLES_EDIT_PER_HOUR, "4", "The maximum amount of article creations/edits per an hour.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_ARTICLES_EDIT_PER_DAY, "10", "The maximum amount of article creations/edits per a day.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_BROWSE_TAG_CATEGORIES, "15", "The number of main tags/categories displayed on the articles homepage.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_BROWSE_ARTICLES_SECTION, "5", "The number of articles per an articles homepage section.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_BROWSE_ARTICLES_PAGE, "10", "The number of articles displayed per a page for tags and search.", false);
 
             return null;
         }
@@ -128,6 +179,8 @@ namespace UberCMS.Plugins
             switch (request.QueryString["1"])
             {
                 case null:
+                case "tag":
+                case "search":
                     pageArticles_Browse(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
                     break;
                 case "delete":
@@ -159,6 +212,186 @@ namespace UberCMS.Plugins
         #region "Methods - Pages"
         public static void pageArticles_Browse(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
+            // Grab permissions
+            bool permPublish;
+            bool permCreate;
+            if (HttpContext.Current.User.Identity.IsAuthenticated)
+            {
+                Result permissions = conn.Query_Read("SELECT access_media_create, access_media_publish FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS ug ON ug.groupid=u.groupid WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
+                if (permissions.Rows.Count == 1)
+                {
+                    permPublish = permissions[0]["access_media_publish"].Equals("1");
+                    permCreate = permissions[0]["access_media_create"].Equals("1");
+                }
+                else
+                    permPublish = permCreate = false;
+            }
+            else
+                permPublish = permCreate = false;
+            // Load settings
+            int browseArticlesSection = Core.settings[SETTINGS_KEY].getInt(SETTINGS_BROWSE_ARTICLES_SECTION);
+            int browseArticlesPage = Core.settings[SETTINGS_KEY].getInt(SETTINGS_BROWSE_ARTICLES_PAGE);
+            // Begin building the content
+            StringBuilder content = new StringBuilder();
+            string subpg = request.QueryString["1"];
+            string tag = request.QueryString["2"];
+            string search = request.QueryString["keywords"];
+            if (subpg == "search" && search != null && search.Length > 0 && search.Length < 40)
+            {
+                int page;
+                if (request.QueryString["bpg"] == null || !int.TryParse(request.QueryString["bpg"], out page) || page < 1) page = 1;
+                // Viewing articles by search
+                content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Search Results for `" + HttpUtility.HtmlEncode(search) + "`"));
+                string escapedKeywords = Utils.Escape(search.Replace("%", string.Empty));
+                Result results = conn.Query_Read("SELECT a.articleid, a.title, a.datetime, at.relative_url FROM articles_thread AS at LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current WHERE at.relative_url LIKE '" + escapedKeywords + "' OR a.title LIKE '%" + escapedKeywords + "%' OR a.body LIKE '%" + escapedKeywords + "%' LIMIT " + ((browseArticlesPage * page) - browseArticlesPage) + "," + browseArticlesPage);
+                if (results.Rows.Count != 0)
+                    foreach (ResultRow foundItem in results)
+                        content.Append(
+                            Core.templates["articles"]["browse_article"]
+                            .Replace("%RELATIVE_URL%", foundItem["relative_url"])
+                            .Replace("%ARTICLEID%", HttpUtility.UrlEncode(foundItem["articleid"]))
+                            .Replace("%TITLE%", HttpUtility.HtmlEncode(foundItem["title"]))
+                            .Replace("%DATETIME%", HttpUtility.HtmlEncode(foundItem["datetime"]))
+                            .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(foundItem["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(foundItem["datetime"])) : "Unknown"))
+                            );
+                else
+                    content.Append("None.");
+                // Add page navigation
+                content.Append(
+                    Core.templates["articles"]["browse_nav"]
+                    .Replace("%TAG%", HttpUtility.UrlEncode(tag))
+                    .Replace("%URL%", "articles/search?keywords=" + HttpUtility.HtmlEncode(search))
+                    .Replace("%PAGE%", page.ToString())
+                    .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
+                    .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                    );
+                // Set navigation flags
+                if (page > 1) pageElements.setFlag("ARTICLES_PAGE_PREVIOUS");
+                if (page < int.MaxValue && results.Rows.Count == browseArticlesPage) pageElements.setFlag("ARTICLES_PAGE_NEXT");
+            }
+            else if (subpg == "tag" && tag != null && tag.Length >= Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_TITLE_MIN) && tag.Length <= Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_TITLE_MAX))
+            {
+                // Viewing articles by tag
+                int page;
+                if (request.QueryString["bpg"] == null || !int.TryParse(request.QueryString["bpg"], out page) || page < 1) page = 1;
+                string sort = request.QueryString["sort"];
+                // Security
+                tag = tag.Replace("%", string.Empty);
+                content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Tag `" + HttpUtility.HtmlEncode(tag) + "`"));
+                // Add sorting
+                content.Append(
+                    Core.templates["articles"]["browse_sorting"]
+                    .Replace("%TAG%", HttpUtility.HtmlEncode(tag))
+                    );
+                // Display all the articles belonging to a tag
+                Result rawArticles = conn.Query_Read("SELECT ata.articleid, a.title, a.datetime, ath.relative_url FROM articles_tags_article AS ata, articles_tags AS at, articles AS a, articles_thread AS ath WHERE a.articleid=ath.articleid_current AND ata.articleid=a.articleid AND ata.tagid=at.tagid AND at.keyword LIKE '" + Utils.Escape(tag) + "' ORDER BY " + (sort == "t_a" ? "a.title ASC" : sort == "t_d" ? "a.title DESC" : sort == "d_a" ? "a.datetime ASC" : "a.datetime DESC") + " LIMIT " + ((browseArticlesPage * page) - browseArticlesPage) + "," + browseArticlesPage);
+                if (rawArticles.Rows.Count != 0)
+                    foreach (ResultRow article in rawArticles)
+                        content.Append(
+                            Core.templates["articles"]["browse_article"]
+                            .Replace("%RELATIVE_URL%", article["relative_url"])
+                            .Replace("%ARTICLEID%", HttpUtility.UrlEncode(article["articleid"]))
+                            .Replace("%TITLE%", HttpUtility.HtmlEncode(article["title"]))
+                            .Replace("%DATETIME%", HttpUtility.HtmlEncode(article["datetime"]))
+                            .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
+                            );
+                else
+                    content.Append("None.");
+                // Add page navigation
+                content.Append(
+                    Core.templates["articles"]["browse_nav"]
+                    .Replace("%TAG%", HttpUtility.UrlEncode(tag))
+                    .Replace("%URL%",  "articles/tag/%TAG%?sort=" + HttpUtility.UrlEncode(sort))
+                    .Replace("%PAGE%", page.ToString())
+                    .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
+                    .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                    );
+                // Set navigation flags
+                if (page > 1) pageElements.setFlag("ARTICLES_PAGE_PREVIOUS");
+                if (page < int.MaxValue && rawArticles.Rows.Count == browseArticlesPage) pageElements.setFlag("ARTICLES_PAGE_NEXT");
+            }
+            else
+            {
+                // Build recent articles
+                content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Recently Published"));
+                Result rawArticlesRecent = conn.Query_Read("SELECT a.title, a.articleid, at.relative_url, a.datetime FROM articles_thread AS at LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current ORDER BY a.datetime DESC, a.title ASC LIMIT " + browseArticlesSection);
+                if (rawArticlesRecent.Rows.Count != 0)
+                    foreach (ResultRow article in rawArticlesRecent)
+                        content.Append(
+                            Core.templates["articles"]["browse_article"]
+                            .Replace("%RELATIVE_URL%", article["relative_url"])
+                            .Replace("%ARTICLEID%", HttpUtility.UrlEncode(article["articleid"]))
+                            .Replace("%TITLE%", HttpUtility.HtmlEncode(article["title"]))
+                            .Replace("%DATETIME%", HttpUtility.HtmlEncode(article["datetime"]))
+                            .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
+                            );
+                else
+                    content.Append("None.");
+
+                // Build most discussed articles
+                content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Most Discussed"));
+                Result rawArticlesDiscussed = conn.Query_Read("SELECT a.title, a.articleid, at.relative_url, a.datetime FROM articles_thread AS at LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current LEFT OUTER JOIN articles_thread_comments AS atc ON atc.threadid=at.threadid GROUP BY atc.threadid ORDER BY COUNT(atc.commentid) DESC, a.title ASC LIMIT " + browseArticlesSection);
+                if (rawArticlesDiscussed.Rows.Count != 0)
+                    foreach (ResultRow article in rawArticlesDiscussed)
+                        content.Append(
+                            Core.templates["articles"]["browse_article"]
+                            .Replace("%RELATIVE_URL%", article["relative_url"])
+                            .Replace("%ARTICLEID%", HttpUtility.UrlEncode(article["articleid"]))
+                            .Replace("%TITLE%", HttpUtility.HtmlEncode(article["title"]))
+                            .Replace("%DATETIME%", HttpUtility.HtmlEncode(article["datetime"]))
+                            .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
+                            );
+                else
+                    content.Append("None.");
+
+                // Build random articles
+                content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Random Articles"));
+                Result rawArticlesRandom = conn.Query_Read("SELECT a.title, a.articleid, at.relative_url, a.datetime FROM articles_thread AS at LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current ORDER BY RAND(), a.title ASC LIMIT " + browseArticlesSection);
+                if (rawArticlesRecent.Rows.Count != 0)
+                    foreach (ResultRow article in rawArticlesRandom)
+                        content.Append(
+                            Core.templates["articles"]["browse_article"]
+                            .Replace("%RELATIVE_URL%", article["relative_url"])
+                            .Replace("%ARTICLEID%", HttpUtility.UrlEncode(article["articleid"]))
+                            .Replace("%TITLE%", HttpUtility.HtmlEncode(article["title"]))
+                            .Replace("%DATETIME%", HttpUtility.HtmlEncode(article["datetime"]))
+                            .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
+                            );
+                else
+                    content.Append("None.");
+            }
+
+            // Build tag categories
+            StringBuilder tagCategories = new StringBuilder();
+            Result rawCategories = conn.Query_Read("SELECT DISTINCT at.keyword, COUNT(ata.tagid) AS articles FROM articles_thread AS ath LEFT OUTER JOIN articles_tags_article AS ata On ata.articleid=ath.articleid_current LEFT OUTER JOIN articles_tags AS at ON at.tagid=ata.tagid GROUP BY at.keyword ORDER BY COUNT(ata.tagid) DESC, at.keyword ASC LIMIT " + Core.settings[SETTINGS_KEY].getInt(SETTINGS_BROWSE_TAG_CATEGORIES));
+            if (rawCategories.Rows.Count != 0)
+                foreach (ResultRow tagCategory in rawCategories)
+                    tagCategories.Append(
+                        Core.templates["articles"]["browse_tag"]
+                        .Replace("%TITLE%", HttpUtility.HtmlEncode(tagCategory["keyword"]))
+                        .Replace("%TITLE_URL%", HttpUtility.UrlEncode(tagCategory["keyword"]))
+                        .Replace("%ARTICLES%", HttpUtility.HtmlEncode(tagCategory["articles"]))
+                        );
+            else
+                tagCategories.Append("No categories/tags exist!");
+
+            // Set flags
+            if(permPublish) pageElements.setFlag("ARTICLES_PUBLISH");
+            pageElements.setFlag("ARTICLES_STATS");
+            if(permCreate) pageElements.setFlag("ARTICLES_CREATE");
+
+            // Add CSS
+            Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
+            // Output page
+            pageElements["CONTENT"] = Core.templates["articles"]["browse"]
+                .Replace("%CONTENT%", content.ToString())
+                .Replace("%TAGS%", tagCategories.ToString())
+                .Replace("%SEARCH%", HttpUtility.HtmlEncode(search))
+                ;
+            pageElements["TITLE"] = "Articles - Browse";
+        }
+        public static void pageArticles_RecentChanges(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        {
         }
         public static void pageArticles_Pending(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
@@ -170,7 +403,8 @@ namespace UberCMS.Plugins
             if(!int.TryParse(request.QueryString["pg"], out page) || page < 1) page = 1;
             // Build a list of pending articles
             StringBuilder articlesPending = new StringBuilder();
-            Result pending = conn.Query_Read("SELECT a.articleid, a.title, u.username, a.userid, a.datetime, a.allow_html FROM articles AS a LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.published='0' ORDER BY a.datetime ASC LIMIT " + ((page * PENDING_PER_PAGE) - PENDING_PER_PAGE) + "," + PENDING_PER_PAGE);
+            int pendingPerPage = Core.settings[SETTINGS_KEY].getInt(SETTINGS_PENDING_PER_PAGE);
+            Result pending = conn.Query_Read("SELECT a.articleid, a.title, u.username, a.userid, a.datetime, a.allow_html FROM articles AS a LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.published='0' ORDER BY a.datetime ASC LIMIT " + ((page * pendingPerPage) - pendingPerPage) + "," + pendingPerPage);
             if (pending.Rows.Count > 0)
                 foreach (ResultRow article in pending)
                     articlesPending.Append(
@@ -193,7 +427,7 @@ namespace UberCMS.Plugins
                 );
             // Set navigation flags
             if (page > 1) pageElements.setFlag("ARTICLE_PAGE_PREVIOUS");
-            if (page < int.MaxValue && pending.Rows.Count == PENDING_PER_PAGE) pageElements.setFlag("ARTICLE_PAGE_NEXT");
+            if (page < int.MaxValue && pending.Rows.Count == pendingPerPage) pageElements.setFlag("ARTICLE_PAGE_NEXT");
             // Output the page
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
             pageElements["CONTENT"] = Core.templates["articles"]["articles_pending"]
@@ -242,20 +476,20 @@ namespace UberCMS.Plugins
             if (title != null && body != null && relativeUrl != null && tags != null)
             {
                 // Validate
-                if (title.Length < TITLE_MIN || title.Length > TITLE_MAX)
-                    error = "Title must be " + TITLE_MIN + " to " + TITLE_MAX + " characters in length!";
-                else if (body.Length < BODY_MIN || body.Length > BODY_MAX)
-                    error = "Body must be " + BODY_MIN + " to " + BODY_MAX + " characters in length!";
-                else if (thumbnail != null && thumbnail.ContentLength > THUMBNAIL_MAXSIZE)
-                    error = "Thumbnail cannot exceed " + THUMBNAIL_MAXSIZE + " bytes (" + Misc.Plugins.getBytesString(THUMBNAIL_MAXSIZE) + ")!";
+                if (title.Length < Core.settings[SETTINGS_KEY].getInt(SETTINGS_TITLE_MIN) || title.Length > Core.settings[SETTINGS_KEY].getInt(SETTINGS_TITLE_MAX))
+                    error = "Title must be " + Core.settings[SETTINGS_KEY][SETTINGS_TITLE_MIN] + " to " + Core.settings[SETTINGS_KEY][SETTINGS_TITLE_MAX] + " characters in length!";
+                else if (body.Length < Core.settings[SETTINGS_KEY].getInt(SETTINGS_BODY_MIN) || body.Length > Core.settings[SETTINGS_KEY].getInt(SETTINGS_BODY_MAX))
+                    error = "Body must be " + Core.settings[SETTINGS_KEY][SETTINGS_BODY_MIN] + " to " + Core.settings[SETTINGS_KEY][SETTINGS_BODY_MAX] + " characters in length!";
+                else if (thumbnail != null && thumbnail.ContentLength > Core.settings[SETTINGS_KEY].getInt(SETTINGS_THUMBNAIL_MAXSIZE))
+                    error = "Thumbnail cannot exceed " + Core.settings[SETTINGS_KEY][SETTINGS_THUMBNAIL_MAXSIZE] + " bytes (" + Misc.Plugins.getBytesString(Core.settings[SETTINGS_KEY].getInt(SETTINGS_THUMBNAIL_MAXSIZE)) + ")!";
                 else if (thumbnail != null && thumbnail.ContentLength > 0 && thumbnail.ContentType != "image/gif" && thumbnail.ContentType != "image/jpeg" && thumbnail.ContentType != "image/png" && thumbnail.ContentType != "image/jpg")
                     error = "Invalid thumbnail image format!";
-                else if ((error = validRelativeUrl(relativeUrl)) != null)
+                else if ((error = validRelativeUrl(relativeUrl, Core.settings[SETTINGS_KEY].getInt(SETTINGS_RELATIVE_URL_MAXCHUNKS), Core.settings[SETTINGS_KEY].getInt(SETTINGS_RELATIVE_URL_CHUNK_MIN), Core.settings[SETTINGS_KEY].getInt(SETTINGS_RELATIVE_URL_CHUNK_MAX))) != null)
                     ;
                 else
                 {
                     // Verify tags
-                    ArticleTags parsedTags = getTags(tags);
+                    ArticleTags parsedTags = getTags(tags, Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_TITLE_MIN), Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_TITLE_MAX), Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_MAX));
                     if (parsedTags.error != null) error = parsedTags.error;
                     else
                     {
@@ -269,8 +503,8 @@ namespace UberCMS.Plugins
                                 Image image = Image.FromStream(thumbnail.InputStream);
                                 int newWidth;
                                 int newHeight;
-                                int maxWidth = THUMBNAIL_MAXWIDTH;
-                                int maxHeight = THUMBNAIL_MAXHEIGHT;
+                                int maxWidth = Core.settings[SETTINGS_KEY].getInt(SETTINGS_THUMBNAIL_MAXWIDTH);
+                                int maxHeight = Core.settings[SETTINGS_KEY].getInt(SETTINGS_THUMBNAIL_MAXHEIGHT);
                                 if (image.Width < maxWidth && image.Height < maxHeight)
                                 {
                                     // We won't bother with any transformations, we'll just draw a new compressed image instead
@@ -536,12 +770,15 @@ namespace UberCMS.Plugins
                 StringBuilder relativeUrl = new StringBuilder();
                 relativeUrl.Append(request.QueryString["page"]).Append("/"); // The querystring "pg" should never be null, however no null exception will occur with stringbuilder anyhow
                 string chunk;
-                for (int i = 1; i <= RELATIVE_URL_MAXCHUNKS; i++)
+                int relativeUrlMaxChunks = Core.settings[SETTINGS_KEY].getInt(SETTINGS_RELATIVE_URL_MAXCHUNKS);
+                int relativeUrlChunkMax = Core.settings[SETTINGS_KEY].getInt(SETTINGS_RELATIVE_URL_CHUNK_MAX);
+                int relativeUrlChunkMin = Core.settings[SETTINGS_KEY].getInt(SETTINGS_RELATIVE_URL_CHUNK_MIN);
+                for (int i = 1; i <= relativeUrlMaxChunks; i++)
                 {
                     chunk = request.QueryString[i.ToString()];
                     if (chunk != null)
                     {
-                        if (chunk.Length > RELATIVE_URL_CHUNK_MAX)
+                        if (chunk.Length < relativeUrlChunkMin || chunk.Length > relativeUrlChunkMax)
                             return; // Invalid request - hence 404...
                         else
                             relativeUrl.Append(chunk).Append("/");
@@ -697,10 +934,10 @@ namespace UberCMS.Plugins
             {
                 if (!Common.Validation.validCaptcha(commentCaptcha))
                     commentError = "Incorrect captcha verification code!";
-                else if (commentBody.Length < COMMENTS_LENGTH_MIN || commentBody.Length > COMMENTS_LENGTH_MAX)
-                    commentError = "Your comment must be " + COMMENTS_LENGTH_MIN + " to  " + COMMENTS_LENGTH_MAX + " in length!";
-                else if (conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' AND datetime >= DATE_SUB(NOW(), INTERVAL 1 HOUR)") >= COMMENTS_MAX_PER_HOUR)
-                    commentError = "You've already posted the maximum of " + COMMENTS_MAX_PER_HOUR + " comments per an hour - try again later!";
+                else if (commentBody.Length < Core.settings[SETTINGS_KEY].getInt(SETTINGS_COMMENTS_LENGTH_MIN) || commentBody.Length > Core.settings[SETTINGS_KEY].getInt(SETTINGS_COMMENTS_LENGTH_MAX))
+                    commentError = "Your comment must be " + Core.settings[SETTINGS_KEY][SETTINGS_COMMENTS_LENGTH_MIN] + " to  " + Core.settings[SETTINGS_KEY][SETTINGS_COMMENTS_LENGTH_MAX] + " in length!";
+                else if (conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' AND datetime >= DATE_SUB(NOW(), INTERVAL 1 HOUR)") >= Core.settings[SETTINGS_KEY].getInt(SETTINGS_COMMENTS_MAX_PER_HOUR))
+                    commentError = "You've already posted the maximum of " + Core.settings[SETTINGS_KEY][SETTINGS_COMMENTS_MAX_PER_HOUR] + " comments per an hour - try again later!";
                 else
                 {
                     // Insert the post
@@ -731,7 +968,8 @@ namespace UberCMS.Plugins
             int commentsPage;
             if (!int.TryParse(commentsPageRaw, out commentsPage) || commentsPage < 1) commentsPage = 1;
             // -- Get the comments data associated with that page
-            Result commentsData = conn.Query_Read("SELECT atc.*, u.username FROM articles_thread_comments AS atc LEFT OUTER JOIN bsa_users AS u ON u.userid=atc.userid WHERE threadid='" + Utils.Escape(article["threadid"]) + "' ORDER BY datetime DESC LIMIT " + ((COMMENTS_PER_PAGE * commentsPage) - COMMENTS_PER_PAGE) + "," + COMMENTS_PER_PAGE);
+            int commentsPerPage = Core.settings[SETTINGS_KEY].getInt(SETTINGS_COMMENTS_PER_PAGE);
+            Result commentsData = conn.Query_Read("SELECT atc.*, u.username FROM articles_thread_comments AS atc LEFT OUTER JOIN bsa_users AS u ON u.userid=atc.userid WHERE threadid='" + Utils.Escape(article["threadid"]) + "' ORDER BY datetime DESC LIMIT " + ((commentsPerPage * commentsPage) - commentsPerPage) + "," + commentsPerPage);
             // -- Build the data
             if (commentsData.Rows.Count == 0)
                 content.Append(Core.templates["articles"]["comments_empty"]);
@@ -759,7 +997,7 @@ namespace UberCMS.Plugins
             // -- Set flags for the previous and next buttons - very simple solution but highly efficient
             if (commentsPage > 1)
                 pageElements.setFlag("ARTICLE_PAGE_PREVIOUS");
-            if (commentsData.Rows.Count == COMMENTS_PER_PAGE)
+            if (commentsData.Rows.Count == commentsPerPage)
                 pageElements.setFlag("ARTICLE_PAGE_NEXT");
             // Set the postbox
             if (HttpContext.Current.User.Identity.IsAuthenticated && allowComments)
@@ -828,7 +1066,8 @@ namespace UberCMS.Plugins
             // Grab the current selected article
             string currentArticleID = (conn.Query_Scalar("SELECT articleid_current FROM articles_thread WHERE threadid='" + Utils.Escape(article["threadid"]) + "'") ?? string.Empty).ToString();
             // Append each article revision
-            Result articles = conn.Query_Read("SELECT a.*, u.username, u2.username AS author FROM articles AS a LEFT OUTER JOIN bsa_users AS u ON u.userid=a.moderator_userid LEFT OUTER JOIN bsa_users AS u2 ON u2.userid=a.userid WHERE a.threadid='" + Utils.Escape(article["threadid"]) + "' ORDER BY a.articleid DESC LIMIT " + ((HISTORY_PER_PAGE * page) - HISTORY_PER_PAGE) + "," + HISTORY_PER_PAGE);
+            int historyPerPage = Core.settings[SETTINGS_KEY].getInt(SETTINGS_HISTORY_PER_PAGE);
+            Result articles = conn.Query_Read("SELECT a.*, u.username, u2.username AS author FROM articles AS a LEFT OUTER JOIN bsa_users AS u ON u.userid=a.moderator_userid LEFT OUTER JOIN bsa_users AS u2 ON u2.userid=a.userid WHERE a.threadid='" + Utils.Escape(article["threadid"]) + "' ORDER BY a.articleid DESC LIMIT " + ((historyPerPage * page) - historyPerPage) + "," + historyPerPage);
             foreach (ResultRow a in articles)
             {
                 content.Append(
@@ -855,7 +1094,7 @@ namespace UberCMS.Plugins
             // Set navigator flags
             if (page > 1)
                 pageElements.setFlag("ARTICLE_PAGE_PREVIOUS");
-            if (page < int.MaxValue && articles.Rows.Count == HISTORY_PER_PAGE)
+            if (page < int.MaxValue && articles.Rows.Count == historyPerPage)
                 pageElements.setFlag("ARTICLE_PAGE_NEXT");
         }
         public static void pageArticle_View_Publish(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
@@ -893,18 +1132,18 @@ namespace UberCMS.Plugins
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public static string validRelativeUrl(string text)
+        public static string validRelativeUrl(string text, int relativeUrlMaxChunks, int relativeUrlChunkMin, int relativeUrlChunkMax)
         {
             if (text == null) return "Invalid relative path!";
             else if (text.Length == 0) return "No relative URL specified!";
             else if (text.StartsWith("/")) return "Relative path cannot start with '/'...";
             else if (text.EndsWith("/")) return "Relative path cannot end with '/'...";
             string[] chunks = text.Split('/');
-            if (chunks.Length > RELATIVE_URL_MAXCHUNKS) return "Max top-directories in relative-path exceeded!";
+            if (chunks.Length > relativeUrlMaxChunks) return "Max top-directories in relative-path exceeded!";
             foreach (string s in chunks)
             {
-                if (s.Length < RELATIVE_URL_CHUNK_MIN || s.Length > RELATIVE_URL_CHUNK_MAX)
-                    return "Relative URL folder '" + s + "' must be " + RELATIVE_URL_CHUNK_MIN + " to " + RELATIVE_URL_CHUNK_MAX + " characters in size!";
+                if (s.Length < relativeUrlChunkMin || s.Length > relativeUrlChunkMax)
+                    return "Relative URL folder '" + s + "' must be " + relativeUrlChunkMin + " to " + relativeUrlChunkMax + " characters in size!";
                 else
                     foreach (char c in s)
                     {
@@ -925,7 +1164,7 @@ namespace UberCMS.Plugins
         /// </summary>
         /// <param name="tags"></param>
         /// <returns></returns>
-        public static ArticleTags getTags(string tags)
+        public static ArticleTags getTags(string tags, int tagsTitleMin, int tagsTitleMax, int tagsMax)
         {
             // Initialize return struct
             ArticleTags tagCollection = new ArticleTags();
@@ -938,13 +1177,13 @@ namespace UberCMS.Plugins
                 tag = rawTag.Trim();
                 if (tag.Length != 0)
                 {
-                    if (tag.Length < TAGS_TITLE_MIN || tag.Length > TAGS_TITLE_MAX)
+                    if (tag.Length < tagsTitleMin || tag.Length > tagsTitleMax)
                     {
-                        tagCollection.error = "Invalid tag '" + tag + "' - must be between " + TAGS_TITLE_MIN + " to " + TAGS_TITLE_MAX + " characters!";
+                        tagCollection.error = "Invalid tag '" + tag + "' - must be between " + tagsTitleMin + " to " + tagsTitleMax + " characters!";
                         break;
                     }
-                    else if (tagCollection.tags.Count + 1 > TAGS_MAX)
-                        tagCollection.error = "Maximum tags of " + TAGS_MAX + " exceeded!";
+                    else if (tagCollection.tags.Count + 1 > tagsMax)
+                        tagCollection.error = "Maximum tags of " + tagsMax + " exceeded!";
                     else if(!tagCollection.tags.Contains(tag))
                         tagCollection.tags.Add(tag);
                 }

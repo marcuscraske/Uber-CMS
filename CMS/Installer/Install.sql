@@ -20,9 +20,11 @@ CREATE TABLE IF NOT EXISTS plugins
 	handles_request_start VARCHAR(1) DEFAULT 0,
 	handles_request_end VARCHAR(1) DEFAULT 0
 );
-CREATE TABLE IF NOT EXISTS settings
+CREATE TABLE IF NOT EXISTS settings2
 (
-	keyname VARCHAR(25) PRIMARY KEY,
+	category VARCHAR(25),
+	keyname VARCHAR(30),
+	PRIMARY KEY(category, keyname),
 	pluginid INT,
 	FOREIGN KEY(`pluginid`) REFERENCES `plugins`(`pluginid`) ON UPDATE CASCADE ON DELETE CASCADE,
 	value TEXT,
