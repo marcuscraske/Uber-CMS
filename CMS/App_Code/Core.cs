@@ -226,6 +226,7 @@ namespace UberCMS
             conn.Settings_Database = connDatabase;
             conn.Settings_User = connUsername;
             conn.Settings_Pass = connPassword;
+            conn.Settings_Connection_String += "Charset=utf8;";
             if (persist)
             {
                 conn.Settings_Timeout_Connection = 864000; // 10 days
