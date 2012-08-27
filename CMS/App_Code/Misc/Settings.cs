@@ -68,6 +68,17 @@ namespace UberCMS.Misc
             return double.Parse(settings[key]);
         }
         /// <summary>
+        /// Returns a long for a specified key; if the value is not numeric or cannot be parsed, FormatException is thrown.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <exception cref="KeyNotFoundException">Thrown if the key is not found.</exception>
+        /// <returns></returns>
+        public long getLong(string key)
+        {
+            if (!settings.ContainsKey(key)) throw new KeyNotFoundException("Settings key '" + key + "' does not exist!");
+            return long.Parse(settings[key]);
+        }
+        /// <summary>
         /// Returns a boolean indicating if a comma-split value contains an item.
         /// 
         /// E.g. a setting's value could be a,b,c; invoking this method with `a` as
