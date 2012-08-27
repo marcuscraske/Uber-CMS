@@ -38,6 +38,8 @@
     max-height: 2em;
     box-shadow: 0em 0em 0.5em #999;
     vertical-align: middle;
+    border: solid 0.1em #999;
+    border-radius: 0.5em;
 }
 .ARTICLE .PANE .BUTTONS
 {
@@ -89,6 +91,18 @@
     display: inline-block;
     margin: 0.25em;
     color: inherit;
+}
+/* Link back to browse articles */
+.VIEW_ARTICLES
+{
+    float: right;
+    color: inherit;
+    padding: 0.25em;
+}
+.VIEW_ARTICLES:hover, .VIEW_ARTICLES:focus
+{
+    background: #CCC;
+    color: #333;
 }
 /* Article comments */
 .ARTICLE .COMMENT
@@ -277,4 +291,65 @@
 {
     background: #333;
     color: #FFF;
+}
+.ARTICLES_BROWSE_CONTENT .CHANGE_DATE_HEADER
+{
+    font-size: 1.4em;
+    margin-top: 0.5em;
+}
+.ARTICLES_BROWSE_CONTENT .CHANGE
+{
+    border-bottom: solid 0.2em #CCC;
+    color: #333;
+}
+.ARTICLES_BROWSE_CONTENT .CHANGE .P
+{
+    padding: 0.5em;
+}
+.ARTICLES_BROWSE_CONTENT .CHANGE img
+{
+    float: left;
+    margin: 0.5em 0.5em 0em 0em;
+}
+.ARTICLES_BROWSE_CONTENT .CHANGE .P a
+{
+    color: #360;
+}
+.ARTICLES_BROWSE_CONTENT .CHANGE .P .DT
+{
+    float: right;
+    color: #999;
+    font-size: 0.9em;
+    margin-left: 0.5em;
+}
+.ARTICLES_BROWSE_CONTENT .STAT
+{
+}
+.ARTICLES_BROWSE_CONTENT .STAT .CELL
+{
+    width: 50%;
+    float: left;
+}
+.ARTICLES_BROWSE_CONTENT .STAT .CELL .P
+{
+    padding: 0.5em;
+}
+/* Article editor */
+#ARTICLE_PREVIEW
+{
+    border-top: solid 0.4em #CCC;
+    padding-top: 0.5em;
+}
+/* Viewing/rendering an article */
+.ARTICLE_HTML_PROTECTION
+{
+    background: red;
+    color: #FFF;
+    padding: 0.5em;
+    border-radius: 0.5em;
+}
+.ARTICLE_HTML_PROTECTION:focus, .ARTICLE_HTML_PROTECTION:hover
+{
+    cursor: pointer;
+    background: #333;
 }

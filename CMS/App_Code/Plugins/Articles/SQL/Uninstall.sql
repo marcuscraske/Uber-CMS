@@ -1,4 +1,7 @@
 ﻿SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE IF EXISTS `articles_images`;
+DROP TABLE IF EXISTS `articles_images_links`;
+DROP TABLE IF EXISTS `articles_log_events`;
 DROP TABLE IF EXISTS `articles_thread_comments`;
 DROP TABLE IF EXISTS `articles_thread`;
 DROP TABLE IF EXISTS `articles`;

@@ -68,6 +68,22 @@ namespace UberCMS.Misc
             return double.Parse(settings[key]);
         }
         /// <summary>
+        /// Returns a boolean indicating if a comma-split value contains an item.
+        /// 
+        /// E.g. a setting's value could be a,b,c; invoking this method with `a` as
+        /// parameter item will return true, whereas a value of `z` would return
+        /// false.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool getCommaArrayContains(string key, string item)
+        {
+            if (!settings.ContainsKey(key)) throw new KeyNotFoundException("Settings key '" + key + "' does not exist!");
+            foreach (string value in settings[key].Split(','))
+                if (value == item) return true;
+            return false;
+        }
+        /// <summary>
         /// Returns a boolean stating if the collection contains a key.
         /// </summary>
         /// <param name="key"></param>

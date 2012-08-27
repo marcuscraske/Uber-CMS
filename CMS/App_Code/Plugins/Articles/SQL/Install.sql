@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS articles
 	show_pane VARCHAR(1) DEFAULT 0,
 	datetime DATETIME
 );
+ALTER TABLE `articles` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 CREATE TABLE IF NOT EXISTS articles_thumbnails
 (
 	thumbnailid INT PRIMARY KEY AUTO_INCREMENT,
@@ -52,4 +53,28 @@ CREATE TABLE IF NOT EXISTS articles_thread_comments
 	FOREIGN KEY(`userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE CASCADE,
 	message TEXT,
 	datetime DATETIME
+);
+CREATE TABLE IF NOT EXISTS articles_log_events
+(
+	event_type INT,
+	userid INT,
+	FOREIGN KEY(`userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE SET NULL,
+	datetime DATETIME,
+	articleid INT,
+	threadid INT
+);
+CREATE TABLE IF NOT EXISTS articles_images
+(
+	imageid INT PRIMARY KEY AUTO_INCREMENT,
+	title VARCHAR(25),
+	userid INT,
+	FOREIGN KEY(`userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE CASCADE,
+	data BLOB
+);
+CREATE TABLE IF NOT EXISTS articles_images_links
+(
+	articleid INT,
+	FOREIGN KEY(`articleid`) REFERENCES `articles`(`articleid`) ON UPDATE CASCADE ON DELETE CASCADE,
+	imageid INT,
+	FOREIGN KEY(`imageid`) REFERENCES `articles_images`(`imageid`) ON UPDATE CASCADE ON DELETE CASCADE
 );
