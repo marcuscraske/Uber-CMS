@@ -793,13 +793,13 @@ namespace UberCMS.Misc
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        public static string getBytesString(long bytes)
+        public static string getBytesString(float bytes)
         {
-            const long kiolobyte = 1024;
-            const long megabyte = 1048576;
-            const long gigabyte = 1073741824;
-            const long terrabyte = 1099511627776;
-            const long petabyte = 1125899906842624;
+            const float kiolobyte = 1024;
+            const float megabyte = 1048576;
+            const float gigabyte = 1073741824;
+            const float terrabyte = 1099511627776;
+            const float petabyte = 1125899906842624;
 
             if (bytes < kiolobyte)
                 return bytes + " B";
