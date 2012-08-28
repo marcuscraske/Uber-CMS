@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article_html_protect]]></hkey><description><![CDATA[HTML protection container for unpublished articles with HTML enabled.]]></description><html><![CDATA[<div class="ARTICLE_HTML_PROTECTION" onclick="removeProtection(this);">%DATA%</div>]]></html></template>

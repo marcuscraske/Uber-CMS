@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[articles_pending_row]]></hkey><description><![CDATA[Pending article on pending articles page.]]></description><html><![CDATA[<div class="ROW ARTICLES_PENDING BORDER">
+	<div class="CELL4">
+		<a href="<!--URL-->/article/%ARTICLEID%">%TITLE%</a>
+	</div>
+	<div class="CELL4">
+		%WARNINGS%
+	</div>
+	<div class="CELL4">
+		<a href="<!--URL-->/profile?userid=%USERID%">%USERNAME%</a>
+	</div>
+	<div class="CELL4">
+		%CREATED%
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

@@ -7,4 +7,5 @@ DROP TABLE IF EXISTS `articles_thread`;
 DROP TABLE IF EXISTS `articles`;
 DROP TABLE IF EXISTS `articles_tags`;
 DROP TABLE IF EXISTS `articles_tags_article`;
+DROP TABLE IF EXISTS `articles_format_providers`;
 SET FOREIGN_KEY_CHECKS=1;

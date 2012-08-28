@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[image_uploader]]></hkey><description><![CDATA[Page used to upload images for articles.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/articles/images/upload" enctype="multipart/form-data">
+	<div class="ROW">
+		<div class="CELL2">
+			Title:
+		</div>
+		<div class="CELL2">
+			<input type="text" name="title" value="%TITLE%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			File:
+		</div>
+		<div class="CELL2">
+			<input type="file" name="image" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			<img src="<!--URL-->/captcha" alt="Captcha" />
+		</div>
+		<div class="CELL2">
+			Captcha:<br />
+			<input type="text" name="captcha" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Upload" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+%ERROR%]]></html></template>

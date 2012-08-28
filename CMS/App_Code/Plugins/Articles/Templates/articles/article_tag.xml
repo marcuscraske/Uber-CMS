@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article_tag]]></hkey><description><![CDATA[A tag within the tags container.]]></description><html><![CDATA[<a href="<!--URL-->/articles?tag=%TITLE%" title="Articles - %TITLE%">%TITLE%</a>]]></html></template>

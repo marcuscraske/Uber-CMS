@@ -322,9 +322,6 @@
     font-size: 0.9em;
     margin-left: 0.5em;
 }
-.ARTICLES_BROWSE_CONTENT .STAT
-{
-}
 .ARTICLES_BROWSE_CONTENT .STAT .CELL
 {
     width: 50%;
@@ -352,4 +349,116 @@
 {
     cursor: pointer;
     background: #333;
+}
+/* Articles - images - viewing */
+.ARTICLE_IMAGE
+{
+    text-align: center;
+}
+.ARTICLE_IMAGE img
+{
+    border: none;
+    max-width: 100%;
+}
+.ARTICLE_INFO .R .C
+{
+    float: left;
+    width: 50%;
+}
+.ARTICLE_INFO .R .C a
+{
+    color: inherit;
+}
+.ARTICLE_INFO .R .C .H
+{
+    font-weight: bold;
+}
+.ARTICLE_INFO .R .C .P
+{
+    padding: 0.25em;
+}
+.ARTICLE_IMAGE_HEADER
+{
+    clear: both;
+    font-size: 1.25em;
+    margin: 0.5em 0em;
+}
+.ARTICLE_IMAGE_REFERENCES a
+{
+    display: block;
+    background: #CCC;
+    color: #333;
+    text-decoration: none;
+    border-radius: 0.5em;
+    overflow: hidden;
+    margin-bottom: 0.5em;
+    border: solid 0.1em #999;
+    height: 2.5em;
+    line-height: 2.5em;
+}
+.ARTICLE_IMAGE_REFERENCES a:hover, .ARTICLE_IMAGE_REFERENCES a:focus
+{
+    background: #333;
+    color: #FFF;
+}
+.ARTICLE_IMAGE_REFERENCES a span
+{
+    float: right;
+    font-size: 0.8em;
+    margin: 0.5em;
+}
+.ARTICLE_IMAGE_REFERENCES a img
+{
+    float: left;
+    width: 3em;
+    height: 2.5em;
+    border: none;
+    border-right: solid 0.1em #999;
+    margin-right: 0.5em;
+}
+/* Articles - image search */
+.ARTICLES_IMAGES_ALPHABET
+{
+    text-align: center;
+    margin-bottom: 0.5em;
+}
+.ARTICLES_IMAGES_ALPHABET a
+{
+    display: inline-block;
+    text-decoration: none;
+    background: #CCC;
+    color: #333;
+    padding: 0.3em;
+}
+.ARTICLES_IMAGES_ALPHABET a:focus, .ARTICLES_IMAGES_ALPHABET a:hover
+{
+    background: #333;
+    color: #FFF;
+}
+.ARTICLES_IMAGES_RESULTS a
+{
+    display: inline-block;
+    text-align: center;
+    margin: 0.5em;
+    text-decoration: none;
+    border: solid 0.1em #CCC;
+    border-radius: 0.5em;
+    overflow: hidden;
+    background: #CCC;
+    border: solid 0.1em #333;
+}
+.ARTICLES_IMAGES_RESULTS a:hover, .ARTICLES_IMAGES_RESULTS a:focus
+{
+    box-shadow: 0em 0em 1em #333;
+}
+.ARTICLES_IMAGES_RESULTS a span
+{
+    display: block;
+    background: #333;
+    color: #FFF;
+}
+.ARTICLES_IMAGES_RESULTS a img
+{
+    width: 12em;
+    height: 10em;
 }

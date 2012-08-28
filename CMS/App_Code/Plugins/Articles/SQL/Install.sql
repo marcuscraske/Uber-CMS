@@ -69,12 +69,22 @@ CREATE TABLE IF NOT EXISTS articles_images
 	title VARCHAR(25),
 	userid INT,
 	FOREIGN KEY(`userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE CASCADE,
-	data BLOB
+	data MEDIUMBLOB,
+	datetime DATETIME
 );
 CREATE TABLE IF NOT EXISTS articles_images_links
 (
 	articleid INT,
 	FOREIGN KEY(`articleid`) REFERENCES `articles`(`articleid`) ON UPDATE CASCADE ON DELETE CASCADE,
 	imageid INT,
-	FOREIGN KEY(`imageid`) REFERENCES `articles_images`(`imageid`) ON UPDATE CASCADE ON DELETE CASCADE
+	FOREIGN KEY(`imageid`) REFERENCES `articles_images`(`imageid`) ON UPDATE CASCADE ON DELETE CASCADE,
+	PRIMARY KEY(articleid, imageid)
+);
+CREATE TABLE IF NOT EXISTS articles_format_providers
+(
+	classpath VARCHAR(30) NOT NULL,
+	method VARCHAR(30) NOT NULL,
+	pluginid INT,
+	FOREIGN KEY(`pluginid`) REFERENCES `plugins`(`pluginid`) ON UPDATE CASCADE ON DELETE CASCADE,
+	UNIQUE INDEX(classpath, method)
 );

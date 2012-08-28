@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article_footer]]></hkey><description><![CDATA[The footer of an article (view) page.]]></description><html><![CDATA[<div class="clear"></div>
+<!--IF:ARTICLE_SHOW_PANE-->
+<a href="<!--URL-->/articles" class="VIEW_ARTICLES">View All Articles</a>
+<!--ENDIF-->
+<div class="TAGS">
+	<span>Tags:</span>
+	%TAGS%
+</div>]]></html></template>

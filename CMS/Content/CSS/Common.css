@@ -83,16 +83,16 @@
 }
 .COMMON_IMG
 {
-    display: inline-block;
+    overflow: hidden;
 }
-.COMMON_IMG:hover img, .COMMON_IMG:focus img
+.COMMON_IMG, .COMMON_IMG img
 {
-    box-shadow: 0em 0em 1em #333;
+    max-width: 100%;
+    max-height: 300em;
 }
 .COMMON_IMG img
 {
-    max-width: 100%;
-    max-height: 30em;
+    border: none;
     border-radius: 0.5em;
 }
 .COMMON_VIDEO

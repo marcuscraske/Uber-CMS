@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[image_search_item]]></hkey><description><![CDATA[An image search item.]]></description><html><![CDATA[<a href="<!--URL-->/articles/images/view/%IMAGEID%">
+	<img src="<!--URL-->/articles/images/data/%IMAGEID%" alt="Image" />
+	<span>%TITLE%</span>
+</a>]]></html></template>

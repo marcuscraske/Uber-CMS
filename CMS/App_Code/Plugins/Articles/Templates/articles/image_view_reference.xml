@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[image_view_reference]]></hkey><description><![CDATA[An article referencing an image.]]></description><html><![CDATA[<a href="<!--URL-->/article/%ARTICLEID%">
+	<span title="%DATETIME%">%DATETIME_SHORT%</span>
+	<img src="<!--URL-->/article/thumbnail/%ARTICLEID%" alt="Article thumbnail" />
+	%TITLE%
+</a>]]></html></template>

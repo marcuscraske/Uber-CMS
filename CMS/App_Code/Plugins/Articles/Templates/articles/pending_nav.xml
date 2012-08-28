@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[pending_nav]]></hkey><description><![CDATA[Navigation for pending page.]]></description><html><![CDATA[<div class="ROW">
+	<div class="CELL1 TC">
+		<!--IF:ARTICLE_PAGE_PREVIOUS--><a href="<!--URL-->/articles/pending?pg=%PAGE_PREVIOUS%" class="BUTTON FL">Previous</a><!--ENDIF-->
+		Page %PAGE%
+		<!--IF:ARTICLE_PAGE_NEXT--><a href="<!--URL-->/articles/pending?pg=%PAGE_NEXT%" class="BUTTON FR">Next</a><!--ENDIF-->
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

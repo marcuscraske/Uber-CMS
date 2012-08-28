@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[articles_pending]]></hkey><description><![CDATA[Base page for pending articles.]]></description><html><![CDATA[<div class="ROW HEADER">
+	<div class="CELL4">
+		Title
+	</div>
+	<div class="CELL4">
+		Warnings
+	</div>
+	<div class="CELL4">
+		Author
+	</div>
+	<div class="CELL4">
+		Created
+	</div>
+	<div class="clear"></div>
+</div>
+%PENDING%]]></html></template>

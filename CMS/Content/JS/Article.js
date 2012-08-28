@@ -37,6 +37,11 @@ function removeProtection(container)
     container.removeAttribute("onclick");
     container.removeAttribute("class");
 }
+function selectText(control)
+{
+    control.focus();
+    control.select();
+}
 // Credit: http://www.gotknowhow.com/articles/how-to-get-the-base-url-with-javascript
 function getBaseURL()
 {

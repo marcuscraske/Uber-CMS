@@ -1,0 +1,2 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[change_options]]></hkey><description><![CDATA[The admin options pane for the recent changes page.]]></description><html><![CDATA[Admin options: <a href="<!--URL-->/articles/recent_changes/wipe" class="BUTTON">Clear Log</a>
+<div class="clear"></div>]]></html></template>

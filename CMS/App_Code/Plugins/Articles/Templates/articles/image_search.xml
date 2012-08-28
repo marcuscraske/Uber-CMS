@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[image_search]]></hkey><description><![CDATA[The search for the image store.]]></description><html><![CDATA[<div class="ARTICLES_IMAGES_ALPHABET">
+	<a href="<!--URL-->/articles/images">All</a>
+	<a href="<!--URL-->/articles/images?a=a">A</a>
+	<a href="<!--URL-->/articles/images?a=b">B</a>
+	<a href="<!--URL-->/articles/images?a=c">C</a>
+	<a href="<!--URL-->/articles/images?a=d">D</a>
+	<a href="<!--URL-->/articles/images?a=e">E</a>
+	<a href="<!--URL-->/articles/images?a=f">F</a>
+	<a href="<!--URL-->/articles/images?a=g">G</a>
+	<a href="<!--URL-->/articles/images?a=h">H</a>
+	<a href="<!--URL-->/articles/images?a=i">I</a>
+	<a href="<!--URL-->/articles/images?a=j">J</a>
+	<a href="<!--URL-->/articles/images?a=k">K</a>
+	<a href="<!--URL-->/articles/images?a=l">L</a>
+	<a href="<!--URL-->/articles/images?a=m">M</a>
+	<a href="<!--URL-->/articles/images?a=n">N</a>
+	<a href="<!--URL-->/articles/images?a=o">O</a>
+	<a href="<!--URL-->/articles/images?a=p">P</a>
+	<a href="<!--URL-->/articles/images?a=q">Q</a>
+	<a href="<!--URL-->/articles/images?a=r">R</a>
+	<a href="<!--URL-->/articles/images?a=s">S</a>
+	<a href="<!--URL-->/articles/images?a=t">T</a>
+	<a href="<!--URL-->/articles/images?a=u">U</a>
+	<a href="<!--URL-->/articles/images?a=v">V</a>
+	<a href="<!--URL-->/articles/images?a=w">W</a>
+	<a href="<!--URL-->/articles/images?a=x">X</a>
+	<a href="<!--URL-->/articles/images?a=y">Y</a>
+	<a href="<!--URL-->/articles/images?a=z">Z</a>
+</div>
+<div class="ARTICLES_IMAGES_SEARCH">
+	<form method="get" action="<!--URL-->/articles/images">
+	Search: <input type="text" class="TEXTBOX" name="search" value="%SEARCH%" /> <input type="submit" class="BUTTON" value="Search" />
+	<!--IF:ARTICLE_CREATE-->
+		<a href="<!--URL-->/articles/images/upload" class="BUTTON">Upload New Image</a>
+	<!--ENDIF-->
+	</form>
+</div>
+<div class="ARTICLES_IMAGES_RESULTS">
+	%RESULTS%
+</div>]]></html></template>

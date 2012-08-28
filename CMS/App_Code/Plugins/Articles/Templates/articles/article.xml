@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article]]></hkey><description><![CDATA[The base page for an article.]]></description><html><![CDATA[<div class="ARTICLE">
 <!--IF:ARTICLE_SHOW_PANE-->
 	<div class="PANE">
-		Published %DATE%, rev. %REVISION%
+		<img src="<!--URL-->/article/thumbnail/%ARTICLEID%" alt="Article Thumbnail" class="THUMBNAIL" /> Published %DATE%, rev. %REVISION%
 		<div class="BUTTONS">
 			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/history">
 				<img src="<!--URL-->/Content/Images/articles/history.png" alt="History" />
@@ -22,13 +22,17 @@
 				<img src="<!--URL-->/Content/Images/articles/delete.png" alt="Delete" />
 				Delete
 			</a>
+			<a class="BUTT" href="<!--URL-->/articles/delete/%THREADID%">
+				<img src="<!--URL-->/Content/Images/articles/delete.png" alt="Delete" />
+				Delete Thread
+			</a>
 			<!--ENDIF:ARTICLE_PERM_DELETE-->
-			<!--IF:ARTICLE_PERM_PUBLISH&ARTICLE_PUBLISHED-->
+			<!--IF:ARTICLE_PERM_PUBLISH&ARTICLE_PUBLISHED&!ARTICLE_CURRENT-->
 			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/set">
 				<img src="<!--URL-->/Content/Images/articles/set.png" alt="Set As Current Article" />
 				Set As Current Article
 			</a>
-			<!--ENDIF:ARTICLE_PERM_PUBLISH&ARTICLE_PUBLISHED-->
+			<!--ENDIF:ARTICLE_PERM_PUBLISH&ARTICLE_PUBLISHED&!ARTICLE_CURRENT-->
 			<!--IF:!ARTICLE_PUBLISHED-->
 			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/publish">
 				<img src="<!--URL-->/Content/Images/articles/publish.png" alt="Publish" />

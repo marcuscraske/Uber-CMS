@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[editor]]></hkey><description><![CDATA[The editor used to create/modify articles.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/article/editor?%PARAMS%">
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[editor]]></hkey><description><![CDATA[The editor used to create/modify articles.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/article/editor?%PARAMS%" enctype="multipart/form-data">
 	<div class="ROW">
 		<div class="CELL2">
 			Title:
@@ -31,11 +31,23 @@
 	</div>
 	<div class="ROW">
 		<div class="CELL2">
+			Thumbnail:
+		</div>
+		<div class="CELL2">
+			<input name="thumbnail" type="file" />
+			<p>
+				If you're modifying an existing article, you can use the "Inherit thumbnail of article being modified" option to avoid re-uploading thumbnails.
+			</p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
 			Options:
 		</div>
 		<div class="CELL2">
 			<div class="CHECKBOX">
-				<input type="checkbox" name="allow_html" %ALLOW_HTML% />
+				<input type="checkbox" id="allow_html" name="allow_html" %ALLOW_HTML% />
 				<div>Allow HTML</div>
 			</div>
 			<div class="CHECKBOX">
@@ -46,18 +58,30 @@
 				<input type="checkbox" name="show_pane" %SHOW_PANE% />
 				<div>Show Options Pane</div>
 			</div>
+			<div class="CHECKBOX">
+				<input type="checkbox" name="inherit_thumbnail" %INHERIT% />
+				<div>Inherit thumbnail of article being modified</div>
+			</div>
 		</div>
 		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL1">
-			<textarea class="TEXTAREA" cols="100" rows="12" name="body">%BODY%</textarea>
+			<textarea class="TEXTAREA" cols="100" rows="12" name="body" id="ARTICLE_BODY">%BODY%</textarea>
 		</div>
 		<div class="clear"></div>
 	</div>
 	<div class="ROW">
-		<div class="CELL1">
+		<div class="CELL2">
+			<div class="BUTTON FL" onclick="previewArticle();">Preview</div>
+		</div>
+		<div class="CELL2">
 			<input type="submit" class="BUTTON FR" value="Save" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1" id="ARTICLE_PREVIEW">
 		</div>
 		<div class="clear"></div>
 	</div>

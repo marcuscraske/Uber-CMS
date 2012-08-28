@@ -1,12 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[history_header]]></hkey><description><![CDATA[The header on the history page of an articles thread.]]></description><html><![CDATA[<div class="ROW HEADER">
-	<div class="CELL3">
+	<div class="CELL4">
 		Title
 	</div>
-	<div class="CELL3">
+	<div class="CELL4">
 		Publication Status
 	</div>
-	<div class="CELL3">
+	<div class="CELL4">
 		Date &amp; Time of Creation
+	</div>
+	<div class="CELL4">
+		Options
 	</div>
 	<div class="clear"></div>
 </div>]]></html></template>

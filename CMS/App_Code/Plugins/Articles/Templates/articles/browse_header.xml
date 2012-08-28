@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[browse_header]]></hkey><description><![CDATA[The header for a section of articles.]]></description><html><![CDATA[<div class="A_HEADER">%TITLE%</div>]]></html></template>

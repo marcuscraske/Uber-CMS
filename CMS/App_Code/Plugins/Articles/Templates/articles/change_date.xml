@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[change_date]]></hkey><description><![CDATA[The date header of a series of change events.]]></description><html><![CDATA[<div class="CHANGE_DATE_HEADER">%TITLE%</div>]]></html></template>

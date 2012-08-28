@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[browse]]></hkey><description><![CDATA[The base page for browse page.]]></description><html><![CDATA[<div class="ARTICLES_BROWSE_SIDEBAR">
+	<div class="A_HEADER">
+		Search
+	</div>
+	<div class="A_ROW">
+		<form method="get" action="<!--URL-->/articles/search">
+			<input type="text" name="keywords" class="TEXTBOX" value="%SEARCH%" />
+			<input type="submit" class="BUTTON" value="Search" />
+		</form>
+	</div>
+	<div class="A_HEADER">
+		Pages
+	</div>
+	<a class="A_ROW" href="<!--URL-->/articles">
+		<img src="<!--URL-->/Content/Images/articles/main.png" alt="Main" />
+		Main
+	</a>
+	<!--IF:ARTICLES_CREATE-->
+	<a class="A_ROW" href="<!--URL-->/article/editor">
+		<img src="<!--URL-->/Content/Images/articles/edit.png" alt="Create Article" />
+		Create Article
+	</a>
+	<!--ENDIF-->
+	<!--IF:ARTICLES_PUBLISH-->
+	<a class="A_ROW" href="<!--URL-->/articles/pending">
+		<img src="<!--URL-->/Content/Images/articles/publish.png" alt="Pending" />
+		Pending
+	</a>
+	<!--ENDIF-->
+	<a class="A_ROW" href="<!--URL-->/articles/images">
+		<img src="<!--URL-->/Content/Images/articles/images.png" alt="Image Store" />
+		Image Store
+	</a>
+	<!--IF:ARTICLES_STATS-->
+	<a class="A_ROW" href="<!--URL-->/articles/stats">
+		<img src="<!--URL-->/Content/Images/articles/stats.png" alt="Statistics" />
+		Statistics
+	</a>
+	<!--ENDIF-->
+	<a class="A_ROW" href="<!--URL-->/articles/recent_changes">
+		<img src="<!--URL-->/Content/Images/articles/changes.png" alt="Recent Changes" />
+		Recent Changes
+	</a>
+	<a class="A_ROW" href="<!--URL-->/articles/index">
+		<img src="<!--URL-->/Content/Images/articles/index.png" alt="Index" />
+		Index
+	</a>
+	<div class="A_HEADER">
+		Main Categories
+	</div>
+	%TAGS%
+	<div class="clear"></div>
+</div>
+<div class="ARTICLES_BROWSE_CONTENT">
+	%CONTENT%
+</div>]]></html></template>

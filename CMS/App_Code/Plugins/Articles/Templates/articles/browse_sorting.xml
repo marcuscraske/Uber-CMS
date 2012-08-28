@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[browse_sorting]]></hkey><description><![CDATA[The sorting navigation for the browsing page.]]></description><html><![CDATA[<div class="SORTING">
+	Sorting:
+	<a href="<!--URL-->/%URL%&amp;sort=t_a">
+		Title A-Z
+	</a>
+	<a href="<!--URL-->/%URL%&amp;sort=t_d">
+		Title Z-A
+	</a>
+	<a href="<!--URL-->/%URL%&amp;sort=d_a">
+		Oldest
+	</a>
+	<a href="<!--URL-->/%URL%&amp;sort=d_d">
+		Latest
+	</a>
+</div>]]></html></template>
