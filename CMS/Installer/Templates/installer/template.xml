@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[installer]]></pkey><hkey><![CDATA[template]]></hkey><description><![CDATA[Installation template.]]></description><html><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Uber CMS - Installer - <!--TITLE--></title>
+		<link type="text/css" rel="Stylesheet" href="<!--URL-->/Content/CSS/Installer.css" />
+	</head>
+	<body>
+		<div class="WRAPPER">
+			<div class="BANNER">
+				&Uuml;ber CMS - Installer
+			</div>
+			<div class="BODY">
+				<div class="TITLE">
+					<!--TITLE-->
+				</div>
+				<div class="CONTENT">
+					<!--CONTENT-->
+					<div class="clear"></div>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="FOOTER">
+				License: Creative Commons Attribution-ShareAlike 3.0 unported<br />
+				<a href="http://www.ubermeat.com">ubermeat.com</a>
+			</div>
+		</div>
+	</body>
+</html>]]></html></template>

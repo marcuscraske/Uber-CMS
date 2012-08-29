@@ -483,12 +483,12 @@ namespace UberCMS.Misc
         /// Installs a plugin from either a zip-file or from a given path; if the install is from a zip, the zip file
         /// will not be deleted by this process (therefore you'll need to delete it after invoking this method).
         /// </summary>
-        /// <param name="basePath"></param>
+        /// <param name="basePath">The base path of where the plugin is located.</param>
         /// <param name="pathIsZipFile">Specifies if the basePath parameter is a path of a directory (if false) or a zip file (if true).</param>
         /// <param name="conn"></param>
         /// <param name="pluginid">Specify this parameter as null if the plugin is new; if this is specified, the existing plugin entry will be updated.</param>
         /// <returns></returns>
-        public static string install(string pluginid, string basePath, bool pathIsZipFile, Connector conn)
+        public static string install(string pluginid, ref string finalPluginid, string basePath, bool pathIsZipFile, Connector conn)
         {
             string error, tempPath = null, pluginDir = null;
             if (pathIsZipFile)
@@ -611,9 +611,12 @@ namespace UberCMS.Misc
             try
             {
                 if (pluginid == null) // Insert if the pluginid is null, else we'll just update the status
-                    conn.Query_Execute("INSERT INTO plugins (title, directory, classpath, cycle_interval, invoke_order, state, handles_404, handles_request_start, handles_request_end) VALUES('" + Utils.Escape(title) + "', '" + Utils.Escape(directory) + "', '" + Utils.Escape(classpath) + "', '" + Utils.Escape(cycleInterval) + "', '" + Utils.Escape(invokeOrder) + "', '" + (int)(UberCMS.Plugins.Base.State.Disabled) + "', '" + (handles404 ? "1" : "0") + "', '" + (handlesRequestStart ? "1" : "0") + "', '" + (handlesRequestEnd ? "1" : "0") + "')");
+                    finalPluginid = conn.Query_Scalar("INSERT INTO plugins (title, directory, classpath, cycle_interval, invoke_order, state, handles_404, handles_request_start, handles_request_end) VALUES('" + Utils.Escape(title) + "', '" + Utils.Escape(directory) + "', '" + Utils.Escape(classpath) + "', '" + Utils.Escape(cycleInterval) + "', '" + Utils.Escape(invokeOrder) + "', '" + (int)(UberCMS.Plugins.Base.State.Disabled) + "', '" + (handles404 ? "1" : "0") + "', '" + (handlesRequestStart ? "1" : "0") + "', '" + (handlesRequestEnd ? "1" : "0") + "'); SELECT LAST_INSERT_ID();").ToString();
                 else
+                {
                     conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Disabled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");
+                    finalPluginid = pluginid;
+                }
             }
             catch (Exception ex)
             {
@@ -692,6 +695,12 @@ namespace UberCMS.Misc
             }
             return null;
         }
+        /// <summary>
+        /// Enables a plugin.
+        /// </summary>
+        /// <param name="pluginid"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
         public static string enable(string pluginid, Connector conn)
         {
             // Grab classpath
@@ -715,6 +724,12 @@ namespace UberCMS.Misc
             Core.cmsStart();
             return null;
         }
+        /// <summary>
+        /// Disables a plugin.
+        /// </summary>
+        /// <param name="pluginid"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
         public static string disable(string pluginid, Connector conn)
         {
             // Grab classpath

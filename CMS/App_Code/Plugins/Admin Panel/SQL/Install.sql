@@ -7,3 +7,8 @@
 	category TEXT,
 	menu_icon TEXT
 );
+CREATE TABLE IF NOT EXISTS `admin_alerts`
+(
+	message TINYTEXT,
+	datetime DATETIME
+);

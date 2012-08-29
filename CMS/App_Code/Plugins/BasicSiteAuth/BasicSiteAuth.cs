@@ -45,6 +45,7 @@ namespace UberCMS.Plugins
         public const int SECRET_ANSWER_MAX = 40;
         public const int USER_GROUP_TITLE_MIN = 1;
         public const int USER_GROUP_TITLE_MAX = 25;
+        public const string FLAG_PASSWORD_ACCESSED = "bsa_password_accessed";
         #endregion
 
         #region "Constants - Setting Keys"
@@ -199,6 +200,21 @@ namespace UberCMS.Plugins
         }
         public static void requestEnd(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
         {
+            // Check no query has been injected
+            const string REGEX_ANTI_INJECTION_TEST = @"(([a-zA-Z0-9]+).(password|\*)(?:.+)(bsa_users AS (\2 |\2$)))|((.+[^.])(password|\*)(?:.+)FROM(?:.+)bsa_users)";
+            if (!pageElements.containsFlag(FLAG_PASSWORD_ACCESSED))
+            {
+                foreach (string query in conn.Logging_Queries())
+                    if (Regex.IsMatch(query, REGEX_ANTI_INJECTION_TEST, RegexOptions.Multiline | RegexOptions.IgnoreCase))
+                    {
+                        // Uh oh...injection occurred...SHUT DOWN EVERYTHING.
+                        AdminPanel.addAlert(conn, "Following query has been detected as an injection:\n" + query);
+                        conn.Disconnect();
+                        response.Write("Your request has been terminated due to a security concern; please try again or contact the site administrator!");
+                        response.End();
+                    }
+            }
+            // Check the users session is still valid
             if (HttpContext.Current.User.Identity.IsAuthenticated)
             {
                 // Set base flag(s)
@@ -1086,6 +1102,8 @@ namespace UberCMS.BasicSiteAuth
                 // Editing a user
                 string error = null;
                 bool updatedAccount = false;
+                // Set SQL injection protection flag (to disable flag)
+                pageElements.setFlag(Plugins.BasicSiteAuth.FLAG_PASSWORD_ACCESSED);
                 // Grab the user's info, bans and available user groups
                 Result user = conn.Query_Read("SELECT * FROM bsa_users WHERE userid='" + Utils.Escape(request.QueryString["2"]) + "'");
                 if (user.Rows.Count != 1) return;

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[installer]]></pkey><hkey><![CDATA[home]]></hkey><description><![CDATA[The welcome/home page for the installer.]]></description><html><![CDATA[<p>
+	Welcome to the &Uuml;ber CMS installation process.
+</p>
+<h2>What Will Happen...</h2>
+<p>
+	<ol>
+		<li>Database and general settings.</li>
+		<li>Installation process.</li>
+		<li>Finish.</li>
+	</ol>
+</p>
+<p>
+
+<a class="BUTTON" href="<!--URL-->/setup">Continue to general settings...</a>
+<div class="clear"></div>
+
+<h2>Advanced Users</h2>
+<h3>Custom Install</h3>
+<p>
+	To create a custom installation e.g. install your own plugins as apart of the process, you can modify
+	the file located in <i>\App_Code\InstallScript.cs</i> or add your own class within the namespace
+	<i>UberCMS.Installer</i> and create a method with the following header as an invocation point:
+</p>
+<p>
+	<i>public static void install(Connector conn)</i>
+</p>
+<p>
+	The object <i>Connector</i> will require you to add <i>using UberLib.Connector</i> to the top of your class
+	in the imports/using section.
+</p>
+<h3>Automatic Install</h3>
+<p>
+	To automatically install an &Uuml;ber CMS installation, simply create the file <i>CMS.config</i> in the
+	root of &Uuml;ber CMS. Then add the following text:
+</p>
+<p>
+	<i>
+		&lt;settings&gt;<br />
+		  &lt;db&gt;<br />
+			&lt;host&gt;hostname of MySQL server&lt;/host&gt;<br />
+			&lt;port&gt;port of MySQL server&lt;/port&gt;<br />
+			&lt;database&gt;the database for uber cms&lt;/database&gt;<br />
+			&lt;username&gt;MySQL username&lt;/username&gt;<br />
+			&lt;password&gt;associated password for the user&lt;/password&gt;<br />
+		  &lt;/db&gt;<br />
+		  &lt;mail&gt;<br />
+			&lt;host&gt;host name of mail server&lt;/host&gt;<br />
+			&lt;port&gt;port of mail server&lt;/port&gt;<br />
+			&lt;username&gt;username of an email account&lt;/username&gt;<br />
+			&lt;password&gt;password of the associated email account&lt;/password&gt;<br />
+			&lt;address&gt;the full address of the associated email account&lt;/address&gt;<br />
+		  &lt;/mail&gt;<br />
+		&lt;/settings&gt;<br />
+	</i>
+</p>
+<p>
+	Optionally you can leave the inside of <i>mail</i> empty (<i>&lt;mail&gt;&lt;/mail&gt; to disable the built-in
+	e-mail queue. Then you just need to visit the following URL to run the installation script:
+</p>
+<p>
+	<i><base path of application>/install/install</i>
+</p>
+<p>
+	For example:
+</p>
+<p>
+	<i>http://localhost/install/install</i>
+</p>]]></html></template>

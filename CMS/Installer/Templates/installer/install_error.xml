@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[installer]]></pkey><hkey><![CDATA[install_error]]></hkey><description><![CDATA[The error page for when an installation fails.]]></description><html><![CDATA[<p>
+	Error occurred during installation:
+</p>
+<h2>Primary Error</h2>
+<p>
+	%MESSAGE_PRIMARY%
+</p>
+<h3>Stack-trace:</h3>
+<p>
+	%STACK_TRACE_PRIMARY%
+</p>
+<h2>Base Error</h2>
+<p>
+	%MESSAGE_BASE%
+</p>
+<h3>Stack-trace:</h3>
+<p>
+	%STACK_TRACE_BASE%
+</p>]]></html></template>

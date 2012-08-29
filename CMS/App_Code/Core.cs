@@ -232,6 +232,7 @@ namespace UberCMS
                 conn.Settings_Timeout_Connection = 864000; // 10 days
                 conn.Settings_Timeout_Command = 3600; // 1 hour
             }
+            conn.Logging_Enabled = true;
             conn.Connect();
             return conn;
         }

@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[installer]]></pkey><hkey><![CDATA[general_settings]]></hkey><description><![CDATA[General settings page.]]></description><html><![CDATA[%ERROR%
+<form method="post" action="<!--URL-->/setup">
+	<h2>Database</h2>
+	<div class="ROW">
+		<div class="CELL2">
+			Host:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="db_host" value="%DB_HOST%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Port:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="db_port" value="%DB_PORT%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Username:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="db_username" value="%DB_USERNAME%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Password:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="db_password" value="%DB_PASSWORD%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Database:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="db_database" value="%DB_DATABASE%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<h2>E-mail Queue Settings</h2>
+	<div class="ROW">
+		<div class="CELL2">
+			Host:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="mail_host" value="%MAIL_HOST%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Port:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="mail_port" value="%MAIL_PORT%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Username:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="mail_username" value="%MAIL_USERNAME%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Password:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="mail_password" value="%MAIL_PASSWORD%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			Full e-mail address:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="mail_address" value="%MAIL_ADDRESS%" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<h2>Privacy</h2>
+	<div class="ROW">
+		<div class="CELL1">
+			<div class="CHECKBOX">
+				<input type="checkbox" name="privacy_indexing" %PRIVACY_INDEXING% />
+				<div>Disallow search engine indexing</div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<a href="<!--URL-->/home" class="BUTTON FL">Cancel</a>
+			<input type="submit" class="BUTTON FR" value="Continue to installation" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>]]></html></template>

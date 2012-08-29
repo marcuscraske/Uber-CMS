@@ -154,34 +154,54 @@ namespace UberCMS.Misc
             }
         }
         /// <summary>
+        /// Loads templates from a physical path; you should use a database, it's far more efficient!
+        /// </summary>
+        /// <param name="directory"></param>
+        public void reloadFromDisk(string directory)
+        {
+            templates.Clear(); // Clear existing templates
+            // Begin loading each template from file into memory
+            XmlDocument doc;
+            foreach (string file in Directory.GetFiles(directory, "*.xml", SearchOption.AllDirectories))
+            {
+                doc = new XmlDocument();
+                doc.LoadXml(File.ReadAllText(file));
+                templates.Add(doc["template"]["pkey"].InnerText + "$" + doc["template"]["hkey"].InnerText, doc["template"]["html"].InnerText);
+            }
+        }
+        /// <summary>
         /// Dumps the templates stored in the database to a directory; the parent parameter
         /// can be null to cause all templates to be dumped - specify string.empty for global
         /// templates.
         /// </summary>
         /// <param name="conn"></param>
-        /// <param name="directory"></param>
-        /// <param name="parent"></param>
+        /// <param name="directory">The full path of where templates will be dumped.</param>
+        /// <param name="parent">Specify null for all templates in the database.</param>
         public void dump(Connector conn, string directory, string parent)
         {
             // Delete existing templates
-            foreach (string file in Directory.GetFiles(directory, "*.xml", SearchOption.AllDirectories))
-                File.Delete(file);
-            foreach (string subdir in Directory.GetDirectories(directory, "*", SearchOption.AllDirectories))
-                try
-                { Directory.Delete(subdir, false); }
-                catch { }
+            string deletePath = parent == null ? directory : directory + "\\" + (parent.Length > 0 ? parent : "default");
+            if (Directory.Exists(deletePath))
+            {
+                foreach (string file in Directory.GetFiles(deletePath, "*.xml", SearchOption.AllDirectories))
+                    File.Delete(file);
+                foreach (string subdir in Directory.GetDirectories(deletePath, "*", SearchOption.AllDirectories))
+                    try
+                    { Directory.Delete(subdir, false); }
+                    catch { }
+            }
             // Write new templates
             XmlDocument doc;
             XmlWriter writer;
-            foreach (ResultRow template in conn.Query_Read("SELECT * FROM html_templates" + (parent != null ? " WHERE pkey='" + Utils.Escape(parent) + "'" : string.Empty) + " ORDER BY hkey ASC"))
+            foreach (ResultRow template in conn.Query_Read("SELECT * FROM html_templates" + (parent != null ? " WHERE pkey='" + Utils.Escape(parent == "default" ? string.Empty : parent) + "'" : string.Empty) + " ORDER BY hkey ASC"))
             {
                 doc = new XmlDocument();
                 // Check the directory exists
-                string dir = directory + "\\" + (template["pkey"].Length > 0 ? template["pkey"] + "\\" : string.Empty);
+                string dir = directory + "\\" + (template["pkey"].Length > 0 ? template["pkey"] : "default");
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
                 // Begin writing the template
-                writer = XmlWriter.Create(dir + template["hkey"] + ".xml");
+                writer = XmlWriter.Create(dir + "\\" + template["hkey"] + ".xml");
                 writer.WriteStartDocument();
                 writer.WriteStartElement("template");
 

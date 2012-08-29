@@ -350,7 +350,7 @@ namespace UberCMS.Plugins
                         {
                             formatted = line.Trim();
                             if (!formatted.StartsWith("//") && formatted.Length != 0)
-                                templates.Add(formatted == "default" ? string.Empty : formatted);
+                                templates.Add(formatted);
                         }
                     }
                     // Ensure the dump path exists

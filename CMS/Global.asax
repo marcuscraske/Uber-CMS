@@ -18,12 +18,12 @@
         string path = System.Web.HttpContext.Current.Request.Path;
         string pathL = path.ToLower();
         if (pathL.StartsWith("/content") || path.Equals("/favicon.ico")) return;
-        else if (pathL.StartsWith("/installer") && UberCMS.Core.state == UberCMS.Core.State.NotInstalled)
-        {
-            rewriteNewPath(Request.ApplicationPath + "/Install/Installer.aspx", Request.ApplicationPath + "/Install/Installer.aspx");
-            System.Web.HttpContext.Current.RewritePath(Request.ApplicationPath + "/Install/Installer.aspx");
-            return;
-        }
+#if !INSTALLED
+        else if (pathL.StartsWith("/install/content/"))
+            System.Web.HttpContext.Current.RewritePath(Request.ApplicationPath + "/Installer/Content/" + path.Substring(17));
+        else if (pathL.StartsWith("/install"))
+            rewriteNewPath(Request.ApplicationPath + "/Installer/Installer.aspx", Request.ApplicationPath + "/Installer/Installer.aspx?page=home");
+#endif
         else if (pathL.StartsWith("/archive")) System.Web.HttpContext.Current.RewritePath(Request.ApplicationPath + "/Default.aspx?page=404");
         else rewriteNewPath(Request.ApplicationPath + "Default.aspx", Request.ApplicationPath + "Default.aspx?page=home");
     }

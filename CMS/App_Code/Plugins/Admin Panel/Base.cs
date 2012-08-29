@@ -170,11 +170,29 @@ namespace UberCMS.Plugins
             string pageid = request.QueryString["1"];
             if (pageid == null)
             {
+                // Check if to delete warning messages
+                if (request.QueryString["wipe"] != null && Common.AntiCSRF.isValidTokenCookie(request, response))
+                    conn.Query_Execute("DELETE FROM admin_alerts;");
+                // Build warning messages
+                StringBuilder alerts = new StringBuilder(Core.templates["admin_panel"]["alert_header"]);
+                Result alertData = conn.Query_Read("SELECT message, datetime FROM admin_alerts ORDER BY datetime DESC");
+                if (alertData.Rows.Count > 0)
+                    foreach (ResultRow alert in alertData)
+                        alerts.Append(
+                            Core.templates["admin_panel"]["alert"]
+                            .Replace("%DATETIME%", HttpUtility.HtmlEncode(alert["datetime"]))
+                            .Replace("%MESSAGE%", alert["message"].Replace("<", "&lt;").Replace(">", "&gt;").Replace("\n", "<br />"))
+                            );
+                else
+                    alerts.Append("No alerts.");
+
+                // Set anti-csrf cookie
+                Common.AntiCSRF.setCookieToken(response);
                 // No page requested, display welcome message
 #if ADMIN_PANEL
-                pageElements["ADMIN_CONTENT"] = Core.templates["admin_panel"]["welcome"];
+                pageElements["ADMIN_CONTENT"] = Core.templates["admin_panel"]["welcome"].Replace("%ALERTS%", alerts.ToString());
 #else
-                pageElements["ADMIN_CONTENT"] = Core.templates["admin_panel"]["welcome_warning"];
+                pageElements["ADMIN_CONTENT"] = Core.templates["admin_panel"]["welcome_warning"].Replace("%ALERTS%", alerts.ToString());
 #endif
                 pageElements["ADMIN_TITLE"] = "Welcome!";
             }
@@ -194,6 +212,12 @@ namespace UberCMS.Plugins
             }
             // Build menu
             StringBuilder menu = new StringBuilder();
+            menu.Append(
+                Core.templates["admin_panel"]["menu_item"]
+                .Replace("%URL%", pageElements["URL"] + "/admin")
+                .Replace("%ICON%", HttpUtility.UrlEncode("Content/Images/admin_panel/home.png"))
+                .Replace("%TEXT%", HttpUtility.HtmlEncode("Home"))
+            );
             string currentHeader = null;
             foreach (ResultRow item in conn.Query_Read("SELECT pageid, title, category, menu_icon FROM admin_panel_pages ORDER BY category ASC, title ASC"))
             {
@@ -344,7 +368,8 @@ namespace UberCMS.Plugins
                         error = "Plugin is already installed.";
                     else
                     {
-                        error = Misc.Plugins.install(pluginidData[0]["pluginid"], Misc.Plugins.getPluginBasePath(pluginidData[0]["pluginid"], conn), false, conn);
+                        string ignore = null;
+                        error = Misc.Plugins.install(pluginidData[0]["pluginid"], ref ignore, Misc.Plugins.getPluginBasePath(pluginidData[0]["pluginid"], conn), false, conn);
                         if (error == null) // Operation successful
                         {
                             conn.Disconnect();
@@ -426,7 +451,8 @@ namespace UberCMS.Plugins
                         string zipPath = Core.basePath + "\\Cache\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + new Random().Next(1, int.MaxValue) + ".zip";
                         upload.SaveAs(zipPath);
                         // Attempt to install it
-                        error = Misc.Plugins.install(null, zipPath, true, conn);
+                        string ignore = null;
+                        error = Misc.Plugins.install(null, ref ignore, zipPath, true, conn);
                         if (error != null)
                             try
                             {
@@ -493,6 +519,21 @@ namespace UberCMS.Plugins
         public static void adminPage_Uninstall(string classpath, string method, Connector conn)
         {
             conn.Query_Execute("DELETE FROM admin_panel_pages WHERE classpath='" + Utils.Escape(classpath) + "' AND method='" + Utils.Escape(method) + "'");
+        }
+        #endregion
+
+        #region "Methods - Alerts"
+        /// <summary>
+        /// Adds a notification/alert to the homepage of the admin panel; this is useful in the event of
+        /// a serious error or issue arising, as a way to inform the site administrator.
+        /// 
+        /// Maximum length is 255 bytes (TINYTEXT).
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="message"></param>
+        public static void addAlert(Connector conn, string message)
+        {
+            conn.Query_Execute("INSERT INTO admin_alerts (message, datetime) VALUES('" + Utils.Escape(message) + "', NOW())");
         }
         #endregion
     }

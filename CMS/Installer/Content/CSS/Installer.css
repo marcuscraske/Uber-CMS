@@ -1,0 +1,210 @@
+﻿/* Base template */
+.clear
+{
+    clear: both;
+}
+.FR
+{
+    float: right;
+}
+.FL
+{
+    float: left;
+}
+body
+{
+    margin: 0em;
+    background: #690;
+    font: normal 14px Arial;
+    color: #360;
+}
+.WRAPPER
+{
+    min-width: 60em;
+}
+.WRAPPER .BANNER
+{
+    background: #9C0;
+    font-size: 2em;
+    color: #FFF;
+    padding: 0.25em 0.5em;
+    border-bottom: solid 0.4em #360;
+    text-shadow: 0em 0em 0.3em #666;
+    font-weight: bold;
+}
+.WRAPPER .BODY
+{
+    padding: 1em 2em 0em 2em;
+    box-shadow: 0em 0em 3em -1em #000;
+}
+.WRAPPER .BODY .TITLE
+{
+    border-radius: 0.5em;
+    border-bottom-left-radius: 0em;
+    border-bottom-right-radius: 0em;
+    background: #360;
+    color: #FFF;
+    padding: 0.25em 0.5em;
+    font-size: 1.25em;
+}
+.WRAPPER .BODY .CONTENT
+{
+    background: #FFF;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    border-top-left-radius: 0em;
+    border-top-right-radius: 0em;
+}
+.WRAPPER .FOOTER
+{
+    margin-top: 1em;
+    text-align: center;
+}
+.WRAPPER .FOOTER a
+{
+    color: #360;
+}
+/* Error container */
+.ERROR
+{
+    margin: 0.5em 0em;
+    padding: 0.5em;
+}
+.ERROR .TEXT
+{
+    padding: 0.3em 0.5em;
+    background: #FCC;
+    color: #F00;
+    border: solid 0.2em #F00;
+}
+/* Headers */
+h2, h3
+{
+    padding: 0.25em 0.5em;
+    font-size: 1.1em;
+    margin: 0em;
+}
+h2
+{
+    background: #360;
+    color: #FFF;
+}
+h3
+{
+    background: #CCC;
+    color: #666;
+}
+/* Button */
+.BUTTON
+{
+    display: inline-block;
+    background: #CCC;
+    color: #333;
+    border: none;
+    border-radius: 0.4em;
+    padding: 0.5em;
+    cursor: pointer;
+    text-decoration: none;
+    font: inherit;
+    line-height: 1em;
+    margin: 0.25em;
+}
+.BUTTON:hover, .BUTTON:focus
+{
+    background: #333;
+    color: #FFF;
+}
+/* Textbox and Textarea */
+.TEXTBOX
+{
+    width: 12em;
+}
+.TEXTBOX, .TEXTAREA
+{
+    border: solid 0.1em #CCC;
+    padding: 0.25em;
+}
+.TEXTBOX:hover, .TEXTBOX:focus, .TEXTAREA:hover, .TEXTAREA:focus
+{
+    background: #CCC;
+    color: #333;
+    border: solid 0.1em #666;
+}
+/* Checkbox */
+.CHECKBOX
+{
+    display: inline-block;
+    color: #333;
+    margin: 0.5em;
+    height: 2em;
+    line-height: 2em;
+    border: solid 0.1em #CCC;
+}
+.CHECKBOX div
+{
+    float: right;
+    background: #CCC;
+    padding: 0em 0.5em;
+}
+.CHECKBOX input[type=checkbox]
+{
+    float: left;
+    margin: 0.5em;
+    padding: 0em;
+}
+.CHECKBOX input[type=checkbox]:checked ~ div
+{
+    background: #9C0;
+    color: #360;
+}
+/* The following CSS is taken from the actual CMS */
+/* Tables */
+.ROW
+{
+    clear: both;
+    padding: 0.5em;
+    margin: 0.5em 0em;
+}
+.ROW.HEADER, .ROW.SUB_HEADER /* For shared styling for heading rows */
+{
+    border-radius: 0.5em;
+}
+.ROW.HEADER /* For header rows */
+{
+    background: #333;
+    color: #FFF;
+}
+.ROW.SUB_HEADER
+{
+    background: #CCC;
+    color: #333;
+}
+.ROW.HEADER a
+{
+    color: #FFF;
+    text-decoration: none;
+}
+.ROW.BORDER /* Bottom-border */
+{
+    border-bottom: solid 0.2em #CCC;
+}
+.ROW .CELL1, .ROW .CELL2, .ROW .CELL3, .ROW .CELL4
+{
+    float: left;
+}
+.ROW .CELL1 /* Row with one cell */
+{
+    width: 100%;
+}
+.ROW .CELL2 /* Row with two cells */
+{
+    width: 50%;
+}
+.ROW .CELL3 /* Row with three cells */
+{
+    width: 33%;
+}
+.ROW .CELL4 /* Row with four cells */
+{
+    width: 25%;
+}
