@@ -96,7 +96,7 @@ namespace UberCMS.Plugins.UberMedia
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_THUMBNAIL_THREAD_TTL, "40000", "The maximum amount of milliseconds for a thumbnail to generate an image; if exceeded, the thumbnail generation is terminated.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_CONVERSION_THREADS, "2", "The number of conversions to take place simultaneously.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_CONVERSION_TIMEOUT, "14400", "The maximum seconds for a conversion to successfully complete.", false);
-            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_TEMPLATE_GLOBAL, "1", "Boolean value; if true, the Uber Media template is applied globally to every single page. This is not recommended for CMS's with other non-Uber Media plugins.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_TEMPLATE_GLOBAL, "0", "Boolean value; if true, the Uber Media template is applied globally to every single page. This is not recommended for CMS's with other non-Uber Media plugins.", false);
             // Reserve URLs
             if ((error = Misc.Plugins.reserveURLs(pluginid, null, new string[] { "home", "ubermedia", "terminal" }, conn)) != null)
                 return error;
