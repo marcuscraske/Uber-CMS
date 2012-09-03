@@ -4,6 +4,6 @@
 // Add CSS
 %GLOBAL%\Content\CSS\UberMedia.css,\Content\CSS
 // Add JS
-%GLOBAL%\Content\JS\ubermedia\*,\Content\JS
+%GLOBAL%\Content\JS\ubermedia\*,\Content\JS\ubermedia
 // Add images
 %GLOBAL%\Content\Images\ubermedia\*,\Content\Images\ubermedia
