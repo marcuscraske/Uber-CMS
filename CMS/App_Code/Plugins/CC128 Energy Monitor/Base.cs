@@ -96,6 +96,7 @@ namespace UberCMS.Plugins
                 // Write the last watt reading
                 response.ContentType = "text/xml";
                 response.Write("<d><w>" + lastReadingWatts + "</w><m>" + maxWatts + "</m></d>");
+                conn.Disconnect();
                 response.End();
             }
             else
