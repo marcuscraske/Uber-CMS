@@ -148,9 +148,8 @@ body
 .AREA_NAV .NAV_SEP
 {
     margin: 0.25em 0.5em;
-    width: 0.1em;
     height: 1.5em;
-    background: #690;
+	border-right: solid 0.1em #690;
 }
 .AREA_NAV .NAV_BUTTON:hover, .AREA_NAV .NAV_BUTTON:focus
 {
@@ -167,14 +166,14 @@ body
 .AREA_CONTENT
 {
 	z-index: 1;
-	margin-top: 1em;
 	width: 100%;
 	background: #FFF;
 	color: #360;
 	padding: 0.5em;
-	box-shadow: 0em 0em 3em -1em #000;
 	min-height: 25em;
 	border-radius: 0.5em;
+	border-top-left-radius: 0em;
+	border-top-right-radius: 0em;
 }
 .AREA_FOOTER, .AREA_FOOTER a
 {
@@ -185,10 +184,17 @@ body
 	padding: 0.5em;
 	text-align: center;
 }
+.AREA_SHADOW
+{
+	box-shadow: 0em 0em 3em -1em #000;
+}
+.AREA_TITLE
+{
+	width: 100%;
+	margin: 1em 0em 0em 0em;
+}
 h2, h3
 {
-	margin: -0.5em 0em 0.5em -0.5em;
-	width: 60em;
 	font-size: 1em;
 	padding: 0.5em;
 }
@@ -203,6 +209,7 @@ h3
 {
 	background: #CCC;
 	color: #666;
+	margin: 0em;
 }
 /* -- Content region -- */
 .FL

@@ -295,6 +295,8 @@ namespace UberCMS.Plugins
                         error = "You've exceeded the maximum login-attempts, try again in " + maxLoginPeriod + " minutes...";
                     else
                     {
+                        // Set anti-injection flag
+                        pageElements.setFlag(FLAG_PASSWORD_ACCESSED);
                         // Authenticate
                         Result res = conn.Query_Read("SELECT u.userid, u.password, g.access_login, COUNT(b.banid) AS active_bans FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS g ON g.groupid=u.groupid LEFT OUTER JOIN bsa_user_bans AS b ON (b.userid=u.userid AND ((b.unban_date IS NULL) OR (b.unban_date > NOW()) )) WHERE u.username='" + Utils.Escape(username) + "'");
                         if (res.Rows.Count != 1 || res[0]["password"] != generateHash(password, salt1, salt2))

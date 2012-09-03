@@ -219,6 +219,7 @@ namespace UberCMS.Plugins
                         else if (file[0].EndsWith("\\*"))
                         {
                             file[0] = file[0].Remove(file[0].Length - 2, 2);
+                            if (file[1].StartsWith("\\")) file[1] = file[1].Remove(0, 1);
                             // A path has been specified, not a file
                             if (!Directory.Exists(file[0]))
                                 filesMissing.Add(file[0] + " (DIRECTORY)");
@@ -240,15 +241,6 @@ namespace UberCMS.Plugins
                 // Remove the excluded filees from the files array
                 foreach (string f in filesExcluded)
                     files.Remove(f);
-                // If missing files have been found, inform the dev and abort
-                if (filesMissing.Count > 0)
-                {
-                    StringBuilder content = new StringBuilder("The following files are missing:");
-                    foreach (string f in filesMissing)
-                        content.Append("<br />'").Append(f).Append("'");
-                    pageElements["CONTENT"] = content.ToString();
-                    return;
-                }
                 // Create a zip in the base of the CMS - delete it if it exists
                 string zipPath = cmsBasePath + "\\" + Path.GetFileName(basePath) + ".zip";
                 if (File.Exists(zipPath))
@@ -264,8 +256,16 @@ namespace UberCMS.Plugins
                     }
                 }
                 // Begin building the output
-                StringBuilder output = new StringBuilder("Successfully packaged zip:<br />");
-                output.Append(zipPath).Append("<br /><br />Files excluded:");
+                StringBuilder output = new StringBuilder("Successfully packaged zip:<br />")
+                .Append(zipPath);
+                // If missing files have been found, inform the dev
+                if (filesMissing.Count > 0)
+                {
+                    output.Append("<br /><br />The following files are missing:");
+                    foreach (string f in filesMissing)
+                        output.Append("<br />'").Append(f).Append("'");
+                }
+                output.Append("<br /><br />Files excluded:");
                 foreach (string f in filesExcluded)
                     output.Append("<br />").Append(f);
                 output.Append("<br /><br />Files included:");
@@ -274,7 +274,14 @@ namespace UberCMS.Plugins
                 {
                     foreach (KeyValuePair<string, string> f in files)
                     {
-                        zip.AddFile(f.Key, f.Value);
+                        try
+                        {
+                            zip.AddFile(f.Key, f.Value);
+                        }
+                        catch(Exception ex)
+                        {
+                            throw new Exception("Failed to add file to zip - " + f.Key + " - " + f.Value + " - " + ex.Message, ex);
+                        }
                         output.Append("<br />").Append(f.Key);
                     }
                     zip.Save();
@@ -297,13 +304,17 @@ namespace UberCMS.Plugins
             // Apply destination suffix of .file if ending is .js to avoid web-server compile issues
             if (fileDestPath.EndsWith(".js"))
                 fileDestPath += ".file";
+            // Check the dest doesn't start with \
+            if (fileDestPath.StartsWith("\\"))
+                fileDestPath = fileDestPath.Remove(0, 1);
             // Validate the destination path does not exist already, if not add the file
             bool fileUnique = true;
+            // Check a duplicate file does not exist
+            string filename = Path.GetFileName(fileOrigin);
             if (files.ContainsValue(fileDestPath))
             {
-                // Check a duplicate file does not exist
                 foreach (KeyValuePair<string, string> f in files)
-                    if (f.Value == fileDestPath && f.Key.EndsWith("\\" + Path.GetFileName(fileOrigin)))
+                    if (f.Value == fileDestPath && f.Key.EndsWith("\\" + filename))
                     {
                         filesExcluded.Add(fileOrigin);
                         fileUnique = false;

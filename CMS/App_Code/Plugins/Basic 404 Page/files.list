@@ -1,0 +1,5 @@
+﻿// Add all of the files within the plugin
+%LOCAL%\*,\
+
+// Exclude PSD
+-%LOCAL%\cat.psd

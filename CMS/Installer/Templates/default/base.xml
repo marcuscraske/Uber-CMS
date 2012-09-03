@@ -37,7 +37,7 @@
 				<div>
 					<a href="./test sub item">
 						<span>
-							<img src="<!--URL-->/Content/Images/inbox.png" alt="Test" />test
+							test
 						</span>
 					</a>
 					<a href="./test sub item">
@@ -99,11 +99,6 @@
 						</div>
 					</div>
 					<div class="NAV_SEP"></div>
-					<a href="<!--URL-->/inbox" class="NAV_BUTTON">
-						<img src="<!--URL-->/Content/Images/inbox.png" alt="Inbox" />
-						(<!--MESSAGES-->)
-					</a>
-					<div class="NAV_SEP"></div>
 					<a href="<!--URL-->/profile" class="NAV_BUTTON">
 						<!--IF:BSA_PROFILES--><img src="<!--URL-->/profile_image/<!--USERID-->" alt="Profile picture" /><!--ENDIF:BSA_PROFILES-->
 						<!--USERNAME-->
@@ -121,10 +116,12 @@
 				<!--ENDIF-->
 			</div>
 		</div>
-		<div class="AREA_CONTENT AREA_ITEM">
-			<h2><!--TITLE--></h2>
-			<!--CONTENT-->
-			<div class="clear"></div>
+		<div class="AREA_SHADOW">
+			<h2 class="AREA_TITLE AREA_ITEM"><!--TITLE--></h2>
+			<div class="AREA_CONTENT AREA_ITEM">
+				<!--CONTENT-->
+				<div class="clear"></div>
+			</div>
 		</div>
 		<div class="AREA_FOOTER">
 			The license of content on this site varies between copyright and open-source licenses such as Creative-Commons; please view our <a href="./license">license</a> page for information on using our work. This site also uses cookies for session-management; by using this site, you agree to using cookies - for more information visit our <a href="./privacy">privacy</a> page.
