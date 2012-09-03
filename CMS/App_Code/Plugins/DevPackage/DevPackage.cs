@@ -27,36 +27,36 @@ namespace UberCMS.Plugins
             string error = null;
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
             // Uninstall templates
-            if((error = Misc.Plugins.templatesUninstall("devpackage", conn)) != null)
+            if ((error = Misc.Plugins.templatesUninstall("devpackage", conn)) != null)
                 return error;
             // Unreserve URLs
             if ((error = Misc.Plugins.unreserveURLs(pluginid, conn)) != null)
                 return error;
             return null;
         }
-        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             switch (request.QueryString["1"])
             {
                 case null:
                 case "home":
-                    pageHome(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageHome(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "sync":
-                    pageSync(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageSync(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "package":
-                    pagePackage(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pagePackage(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "dump":
-                    pageDump(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageDump(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "upload":
-                    pageUpload(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageUpload(pluginid, conn, ref pageElements, request, response);
                     break;
             }
         }
-        public static void pageHome(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageHome(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             pageElements["TITLE"] = "Developers - Package Automator";
             StringBuilder plugins = new StringBuilder();
@@ -79,7 +79,7 @@ namespace UberCMS.Plugins
         /// <param name="request"></param>
         /// <param name="response"></param>
         /// <param name="baseTemplateParent"></param>
-        public static void pageSync(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageSync(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             pageElements["TITLE"] = "Developers - Package Automator - Sync Global Files";
             string target = request.QueryString["2"];
@@ -160,7 +160,7 @@ namespace UberCMS.Plugins
         /// <param name="request"></param>
         /// <param name="response"></param>
         /// <param name="baseTemplateParent"></param>
-        public static void pagePackage(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pagePackage(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             pageElements["TITLE"] = "Developers - Package Automator - Package";
             string targetPluginid = request.QueryString["2"];
@@ -200,7 +200,7 @@ namespace UberCMS.Plugins
                             else
                                 foreach (string f in Directory.GetFiles(file[0], "*", SearchOption.AllDirectories))
                                     if (!f.EndsWith("\\Thumbs.db")) // Protection against adding Windows thumbnail indexer files
-                                        pagePackage_addFile(f, file[1] + Path.GetDirectoryName(f).Remove(0, file[0].Length - 1), ref files, ref filesExcluded);
+                                        pagePackage_addFile(f, file[1] + Path.GetDirectoryName(f).Remove(0, file[0].Length), ref files, ref filesExcluded);
                         }
                         else
                         {
@@ -213,7 +213,7 @@ namespace UberCMS.Plugins
                     }
                 }
                 // Remove the excluded filees from the files array
-                foreach(string f in filesExcluded)
+                foreach (string f in filesExcluded)
                     files.Remove(f);
                 // If missing files have been found, inform the dev and abort
                 if (filesMissing.Count > 0)
@@ -225,7 +225,7 @@ namespace UberCMS.Plugins
                     return;
                 }
                 // Create a zip in the base of the CMS - delete it if it exists
-                string zipPath = cmsBasePath + Path.GetFileName(basePath) + ".zip";
+                string zipPath = cmsBasePath + "\\" + Path.GetFileName(basePath) + ".zip";
                 if (File.Exists(zipPath))
                 {
                     try
@@ -299,7 +299,7 @@ namespace UberCMS.Plugins
         /// <param name="request"></param>
         /// <param name="response"></param>
         /// <param name="baseTemplateParent"></param>
-        public static void pageDump(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageDump(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             pageElements["TITLE"] = "Developers - Package Automator - Dump Templates";
             string templatesPath = null;
@@ -383,7 +383,7 @@ namespace UberCMS.Plugins
         /// <param name="request"></param>
         /// <param name="response"></param>
         /// <param name="baseTemplateParent"></param>
-        public static void pageUpload(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageUpload(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             pageElements["TITLE"] = "Developers - Package Automator - Upload Templates";
             string targetPluginid = request.QueryString["2"];

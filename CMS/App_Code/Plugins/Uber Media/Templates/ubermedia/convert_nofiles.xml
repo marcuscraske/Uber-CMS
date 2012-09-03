@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[convert_nofiles]]></hkey><description><![CDATA[Displayed to the user when they try to convert an item or folder and no files are found.]]></description><html><![CDATA[<h2>Convert File(s) - No Item(s) Found</h2>
+<p>
+The item you've selected to be converted does not exist or the folder selected has no items!
+</p>]]></html></template>

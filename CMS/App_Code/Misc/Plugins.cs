@@ -85,7 +85,8 @@ namespace UberCMS.Misc
             /// <returns></returns>
             public static RequestHandlers getRequestPlugin(Connector conn, HttpRequest request)
             {
-                string page = request.QueryString["page"] ?? "home";
+                // If no page is provided, we'll check for a default page in the setting, else we'll just use home
+                string page = request.QueryString["page"] ?? (Core.settings.contains("core", "default_page") ? Core.settings["core"]["default_page"] : "home");
                 RequestHandlers handlers = new RequestHandlers();
                 foreach (ResultRow handler in conn.Query_Read("SELECT p.pluginid, p.classpath FROM urlrewriting AS u LEFT OUTER JOIN plugins AS p ON p.pluginid=u.pluginid WHERE u.parent IS NULL AND u.title LIKE '" + Utils.Escape(page.Replace("%", "")) + "' AND p.state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' ORDER BY p.invoke_order ASC LIMIT 1"))
                     handlers.add(new RequestHandler(handler["pluginid"], handler["classpath"]));
@@ -236,22 +237,20 @@ namespace UberCMS.Misc
 
         #region "Methods - Content"
         /// <summary>
-        /// Installs a plugin content directory into the main /Content directory;
-        /// existing files will be over-written!
-        /// 
-        /// Files ending with .file will have their extension removed, useful for JavaScript files.
+        /// Copies files from one directory to another.
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="pathOrigin">The origin path of the content.</param>
+        /// <param name="pathDest">The destination path of the content.</param>
         /// <returns></returns>
-        public static string contentInstall(string path)
+        public static string contentInstall(string pathOrigin, string pathDest)
         {
             try
             {
                 string destPath;
                 string destDirectory;
-                foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+                foreach (string file in Directory.GetFiles(pathOrigin, "*", SearchOption.AllDirectories))
                 {
-                    destPath = Core.basePath + "\\Content" + file.Substring(path.Length);
+                    destPath = pathDest + file.Substring(pathOrigin.Length);
                     if (destPath.EndsWith(".file"))
                         destPath = destPath.Remove(destPath.Length - 5, 5);
                     destDirectory = Path.GetDirectoryName(destPath);
@@ -266,19 +265,20 @@ namespace UberCMS.Misc
             return null;
         }
         /// <summary>
-        /// Uninstalls a plugin content directory from the main /Content directory.
+        /// Removes files from the destination path that exist in the origin path.
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="pathOrigin">The origin path of the content.</param>
+        /// <param name="pathDest">The destination path of the content.</param>
         /// <returns></returns>
-        public static string contentUninstall(string path)
+        public static string contentUninstall(string pathOrigin, string pathDest)
         {
             try
             {
                 string destPath;
                 string destDirectory;
-                foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+                foreach (string file in Directory.GetFiles(pathOrigin, "*", SearchOption.AllDirectories))
                 {
-                    destPath = Core.basePath + "\\Content" + file.Substring(path.Length);
+                    destPath = pathDest + file.Substring(pathOrigin.Length);
                     if (destPath.EndsWith(".file"))
                         destPath = destPath.Remove(destPath.Length - 5, 5);
                     try
@@ -290,7 +290,7 @@ namespace UberCMS.Misc
                             // it's not critical the directory is deleted so we can ignore it...
                             Directory.Delete(destDirectory);
                     }
-                    catch{}
+                    catch { }
                 }
             }
             catch (Exception ex)
@@ -298,6 +298,27 @@ namespace UberCMS.Misc
                 return "Failed to uninstall content - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
             }
             return null;
+        }
+        /// <summary>
+        /// Installs a plugin content directory into the main /Content directory;
+        /// existing files will be over-written!
+        /// 
+        /// Files ending with .file will have their extension removed, useful for JavaScript files.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string contentInstall(string path)
+        {
+            return contentInstall(path, Core.basePath + "\\Content");
+        }
+        /// <summary>
+        /// Uninstalls a plugin content directory from the main /Content directory.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string contentUninstall(string path)
+        {
+            return contentUninstall(path, Core.basePath + "\\Content");
         }
         #endregion
 
@@ -715,7 +736,7 @@ namespace UberCMS.Misc
             }
             catch (Exception ex)
             {
-                return "Failed to enable plugin - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+                return "Failed to enable plugin - " + ex.Message + " - " + ex.GetBaseException().Message + " - " + ex.GetBaseException().StackTrace + "!";
             }
             // Update status
             conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Enabled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");
@@ -744,7 +765,7 @@ namespace UberCMS.Misc
             }
             catch (Exception ex)
             {
-                return "Failed to disable plugin - " + ex.Message + " - " + ex.GetBaseException().Message + "!";
+                return "Failed to disable plugin - " + ex.Message + " - " + ex.GetBaseException().Message + " - " + ex.GetBaseException().StackTrace + "!";
             }
             // Update status
             conn.Query_Execute("UPDATE plugins SET state='" + (int)UberCMS.Plugins.Base.State.Disabled + "' WHERE pluginid='" + Utils.Escape(pluginid) + "'");

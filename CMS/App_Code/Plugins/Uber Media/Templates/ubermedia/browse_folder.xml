@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[browse_folder]]></hkey><description><![CDATA[A folder on the browse page.]]></description><html><![CDATA[<div class="ITEM">
+	<a class="INFO" title="%TITLE%" href="<!--URL-->/ubermedia/browse/%PFOLDERID%/%VITEMID%">
+		<img class="THUMB" alt="Thumbnail" src="<!--URL-->/Content/Images/ubermedia/Browse/folder.png" />
+		%TITLE_S%
+	</a>
+	<div class="OPTIONS">
+		<a href="<!--URL-->/ubermedia/browse/%PFOLDERID%/%VITEMID%?action=queue_all">
+			<img src="<!--URL-->/Content/Images/ubermedia/Browse/add_to_queue.png" alt="Add to queue" title="Add to queue" />
+		</a>
+		<a href="<!--URL-->/ubermedia/browse/%PFOLDERID%/%VITEMID%?action=delete_folder">
+			<img src="<!--URL-->/Content/Images/ubermedia/Browse/delete.png" alt="Delete folder" title="Delete folder" />
+		</a>
+	</div>
+</div>]]></html></template>

@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[browse_footer_next]]></hkey><description><![CDATA[Browse next page button.]]></description><html><![CDATA[<a href="%URL%" class="B_NEXT">Next</a>]]></html></template>

@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[item_player_image]]></hkey><description><![CDATA[Used to view an image.]]></description><html><![CDATA[<img src="<!--URL-->ubermedia//item/<!--ITEM_VITEMID-->/stream" alt="<!--ITEM_TITLE-->" class="ITEM_IMG" />]]></html></template>

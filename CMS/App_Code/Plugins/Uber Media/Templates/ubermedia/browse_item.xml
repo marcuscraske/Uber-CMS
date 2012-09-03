@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[browse_item]]></hkey><description><![CDATA[An item on the browse page.]]></description><html><![CDATA[<div class="ITEM">
+	<a class="INFO" title="%TITLE%" href="<!--URL-->/ubermedia/item/%VITEMID%">
+		<img class="THUMB" alt="Thumbnail" src="<!--URL-->/ubermedia/thumbnail/%VITEMID%" />
+		%TITLE_S%
+	</a>
+	<div class="OPTIONS">
+		<a href="<!--URL-->/ubermedia/item/%VITEMID%/play_now" onclick="return itemPlay('%VITEMID%');">
+			<img src="<!--URL-->/Content/Images/ubermedia/Browse/play_now.png" alt="Play now" title="Play now" />
+		</a>
+		<a href="<!--URL-->/ubermedia/item/%VITEMID%/add_to_queue" onclick="return itemQueue('%VITEMID%');">
+			<img src="<!--URL-->/Content/Images/ubermedia/Browse/add_to_queue.png" alt="Add to queue" title="Add to queue" />
+		</a>
+		<a href="<!--URL-->/ubermedia/item/%VITEMID%/watch">
+			<img src="<!--URL-->/Content/Images/ubermedia/Browse/watch.png" alt="Watch" title="Watch" />
+		</a>
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

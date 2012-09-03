@@ -194,6 +194,16 @@ namespace UberCMS.Misc
             categories.Clear();
             categories = null;
         }
+        /// <summary>
+        /// Returns a boolean regarding of a key exists within a category.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool contains(string category, string key)
+        {
+            return categories.ContainsKey(category) && categories[category].settings.ContainsKey(key);
+        }
         #endregion
     }
 }

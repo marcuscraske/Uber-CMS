@@ -1,0 +1,2 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[admin_panel]]></pkey><hkey><![CDATA[alert_header]]></hkey><description><![CDATA[The header of the alert notifications area.]]></description><html><![CDATA[<a href="<!--URL-->/admin?wipe=1" class="BUTTON">Wipe Alerts</a>
+<div class="clear"></div>]]></html></template>

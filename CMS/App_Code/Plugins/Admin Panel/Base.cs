@@ -1,4 +1,18 @@
-﻿using System;
+﻿ ﻿/*
+ * UBERMEAT FOSS
+ * ****************************************************************************************
+ * License:                 Creative Commons Attribution-ShareAlike 3.0 unported
+ *                          http://creativecommons.org/licenses/by-sa/3.0/
+ * 
+ * Project:                 Uber CMS / Plugins / Admin Panel
+ * File:                    /App_Code/Plugins/Admin Panel/Base.cs
+ * Author(s):               limpygnome						limpygnome@gmail.com
+ * To-do/bugs:              none
+ * 
+ * An admin panel which allows the management of internal settings, the e-mail queue
+ * and installed plugins; this plugin is independent, with support for basic site auth.
+ */
+using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Text;
@@ -74,7 +88,7 @@ namespace UberCMS.Plugins
             return "Cannot uninstall the admin panel - modify the web.config file to run the site in debug-mode! This is protection against accidental uninstallation...";
 #endif
         }
-        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             switch (request.QueryString["page"])
             {
@@ -83,7 +97,7 @@ namespace UberCMS.Plugins
                     if (request.UrlReferrer != null && request.UrlReferrer.Host != request.Url.Host)
                         return; // The page doesn't exist...which helps if the request was made by a bot
                     // Delegate the request
-                    pageAdmin(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageAdmin(pluginid, conn, ref pageElements, request, response);
                     break;
             }
         }
@@ -124,7 +138,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        private static void pageAdmin(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        private static void pageAdmin(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Attach CSS file
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/AdminPanel.css", ref pageElements);
@@ -159,7 +173,7 @@ namespace UberCMS.Plugins
                 // Display form
                 pageElements["TITLE"] = "Admin - Token Authentication";
                 pageElements["CONTENT"] = Core.templates["admin_panel"]["token_login"]
-                    .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
+                    .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
                 return;
             }
 #endif
@@ -205,7 +219,7 @@ namespace UberCMS.Plugins
                 // Set the admin URL
                 pageElements["ADMIN_URL"] = pageElements["URL"] + "/admin/" + pageid;
                 // Invoke the page handler
-                if (!Misc.Plugins.invokeMethod(page[0]["classpath"], page[0]["method"], new object[] { conn, pageElements, request, response, baseTemplateParent }))
+                if (!Misc.Plugins.invokeMethod(page[0]["classpath"], page[0]["method"], new object[] { conn, pageElements, request, response }))
                     return;
                 else if (pageElements["ADMIN_CONTENT"] == null || pageElements["ADMIN_CONTENT"].Length == 0)
                     return;
@@ -244,7 +258,7 @@ namespace UberCMS.Plugins
         #endregion
 
         #region "Methods - Admin Pages"
-        public static void pageEmailQueue(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageEmailQueue(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Check for e-mail deletion
             string deleteEmailID = request.QueryString["delete"];
@@ -277,7 +291,7 @@ namespace UberCMS.Plugins
                 ;
             pageElements["ADMIN_TITLE"] = "Core - E-mail Queue";
         }
-        public static void pageSettings(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageSettings(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string error = null;
             bool successfullyUpdated = false;
@@ -341,11 +355,11 @@ namespace UberCMS.Plugins
             pageElements["ADMIN_CONTENT"] =
                 Core.templates["admin_panel"]["settings"]
                 .Replace("%ITEMS%", settingItems.ToString())
-                .Replace("%SUCCESS%", successfullyUpdated ? Core.templates[baseTemplateParent]["success"].Replace("%SUCCESS%", "Successfully saved settings!") : string.Empty)
-                .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
+                .Replace("%SUCCESS%", successfullyUpdated ? Core.templates[pageElements["TEMPLATE"]]["success"].Replace("%SUCCESS%", "Successfully saved settings!") : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
             pageElements["ADMIN_TITLE"] = "Core - Settings";
         }
-        public static void pagePlugins(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pagePlugins(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string error = null;
             // Check for action
@@ -432,7 +446,7 @@ namespace UberCMS.Plugins
                     // Display confirmation form
                     pageElements["ADMIN_CONTENT"] = Core.templates["admin_panel"]["plugin_uninstall"]
                         .Replace("%CSRF%", HttpUtility.HtmlEncode(Common.AntiCSRF.getFormToken()))
-                        .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                        .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
                         .Replace("%PLUGINID%", HttpUtility.HtmlEncode(pluginidData[0]["pluginid"]))
                         .Replace("%TITLE%", HttpUtility.HtmlEncode(pluginidData[0]["title"]));
                     pageElements["ADMIN_TITLE"] = "Core - Plugins - Uninstall";
@@ -447,6 +461,8 @@ namespace UberCMS.Plugins
                         error = "Invalid plugin zip archive specified!";
                     else
                     {
+                        // Check the cache directory exists
+                        if (!Directory.Exists(Core.basePath + "\\Cache")) Directory.CreateDirectory(Core.basePath + "\\Cache");
                         // Save the zip
                         string zipPath = Core.basePath + "\\Cache\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + new Random().Next(1, int.MaxValue) + ".zip";
                         upload.SaveAs(zipPath);
@@ -464,9 +480,8 @@ namespace UberCMS.Plugins
                 else
                     error = "Unhandled action!";
             }
-            else
-                // Set an anti-csrf protection cookie for the above actions to verify the process is genuine
-                Common.AntiCSRF.setCookieToken(response);
+            // Set an anti-csrf protection cookie for the above actions to verify the process is genuine
+            Common.AntiCSRF.setCookieToken(response);
             // List the plugins
             StringBuilder pluginsList = new StringBuilder();
             string state;
@@ -504,7 +519,7 @@ namespace UberCMS.Plugins
             }
             // Display content
             pageElements["ADMIN_CONTENT"] = Core.templates["admin_panel"]["plugins"]
-                .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
                 .Replace("%ITEMS%", pluginsList.ToString())
                 ;
             pageElements["ADMIN_TITLE"] = "Core - Plugins";

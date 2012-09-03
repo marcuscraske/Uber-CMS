@@ -1,0 +1,3 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[search]]></hkey><description><![CDATA[Displayed to the user when they go on the search page.]]></description><html><![CDATA[<h2>Search</h2>
+<p>Enter your search query in the top-right box!</p>
+<p>You can do this whilst on any page...</p>]]></html></template>

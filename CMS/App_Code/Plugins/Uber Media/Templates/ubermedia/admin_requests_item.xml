@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_requests_item]]></hkey><description><![CDATA[External requests item for admin_requests.]]></description><html><![CDATA[<div class="R">
+<div class="A">%REASON%</div>
+<div class="B">%DATETIME%</div>
+<div class="C">%URL%</div>
+<div class="clear"></div>
+</div>]]></html></template>

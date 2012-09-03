@@ -1,0 +1,3 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_terminals]]></hkey><description><![CDATA[Admin terminals page.]]></description><html><![CDATA[<h2>Terminals/Media Computers</h2>
+<h3>Remove Terminal</h3>
+%TERMINALS%]]></html></template>

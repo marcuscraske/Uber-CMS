@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[status_header]]></hkey><description><![CDATA[The heading of the status main page.]]></description><html><![CDATA[<h2>Status of Terminals</h2>
+<div class="R RH">
+	<div class="C3"><div class="P2">Title</div></div>
+	<div class="C3"><div class="P2">Last Communicated</div></div>
+	<div class="C3"><div class="P2">Options</div></div>
+<div class="clear"></div>
+</div>]]></html></template>

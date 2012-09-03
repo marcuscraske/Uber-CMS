@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_sidebar]]></hkey><description><![CDATA[Sidebar for the admin page.]]></description><html><![CDATA[<a href="<!--URL-->/ubermedia/admin"><img src="<!--URL-->/Content/Images/ubermedia/home.png" alt="Home" />Home</a>
+<a href="<!--URL-->/ubermedia/admin/startup"><img src="<!--URL-->/Content/Images/ubermedia/home.png" alt="Home" />Startup/Help</a>
+<h2>Options</h2>
+<a href="<!--URL-->/ubermedia/admin/folders"><img src="<!--URL-->/Content/Images/ubermedia/folders.png" alt="Configure Main Folders" />Configure Main Folders</a>
+<a href="<!--URL-->/ubermedia/admin/terminals"><img src="<!--URL-->/Content/Images/ubermedia/terminals.png" alt="Terminals" />Terminals/Media Computers</a>
+<a href="<!--URL-->/ubermedia/admin/tags"><img src="<!--URL-->/Content/Images/ubermedia/tags.png" alt="Tags" />Tags</a>
+<a href="<!--URL-->/ubermedia/admin/settings"><img src="<!--URL-->/Content/Images/ubermedia/configure.png" alt="Settings" />Settings</a>
+<a href="<!--URL-->/ubermedia/admin/requests"><img src="<!--URL-->/Content/Images/ubermedia/external.png" alt="View External Requests" />View External Requests</a>
+<h2>Services</h2>
+<a href="<!--URL-->/ubermedia/admin/rebuild_thumbnails"><img src="<!--URL-->/Content/Images/ubermedia/rebuild_thumbnail.png" alt="Rebuild Thumbnails" />Rebuild All Thumbnails</a>
+<a href="<!--URL-->/ubermedia/admin/rebuild_film_cache"><img src="<!--URL-->/Content/Images/ubermedia/rebuild_thumbnail.png" alt="Rebuild Film Information" />Rebuild Film Information Cache</a>
+<a href="<!--URL-->/ubermedia/admin/run_indexer"><img src="<!--URL-->/Content/Images/ubermedia/indexer.png" alt="Run Indexer" />Run Indexer</a>
+<a href="<!--URL-->/ubermedia/admin/stop_indexer"><img src="<!--URL-->/Content/Images/ubermedia/delete.png" alt="Stop Indexer" />Stop Indexer</a>
+<a href="<!--URL-->/ubermedia/admin/start_thumbnails"><img src="<!--URL-->/Content/Images/ubermedia/start.png" alt="Start Thumbnails Service" />Start Thumbnails Service</a>
+<a href="<!--URL-->/ubermedia/admin/stop_thumbnails"><img src="<!--URL-->/Content/Images/ubermedia/delete.png" alt="Stop Thumbnails Service" />Stop Thumbnails Service</a>
+<a href="<!--URL-->/ubermedia/admin/conversion_start"><img src="<!--URL-->/Content/Images/ubermedia/start.png" alt="Start Conversion Service" />Start Conversion Service</a>
+<a href="<!--URL-->/ubermedia/admin/conversion_stop"><img src="<!--URL-->/Content/Images/ubermedia/delete.png" alt="Stop Conversion Service" />Stop Conversion Service</a>
+<a href="<!--URL-->/ubermedia/admin/conversion_clear"><img src="<!--URL-->/Content/Images/ubermedia/delete.png" alt="Clear Conversion Queue" />Clear Conversion Queue</a>
+<h2>Tasks</h2>
+<a href="<!--URL-->/ubermedia/admin/rebuild_all"><img src="<!--URL-->/Content/Images/ubermedia/rebuild_thumbnail.png" alt="Rebuild Library" />Clear &amp; Rebuild Library</a>
+<a href="<!--URL-->/ubermedia/admin/uninstall"><img src="<!--URL-->/Content/Images/ubermedia/admin_uninstall.png" alt="Uninstall" />Uninstall</a>]]></html></template>

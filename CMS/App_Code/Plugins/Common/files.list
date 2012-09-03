@@ -1,6 +1,9 @@
 ﻿// Add all of the files within the plugin
 %LOCAL%\*,\
 
+// Exclude psd file
+-%LOCAL%\Unknown_Flag.psd
+
 // Add content files
 %GLOBAL%\Content\CSS\Common.css,\Content\CSS
 %GLOBAL%\Content\Images\common\*,\Content\Images\common

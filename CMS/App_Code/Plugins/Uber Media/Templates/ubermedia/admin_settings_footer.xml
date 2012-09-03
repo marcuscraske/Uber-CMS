@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_settings_footer]]></hkey><description><![CDATA[Admin settings page footer.]]></description><html><![CDATA[<div><input type="submit" class="BUTTON" value="Save" /></div>]]></html></template>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[browse_add_folder]]></hkey><description><![CDATA[Used to add a folder to a drive.]]></description><html><![CDATA[<h2>Add Folder</h2>
+<form method="post" action="%IURL%">
+	<div class="R">
+		<div class="C">Title:</div>
+		<div class="C"><input type="text" name="folder_title" value="%FOLDER_TITLE%" /></div>
+	</div>
+	<div class="R">
+		<div class="C">&nbsp;</div>
+		<div class="C"><input type="submit" value="Add" class="BUTTON" /></div>
+	</div>
+</form>
+<div class="clear"></div>
+<div class="ERROR_BOX" style="%ERROR_STYLE%"><div>%ERROR_MESSAGE%</div></div>
+<br />]]></html></template>

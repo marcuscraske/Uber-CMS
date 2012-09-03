@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_terminals_item]]></hkey><description><![CDATA[Admin terminals item (media computer/terminal).]]></description><html><![CDATA[<a href="<!--URL-->/ubermedia/admin/terminals/remove?t=%TERMINALID%" class="TERMINAL">
+<span>(%TERMINALID%) %TITLE%</span>
+<div><div>Last connected:</div>%UPDATED%</div>
+</a>]]></html></template>

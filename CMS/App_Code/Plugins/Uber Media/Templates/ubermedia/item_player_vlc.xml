@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[item_player_vlc]]></hkey><description><![CDATA[Used to play an item using the VLC webplayer (audio and video).]]></description><html><![CDATA[<embed type="application/x-vlc-plugin" pluginspage="http://www.videolan.org"
+	width="700px"
+	height="400px"
+	id="vlc">
+</embed>
+<script language="Javascript">
+<!--
+var vlc = document.getElementById("vlc");
+var id = vlc.playlist.add("<!--FULL_URL-->/ubermedia/item/<!--ITEM_VITEMID-->/stream", "Web Stream", "");
+vlc.playlist.playItem(id);
+vlc.play();
+//!-->
+</script>
+<p>
+	<a class="BUTTON" href="<!--URL-->/ubermedia/item/<!--ITEM_VITEMID-->/watch/vlc">Use VLC Web-player</a>&nbsp;&nbsp;<a class="BUTTON" href="<!--URL-->/ubermedia/item/<!--ITEM_VITEMID-->/watch">Use HTML5</a>&nbsp;&nbsp;<a class="BUTTON" href="<!--URL-->/ubermedia/item/<!--ITEM_VITEMID-->/watch?force_vlc=1">Force VLC</a>&nbsp;&nbsp;<a class="BUTTON" href="<!--URL-->/ubermedia/item/<!--ITEM_VITEMID-->/watch?force_vlc=0">Unforce VLC</a>
+	<div class="clear"></div>
+</p>
+<p>
+    Not working? You can open the following URL in a media player instead:
+</p>
+<a href="<!--FULL_URL-->/ubermedia/item/<!--ITEM_VITEMID-->/stream"><!--FULL_URL-->/ubermedia/item/<!--ITEM_VITEMID-->/stream</a>
+<p>
+   If so, it's recommended you use VLC as a media player:
+</p>
+<a href="http://www.videolan.org/vlc/">http://www.videolan.org/vlc/</a>]]></html></template>

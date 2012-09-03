@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[status_terminal]]></hkey><description><![CDATA[For each terminal element.]]></description><html><![CDATA[<div class="R RD">
+	<div class="C3">
+		<img src="<!--URL-->/Content/Images/ubermedia/Status/terminal.png" alt="Terminal Icon" title="Terminal Icon" />
+		%TITLE%
+	</div>
+	<div class="C3">
+		%STATUS%<br />
+		%UPDATED%
+	</div>
+	<div class="C3">
+		<a href="<!--URL-->/ubermedia/admin/terminals/remove?t=%TERMINALID%">Delete</a>
+		<a href="<!--URL-->/ubermedia/shutdown/%TERMINALID%">Shutdown</a>
+		<a href="<!--URL-->/ubermedia/restart/%TERMINALID%">Restart</a>
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

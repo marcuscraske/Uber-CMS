@@ -1,4 +1,18 @@
-﻿using System;
+﻿ ﻿/*
+ * UBERMEAT FOSS
+ * ****************************************************************************************
+ * License:                 Creative Commons Attribution-ShareAlike 3.0 unported
+ *                          http://creativecommons.org/licenses/by-sa/3.0/
+ * 
+ * Project:                 Uber CMS
+ * File:                    /App_Code/Plugins/Base.cs
+ * Author(s):               limpygnome						limpygnome@gmail.com
+ * To-do/bugs:              none
+ * 
+ * The base class for a plugin; this is used for enum referencing and to display the
+ * methods available for developers.
+ */
+using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Text;

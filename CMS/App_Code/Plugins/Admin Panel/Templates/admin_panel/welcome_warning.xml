@@ -1,3 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[admin_panel]]></pkey><hkey><![CDATA[welcome_warning]]></hkey><description><![CDATA[A warning displayed to the user if preprocessor directives have not been installed properly for the admin panel.]]></description><html><![CDATA[<p>Critical warning: pre-processor directives for the admin panel have not been installed correctly; this means other plugins dependent on this admin panel may not function correctly!</p>
 
-<p>You should fix this issue as soon as possible!!!</p>]]></html></template>
+<p>You should fix this issue as soon as possible!!!</p>
+<div class="ROW HEADER">
+	<div class="CELL1">
+		Alerts
+	</div>
+	<div class="clear"></div>
+</div>
+%ALERTS%]]></html></template>

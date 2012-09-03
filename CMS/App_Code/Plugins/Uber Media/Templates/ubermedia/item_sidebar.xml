@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[item_sidebar]]></hkey><description><![CDATA[The sidebar of the items page.]]></description><html><![CDATA[<h2>Options</h2>
+<a href="<!--URL-->/ubermedia/item/%VITEMID%"><img src="<!--URL-->/Content/Images/ubermedia/info.png" alt="View Details" />View Details</a>
+<a href="<!--URL-->/ubermedia/item/%VITEMID%/modify"><img src="<!--URL-->/Content/Images/ubermedia/modify.png" alt="Modify" />Modify</a>
+<a href="<!--URL-->/ubermedia/item/%VITEMID%/rebuild"><img src="<!--URL-->/Content/Images/ubermedia/rebuild_thumbnail.png" alt="Rebuild Thumbnail" />Rebuild Thumbnail</a>
+<a href="<!--URL-->/ubermedia/item/%VITEMID%/delete"><img src="<!--URL-->/Content/Images/ubermedia/delete.png" alt="Delete" />Delete</a>
+<a href="<!--URL-->/ubermedia/item/%VITEMID%/reset_views"><img src="<!--URL-->/Content/Images/ubermedia/reset_views.png" alt="Reset Views" />Reset Views</a>
+<a href="<!--URL-->/ubermedia/convert/%VITEMID%"><img src="<!--URL-->/Content/Images/ubermedia/convert.png" alt="Convert" />Convert</a>
+<h2>Media</h2>
+<a onclick="return itemPlay('%VITEMID%');" href="<!--URL-->/ubermedia/item/%VITEMID%/play_now"><img src="<!--URL-->/Content/Images/ubermedia/play_now.png" alt="Play Now" />Play Now</a>
+<a onclick="return itemQueue('%VITEMID%');" href="<!--URL-->/ubermedia/item/%VITEMID%/add_to_queue"><img src="<!--URL-->/Content/Images/ubermedia/play_queue.png" alt="Add to Queue" />Add to Queue</a>
+<a href="<!--URL-->/ubermedia/item/%VITEMID%/watch"><img src="<!--URL-->/Content/Images/ubermedia/play.png" alt="Add to Queue" />Watch via Browser</a>]]></html></template>

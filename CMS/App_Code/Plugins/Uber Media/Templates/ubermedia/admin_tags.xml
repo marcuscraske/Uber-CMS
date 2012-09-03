@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_tags]]></hkey><description><![CDATA[Admin tags page.]]></description><html><![CDATA[<h2>Tags</h2>
+<h3>Add New Tag</h3>
+<form method="post" action="<!--URL-->/ubermedia/admin/tags">
+<div class="R">
+
+<div class="C">Title:</div>
+<div class="C"><input type="text" name="title" /></div>
+
+<div class="C">&nbsp;</div>
+<div class="C"><input type="submit" class="BUTTON" value="Add" /></div>
+</div>
+</form>
+<div class="clear"></div>
+
+<div class="ERROR_BOX" style="<!--ERR_STYLE-->">
+<div><!--ERR_MSG--></div>
+</div>
+
+<h3>Remove Tags</h3>
+%TAGS%]]></html></template>

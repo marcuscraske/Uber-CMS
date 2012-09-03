@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[browse_youtube]]></hkey><description><![CDATA[Used to add a YouTube item to a file.]]></description><html><![CDATA[<h2>Add YouTube Video</h2>
+<form method="post" action="%IURL%">
+	<div class="R">
+		<div  class="C">YouTube URL:</div>
+		<div  class="C"><input type="text" name="youtube_url" value="%YOUTUBE_URL%" /></div>
+	</div>
+	<div class="R">
+		<div class="C">Title:</div>
+		<div class="C"><input type="text" name="youtube_title" value="%YOUTUBE_TITLE%" /></div>
+	</div>
+	<div class="R">
+		<div class="C">&nbsp;</div>
+		<div class="C"><input type="submit" value="Add" class="BUTTON" /></div>
+	</div>
+</form>
+<div class="clear"></div>
+<div class="ERROR_BOX" style="%ERROR_STYLE%"><div>%ERROR_MESSAGE%</div></div>
+<br />]]></html></template>

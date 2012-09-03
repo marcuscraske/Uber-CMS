@@ -1,0 +1,2 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[item_player_unknown]]></hkey><description><![CDATA[Displayed when a player cannot be found.]]></description><html><![CDATA[<h3>Cannot be played...</h3>
+<p>The following item is not supported for viewing/playing/interaction.</p>]]></html></template>

@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[base]]></hkey><description><![CDATA[The base page for the website.]]></description><html><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Uber Media</title>
+    <link rel="Stylesheet" type="text/css" href="<!--URL-->/Content/CSS/UberMedia.css" />
+    <script type="text/javascript" src="<!--URL-->/Content/JS/ubermedia/Core.js"></script>
+    <!--HEADER-->
+</head>
+<body onload="<!--ONLOAD-->">
+    <div class="AREA_SHADE">&nbsp;</div>
+    <div class="AREA_SHADE2">&nbsp;</div>
+    <div class="AREA_WRAPPER">
+        <div class="AREA_BANNER">
+            <div>
+                Search:
+                <input type="text" onkeyup="Search(this.value);" />
+            </div>
+            <h1>&Uuml;ber Media</h1>
+        </div>
+        <div class="AREA_NAVIGATION">
+            <a id="NAV_HOME" href="<!--URL-->/home" class="<!--NAVI_HOME-->">Home</a>
+            <span>&nbsp;</span>
+            <a  id="NAV_BROWSE" href="<!--URL-->/ubermedia/browse" class="<!--NAVI_BROWSE-->">Browse</a>
+            <span>&nbsp;</span>
+            <a  id="NAV_NEW" href="<!--URL-->/ubermedia/newest" class="<!--NAVI_NEWEST-->">Newest Additions</a>
+            <span>&nbsp;</span>
+            <a  id="NAV_POPULAR" href="<!--URL-->/ubermedia/popular" class="<!--NAVI_POPULAR-->">Popular</a>
+            <span>&nbsp;</span>
+            <a  id="NAV_CONTROL" href="<!--URL-->/ubermedia/control" class="<!--NAVI_CONTROL-->">Control</a>
+            <div>
+                Media Computer:
+                <select onchange="ChangeMediaComputer(this.value);">
+                    <!--MEDIACOMPUTERS-->
+                </select>
+            </div>
+        </div>
+        <div class="AREA_CONTENT">
+            <div id="LEFT">
+                      <!--CONTENT_LEFT-->
+            </div>
+            <div id="RIGHT">
+                      <!--CONTENT_RIGHT-->
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div class="AREA_FOOTER">
+        Creative Commons Attribution-ShareAlike 3.0 unported<br />
+        <a href="http://www.ubermeat.co.uk/">ubermeat.co.uk</a>
+    </div>
+</body>
+</html>]]></html></template>

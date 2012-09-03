@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[item_player_html5_video]]></hkey><description><![CDATA[Used to play an item using HTML5 video.]]></description><html><![CDATA[<style type="text/css">
+	video
+	{
+		background: #000;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+<script>
+ function failed(e)
+ {
+   // video playback failed - show a message saying why
+   switch (e.target.error.code)
+   {
+	 case e.target.error.MEDIA_ERR_ABORTED:
+	   alert('Failed to play media:\nYou aborted the video playback.');
+	   break;
+	 case e.target.error.MEDIA_ERR_NETWORK:
+	   alert('Failed to play media:\nA network error caused the video download to fail part-way.');
+	   break;
+	 case e.target.error.MEDIA_ERR_DECODE:
+	   alert('Failed to play media:\nThe video playback was aborted due to a corruption problem or because the video used features your browser did not support.');
+	   break;
+	 case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+	   alert('Failed to play media:\nThe video could not be loaded, either because the server or network failed or because the format is not supported.');
+	   break;
+	 default:
+	   alert('Failed to play media:\nAn unknown error occurred.');
+	   break;
+   }
+ }
+</script>
+
+<video autoplay controls onerror="failed(event)">
+	<source src="<!--URL-->/ubermedia/item/<!--ITEM_VITEMID-->/stream" />
+</video>
+
+<p>
+	<a class="BUTTON" href="<!--URL-->/ubermedia/item/<!--ITEM_VITEMID-->/watch/vlc">Use VLC Web-player</a>&nbsp;&nbsp;<a class="BUTTON" href="<!--URL-->/ubermedia/item/<!--ITEM_VITEMID-->/watch">Use HTML5</a>&nbsp;&nbsp;<a class="BUTTON" href="<!--URL-->/ubermedia/item/<!--ITEM_VITEMID-->/watch?force_vlc=1">Force VLC</a>&nbsp;&nbsp;<a class="BUTTON" href="<!--URL-->/ubermedia/item/<!--ITEM_VITEMID-->/watch?force_vlc=0">Unforce VLC</a>
+	<div class="clear"></div>
+</p>
+<p>
+    Not working? You can open the following URL in a media player instead:
+</p>
+<a href="<!--FULL_URL-->/ubermedia/item/<!--ITEM_VITEMID-->/stream"><!--FULL_URL-->/ubermedia/item/<!--ITEMID-->/stream</a>
+<p>
+   If so, it's recommended you use VLC as a media player:
+</p>
+<a href="http://www.videolan.org/vlc/">http://www.videolan.org/vlc/</a>]]></html></template>

@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS articles_thread
 	articleid_current INT,
 	FOREIGN KEY(`articleid_current`) REFERENCES `articles`(`articleid`) ON UPDATE CASCADE ON DELETE SET NULL
 );
-SET FOREIGN_KEY_CHECKS=1;
 CREATE TABLE IF NOT EXISTS articles
 (
 	articleid INT PRIMARY KEY AUTO_INCREMENT,
@@ -15,7 +14,8 @@ CREATE TABLE IF NOT EXISTS articles
 	title TEXT,
 	userid INT,
 	FOREIGN KEY(`userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE SET NULL,
-	thumbnailid FOREIGN KEY(`thumbnailid`) REFERENCES `articles_thumbnails`(`thumbnailid`) ON UPDATE CASCADE ON DELETE SET NULL,
+	thumbnailid INT,
+	FOREIGN KEY(`thumbnailid`) REFERENCES `articles_thumbnails`(`thumbnailid`) ON UPDATE CASCADE ON DELETE SET NULL,
 	body TEXT,
 	moderator_userid INT,
 	FOREIGN KEY(`moderator_userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE SET NULL,
@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS articles
 	datetime DATETIME
 );
 ALTER TABLE `articles` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+SET FOREIGN_KEY_CHECKS=1;
 CREATE TABLE IF NOT EXISTS articles_thumbnails
 (
 	thumbnailid INT PRIMARY KEY AUTO_INCREMENT,

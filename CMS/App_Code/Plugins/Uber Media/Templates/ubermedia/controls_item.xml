@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[controls_item]]></hkey><description><![CDATA[]]></description><html><![CDATA[<div class="PITEM">
+<a href="<!--URL-->/ubermedia/control?mc=<!--MEDIACOMPUTER-->&amp;manual=1&amp;cmd=remove&amp;cid=%CID%" class="x">X</a>
+<a href="<!--URL-->/ubermedia/item/%VITEMID%" class="i"><img src="<!--URL-->/ubermedia/thumbnail/%VITEMID%" alt="%TITLE%'s thumbnail" title="%TITLE%'s thumbnail" /></a><a href="<!--URL-->/ubermedia/control?mc=<!--MEDIACOMPUTER-->&amp;manual=1&amp;cmd=play_now&amp;cid=%CID%" class="t">%TITLE%</a>
+</div>]]></html></template>

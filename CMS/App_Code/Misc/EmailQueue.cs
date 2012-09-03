@@ -18,6 +18,14 @@ namespace UberCMS.Misc
         #endregion
 
         #region "Method - Constructors"
+        /// <summary>
+        /// Creates a new enabled e-mail queue.
+        /// </summary>
+        /// <param name="mailHost"></param>
+        /// <param name="mailPort"></param>
+        /// <param name="mailUsername"></param>
+        /// <param name="mailPassword"></param>
+        /// <param name="mailAddress"></param>
         public EmailQueue(string mailHost, int mailPort, string mailUsername, string mailPassword, string mailAddress)
         {
             threadProtection = new object();
@@ -28,6 +36,10 @@ namespace UberCMS.Misc
             this.mailAddress = mailAddress;
             mailErrors = 0;
         }
+        /// <summary>
+        /// Creates a disabled e-mail queue.
+        /// </summary>
+        public EmailQueue() {}
         #endregion
 
         #region "Methods - Start/stop"
@@ -36,6 +48,7 @@ namespace UberCMS.Misc
         /// </summary>
         public void start()
         {
+            if (threadProtection == null) return;
             lock (threadProtection)
             {
                 cyclerThread = new Thread(
@@ -51,6 +64,7 @@ namespace UberCMS.Misc
         /// </summary>
         public void stop()
         {
+            if (threadProtection == null) return;
             lock (threadProtection)
             {
                 cyclerThread.Abort();
@@ -76,6 +90,8 @@ namespace UberCMS.Misc
         /// </summary>
         public void cycler()
         {
+            // Ensure the e-mail queue is enabled
+            if (threadProtection == null) return;
             // Validate the settings, else stop
             if (mailHost == null || mailHost.Length == 0 || mailUsername == null || mailUsername.Length == 0 || mailPassword == null || mailAddress == null || mailAddress.Length == 0)
                 return;

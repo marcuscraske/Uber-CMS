@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[admin_panel]]></pkey><hkey><![CDATA[alert]]></hkey><description><![CDATA[An alert container for the welcome page.]]></description><html><![CDATA[<div class="ROW">
+	<div class="CELL2">
+		%DATETIME%
+	</div>
+	<div class="CELL2">
+		%MESSAGE%
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

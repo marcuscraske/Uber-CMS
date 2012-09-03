@@ -1,4 +1,21 @@
-﻿using System;
+﻿ ﻿/*
+ * UBERMEAT FOSS
+ * ****************************************************************************************
+ * License:                 Creative Commons Attribution-ShareAlike 3.0 unported
+ *                          http://creativecommons.org/licenses/by-sa/3.0/
+ * 
+ * Project:                 Uber CMS / Plugins / BasicSiteAuth
+ * File:                    /App_Code/BasicSiteAuth/BasicSiteAuth.cs
+ * Author(s):               limpygnome						limpygnome@gmail.com
+ * To-do/bugs:              none
+ * 
+ * A plugin to provide basic site authentication, although do not let the name fool you;
+ * this plugin supports "Admin Panel", contains user-groups and utilizes a double-salt
+ * SHA-512 custom-shifting algorithm for hashing passwords. This plugin also checks
+ * for any potential SQL injections at the end of requests; if this event occurs,
+ * the request is terminated and a notification is sent to the admin panel.
+ */
+using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Text;
@@ -168,37 +185,37 @@ namespace UberCMS.Plugins
             initSalts(pluginid, conn);
             return null;
         }
-        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             switch (request.QueryString["page"])
             {
                 case "login":
                     if (HttpContext.Current.User.Identity.IsAuthenticated) return;
-                    pageLogin(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageLogin(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "logout":
                     if (!HttpContext.Current.User.Identity.IsAuthenticated) return;
-                    pageLogout(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageLogout(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "register":
                     if (HttpContext.Current.User.Identity.IsAuthenticated) return;
-                    pageRegister(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageRegister(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "recover":
                     if (HttpContext.Current.User.Identity.IsAuthenticated) return;
-                    pageRecover(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageRecover(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "my_account":
                     if (!HttpContext.Current.User.Identity.IsAuthenticated) return;
-                    pageMyAccount(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageMyAccount(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "log":
                     if (!HttpContext.Current.User.Identity.IsAuthenticated) return;
-                    pageLog(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageLog(pluginid, conn, ref pageElements, request, response);
                     break;
             }
         }
-        public static void requestEnd(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void requestEnd(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Check no query has been injected
             const string REGEX_ANTI_INJECTION_TEST = @"(([a-zA-Z0-9]+).(password|\*)(?:.+)(bsa_users AS (\2 |\2$)))|((.+[^.])(password|\*)(?:.+)FROM(?:.+)bsa_users)";
@@ -251,7 +268,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        private static void pageLogin(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        private static void pageLogin(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             const string incorrectUserPassword = "Incorrect username or password!";
             string error = null;
@@ -323,7 +340,7 @@ namespace UberCMS.Plugins
                 .Replace("%REFERRAL%", HttpUtility.HtmlEncode(referral != null ? referral : request.UrlReferrer != null ? request.UrlReferrer.AbsoluteUri : pageElements["URL"] + "/home"))
                 .Replace("%USERNAME%", request.Form["username"] ?? string.Empty)
                 .Replace("%PERSIST%", request.Form["persist"] != null ? "checked" : string.Empty)
-                .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", error) : string.Empty);
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", error) : string.Empty);
         }
         /// <summary>
         /// Used to sign-out the user/dispose the session.
@@ -333,7 +350,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        private static void pageLogout(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        private static void pageLogout(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Dispose the current session
             FormsAuthentication.SignOut();
@@ -350,7 +367,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        private static void pageRegister(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        private static void pageRegister(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             switch (request.QueryString["1"])
             {
@@ -516,7 +533,7 @@ namespace UberCMS.Plugins
                         .Replace("%EMAIL%", request.Form["email"] ?? string.Empty)
                         .Replace("%SECRET_QUESTION%", request.Form["secret_question"] ?? string.Empty)
                         .Replace("%SECRET_ANSWER%", request.Form["secret_answer"] ?? string.Empty)
-                        .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", error) : string.Empty);
+                        .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", error) : string.Empty);
                     break;
             }
 
@@ -529,16 +546,16 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        private static void pageRecover(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        private static void pageRecover(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Check which function the user wants
             switch (request.QueryString["1"])
             {
                 case "email":
-                    pageRecover_Email(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageRecover_Email(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "secret_qa":
-                    pageRecover_SecretQA(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageRecover_SecretQA(pluginid, conn, ref pageElements, request, response);
                     break;
                 case null:
                     pageElements["TITLE"] = "Account Recovery";
@@ -554,7 +571,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        private static void pageRecover_SecretQA(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        private static void pageRecover_SecretQA(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             if (request.QueryString["2"] != null && request.QueryString["2"] == "success")
             {
@@ -637,7 +654,7 @@ namespace UberCMS.Plugins
                             .Replace("%USERNAME%", HttpUtility.HtmlEncode(username ?? string.Empty))
                             .Replace("%SECRET_QUESTION%", HttpUtility.HtmlEncode(sqa["secret_question"]))
                             .Replace("%SECRET_ANSWER%", HttpUtility.HtmlEncode(secretAnswer ?? string.Empty))
-                            .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
+                            .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
                     }
                 }
                 if (pageElements["CONTENT"] == null || pageElements["CONTENT"].Length == 0)
@@ -646,7 +663,7 @@ namespace UberCMS.Plugins
                     pageElements["TITLE"] = "Account Recovery - Secret Question";
                     pageElements["CONTENT"] = Core.templates["basic_site_auth"]["recovery_qa_user"]
                         .Replace("%USERNAME%", HttpUtility.HtmlEncode(username ?? string.Empty))
-                        .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
+                        .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
                 }
             }
         }
@@ -658,7 +675,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        private static void pageRecover_Email(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        private static void pageRecover_Email(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string error = null;
             if (request.QueryString["2"] != null)
@@ -697,7 +714,7 @@ namespace UberCMS.Plugins
                         pageElements["TITLE"] = "Account Recovery - New Password";
                         pageElements["CONTENT"] = Core.templates["basic_site_auth"]["recovery_email_newpass"]
                             .Replace("%CODE%", HttpUtility.UrlEncode(code))
-                            .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", error) : string.Empty);
+                            .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", error) : string.Empty);
                     }
                 }
             }
@@ -766,7 +783,7 @@ namespace UberCMS.Plugins
                 {
                     pageElements["TITLE"] = "Account Recovery - E-mail";
                     pageElements["CONTENT"] = Core.templates["basic_site_auth"]["recovery_email_form"]
-                        .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", error) : string.Empty);
+                        .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", error) : string.Empty);
                 }
             }
         }
@@ -778,7 +795,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        private static void pageMyAccount(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        private static void pageMyAccount(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string error = null;
             string currentPassword = request.Form["currentpassword"];
@@ -835,7 +852,7 @@ namespace UberCMS.Plugins
                 .Replace("%EMAIL%", HttpUtility.HtmlEncode(email ?? userInfo["email"]))
                 .Replace("%SECRET_QUESTION%", HttpUtility.HtmlEncode(secretQuestion ?? userInfo["secret_question"]))
                 .Replace("%SECRET_ANSWER%", HttpUtility.HtmlEncode(secretAnswer ?? userInfo["secret_answer"]))
-                .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : updatedSettings ? Core.templates[baseTemplateParent]["success"].Replace("%SUCCESS%", "Account settings successfully updated!") : string.Empty);
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : updatedSettings ? Core.templates[pageElements["TEMPLATE"]]["success"].Replace("%SUCCESS%", "Account settings successfully updated!") : string.Empty);
         }
         /// <summary>
         /// Displays logged events of the users actions; this can also be accessed by administrators for all users if the preprocessor
@@ -846,7 +863,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        private static void pageLog(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        private static void pageLog(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string userid = null;
             // Check what account we'll be displaying
@@ -1095,7 +1112,7 @@ namespace UberCMS.BasicSiteAuth
 {
     public static class Admin
     {
-        public static void pageUsers(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageUsers(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             if (request.QueryString["2"] != null)
             {
@@ -1237,7 +1254,7 @@ namespace UberCMS.BasicSiteAuth
                     .Replace("%BAN_REASON%", HttpUtility.HtmlEncode(banReason))
                     .Replace("%BAN_CUSTOM%", HttpUtility.HtmlEncode(ban))
                     .Replace("%BANS%", bansHistory.ToString())
-                    .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : updatedAccount ? Core.templates[baseTemplateParent]["success"].Replace("%SUCCESS%", "Successfully updated account settings!") : string.Empty)
+                    .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : updatedAccount ? Core.templates[pageElements["TEMPLATE"]]["success"].Replace("%SUCCESS%", "Successfully updated account settings!") : string.Empty)
                     .Replace("%USERID%", user[0]["userid"])
                     ;
                 pageElements["ADMIN_TITLE"] = "Authentication - Users - Editing '" + HttpUtility.HtmlEncode(user[0]["username"]) + "'";
@@ -1265,12 +1282,12 @@ namespace UberCMS.BasicSiteAuth
                 }
                 // Display user-search form
                 pageElements["ADMIN_CONTENT"] = Core.templates["basic_site_auth"]["admin_users"]
-                    .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                    .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
                     .Replace("%USERNAME%", HttpUtility.HtmlEncode(username));
                 pageElements["ADMIN_TITLE"] = "Authentication - Users";
             }
         }
-        public static void pageUserGroups(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageUserGroups(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string error = null;
             bool updatedSettings = false;
@@ -1306,7 +1323,7 @@ namespace UberCMS.BasicSiteAuth
                     .Replace("%GROUPID%", HttpUtility.HtmlEncode(transferGroupID))
                     .Replace("%TITLE%", HttpUtility.HtmlEncode(groupOrigin[0]["title"]))
                     .Replace("%GROUPS%", currentGroups.ToString())
-                    .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                    .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
                     ;
             }
             else
@@ -1432,7 +1449,7 @@ namespace UberCMS.BasicSiteAuth
                         );
                 }
                 pageElements["ADMIN_CONTENT"] = Core.templates["basic_site_auth"]["admin_user_groups"]
-                    .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : updatedSettings ? Core.templates[baseTemplateParent]["success"].Replace("%SUCCESS%", "Successfully updated settings!") : string.Empty)
+                    .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : updatedSettings ? Core.templates[pageElements["TEMPLATE"]]["success"].Replace("%SUCCESS%", "Successfully updated settings!") : string.Empty)
                     .Replace("%GROUP_ADD_TITLE%", HttpUtility.HtmlEncode(groupAddTitle))
                     .Replace("%ITEMS%", groups.ToString())
                     ;
@@ -1448,7 +1465,7 @@ namespace UberCMS.BasicSiteAuth
                 if (label["column_title"].Equals(columnName)) return label["title"];
             return defaultTitle;
         }
-        public static void pageUserLogs(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageUserLogs(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string error = null;
             // Check if a username has been posted
@@ -1472,7 +1489,7 @@ namespace UberCMS.BasicSiteAuth
             // Display form
             pageElements["ADMIN_TITLE"] = "Authentication - User Logs";
             pageElements["ADMIN_CONTENT"] = Core.templates["basic_site_auth"]["admin_user_logs"]
-                .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
                 .Replace("%USERNAME%", username ?? string.Empty);
         }
     }

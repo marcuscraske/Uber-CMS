@@ -3,4 +3,11 @@ Welcome to the admin panel!
 </p>
 <p>
 Form here you can add, remove and change the settings and mechanics of your CMS and plugins.
-</p>]]></html></template>
+</p>
+<div class="ROW HEADER">
+	<div class="CELL1">
+		Alerts
+	</div>
+	<div class="clear"></div>
+</div>
+%ALERTS%]]></html></template>

@@ -1,4 +1,18 @@
-﻿using System;
+﻿ ﻿/*
+ * UBERMEAT FOSS
+ * ****************************************************************************************
+ * License:                 Creative Commons Attribution-ShareAlike 3.0 unported
+ *                          http://creativecommons.org/licenses/by-sa/3.0/
+ * 
+ * Project:                 Uber CMS / Plugins / Articles
+ * File:                    /App_Code/Plugins/Articles/Base.cs
+ * Author(s):               limpygnome						limpygnome@gmail.com
+ * To-do/bugs:              none
+ * 
+ * A plugin which provides the ability to make articles with a revisioning system; you
+ * can also store images and tag articles.
+ */
+using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Text;
@@ -84,9 +98,6 @@ namespace UberCMS.Plugins
         {
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
             string error = null;
-            // Reserve URLS
-            if ((error = Misc.Plugins.reserveURLs(pluginid, null, new string[] { "article", "articles" }, conn)) != null)
-                return error;
             // Install content
             if((error = Misc.Plugins.contentInstall(basePath + "\\Content")) != null)
                 return error;
@@ -134,6 +145,9 @@ namespace UberCMS.Plugins
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_IMAGES_PER_PAGE, "9", "The number of images displayed per a page in the image store.", false);
             // Install default provider(s)
             formattingAdd(conn, pluginid, "UberCMS.Plugins.Common", "format");
+            // Reserve URLS
+            if ((error = Misc.Plugins.reserveURLs(pluginid, null, new string[] { "article", "articles" }, conn)) != null)
+                return error;
 
             return null;
         }
@@ -157,9 +171,6 @@ namespace UberCMS.Plugins
         {
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
             string error = null;
-            // Unreserve all URLs
-            if((error = Misc.Plugins.unreserveURLs(pluginid, conn)) != null)
-                return error;
             // Uninstall SQL
             if ((error = Misc.Plugins.executeSQL(basePath + "\\SQL\\Uninstall.sql", conn)) != null)
                 return error;
@@ -168,30 +179,30 @@ namespace UberCMS.Plugins
 
             return null;
         }
-        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             switch (request.QueryString["page"])
             {
                 case "article":
-                    pageArticle(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageArticle(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "articles":
-                    pageArticles(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageArticles(pluginid, conn, ref pageElements, request, response);
                     break;
                 default:
-                    pageArticle_Editor(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageArticle_Editor(pluginid, conn, ref pageElements, request, response);
                     break;
             }
         }
-        public static void handleRequestNotFound(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void handleRequestNotFound(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             if(Core.settings[SETTINGS_KEY].getBool(SETTINGS_KEY_HANDLES_404))
-                pageArticle_View(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pageArticle_View(pluginid, conn, ref pageElements, request, response);
         }
         #endregion
 
         #region "Methods - Page Handlers"
-        public static void pageArticles(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Grab permissions
             bool permPublish;
@@ -223,23 +234,23 @@ namespace UberCMS.Plugins
             string search = request.QueryString["keywords"];
             // Invoke the sub-page for content
             if (subpg == null)
-                pageArticles_Browse(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pageArticles_Browse(ref content, pluginid, conn, ref pageElements, request, response);
             else if (subpg == "images")
-                pageArticles_Images(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent, permCreate, permDelete, permPublish);
+                pageArticles_Images(ref content, pluginid, conn, ref pageElements, request, response, permCreate, permDelete, permPublish);
             else if (subpg == "recent_changes")
-                pageArticles_RecentChanges(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent, adminAccess);
+                pageArticles_RecentChanges(ref content, pluginid, conn, ref pageElements, request, response, adminAccess);
             else if (subpg == "search" && search != null && search.Length > 0 && search.Length < 40)
-                pageArticles_Search(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pageArticles_Search(ref content, pluginid, conn, ref pageElements, request, response);
             else if (subpg == "tag" && tag != null && tag.Length >= Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_TITLE_MIN) && tag.Length <= Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_TITLE_MAX))
-                pageArticles_Tag(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pageArticles_Tag(ref content, pluginid, conn, ref pageElements, request, response);
             else if (subpg == "stats")
-                pageArticles_Stats(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pageArticles_Stats(ref content, pluginid, conn, ref pageElements, request, response);
             else if (subpg == "pending")
-                pageArticles_Pending(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pageArticles_Pending(ref content, pluginid, conn, ref pageElements, request, response);
             else if (subpg == "delete")
-                pageArticles_Delete(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pageArticles_Delete(ref content, pluginid, conn, ref pageElements, request, response);
             else if (subpg == "index")
-                pageArticles_Index(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pageArticles_Index(ref content, pluginid, conn, ref pageElements, request, response);
             else
                 return; // Incorrect sub-page or parameters specified, abort the request and cause 404
             // Check content has been set, else 404
@@ -270,22 +281,22 @@ namespace UberCMS.Plugins
                 .Replace("%SEARCH%", HttpUtility.HtmlEncode(search))
                 ;
         }
-        public static void pageArticle(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticle(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             switch (request.QueryString["1"])
             {
                 default:
-                    pageArticle_View(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageArticle_View(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "create":
                 case "editor":
-                    pageArticle_Editor(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageArticle_Editor(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "thumbnail":
-                    pageArticle_Thumbnail(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageArticle_Thumbnail(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "preview":
-                    pageArticle_Preview(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageArticle_Preview(pluginid, conn, ref pageElements, request, response);
                     break;
             }
         }
@@ -300,8 +311,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        /// <param name="baseTemplateParent"></param>
-        public static void pageArticle_Editor(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticle_Editor(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Check the user is logged-in, else redirect to the login page
             if (!HttpContext.Current.User.Identity.IsAuthenticated)
@@ -509,7 +519,7 @@ namespace UberCMS.Plugins
             }
             // Display form
             pageElements["CONTENT"] = Core.templates["articles"]["editor"]
-                .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
                 .Replace("%PARAMS%", preData != null ? "articleid=" + HttpUtility.UrlEncode(preData[0]["articleid"]) : string.Empty)
                 .Replace("%TITLE%", HttpUtility.HtmlEncode(title ?? (preDataRow != null ? preDataRow["title"] : string.Empty)))
                 .Replace("%RELATIVE_PATH%", HttpUtility.HtmlEncode(relativeUrl ?? (preDataRow != null ? preDataRow["relative_url"] : string.Empty)))
@@ -527,7 +537,7 @@ namespace UberCMS.Plugins
             pageElements["TITLE"] = "Articles - Editor";
         }
         public static byte[] pageArticle_Thumbnail_Unknown = null;
-        public static void pageArticle_Thumbnail(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticle_Thumbnail(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             response.ContentType = "image/jpeg";
             // Cache the unknown image - spam/bot or failed responses will be a lot easier on the web server in terms of I/O
@@ -566,7 +576,7 @@ namespace UberCMS.Plugins
             conn.Disconnect();
             response.End();
         }
-        public static void pageArticle_Preview(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticle_Preview(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string data = request.Form["data"];
             bool allowHtml = request.Form["allow_html"] != null && request.Form["allow_html"].Equals("1");
@@ -591,7 +601,7 @@ namespace UberCMS.Plugins
         #endregion
 
         #region "Methods - Articles - Pages"
-        public static void pageArticles_Browse(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Browse(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             int browseArticlesSection = Core.settings[SETTINGS_KEY].getInt(SETTINGS_BROWSE_ARTICLES_SECTION);
             // Build recent articles
@@ -643,7 +653,7 @@ namespace UberCMS.Plugins
                 content.Append("None.");
             pageElements["TITLE"] = "Articles - Browse";
         }
-        public static void pageArticles_Tag(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Tag(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string tag = request.QueryString["2"];
             int browseArticlesPage = Core.settings[SETTINGS_KEY].getInt(SETTINGS_BROWSE_ARTICLES_PAGE);
@@ -687,7 +697,7 @@ namespace UberCMS.Plugins
             if (page < int.MaxValue && rawArticles.Rows.Count == browseArticlesPage) pageElements.setFlag("ARTICLES_PAGE_NEXT");
             pageElements["TITLE"] = "Articles - Tag - " + HttpUtility.HtmlEncode(tag);
         }
-        public static void pageArticles_Search(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Search(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string search = request.QueryString["keywords"];
             int browseArticlesPage = Core.settings[SETTINGS_KEY].getInt(SETTINGS_BROWSE_ARTICLES_PAGE);
@@ -722,7 +732,7 @@ namespace UberCMS.Plugins
             if (page < int.MaxValue && results.Rows.Count == browseArticlesPage) pageElements.setFlag("ARTICLES_PAGE_NEXT");
             pageElements["TITLE"] = "Articles - Search";
         }
-        public static void pageArticles_RecentChanges(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent, bool accessAdmin)
+        public static void pageArticles_RecentChanges(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, bool accessAdmin)
         {
             // Grab the page
             int page;
@@ -855,7 +865,7 @@ namespace UberCMS.Plugins
             // Output the page
             pageElements["TITLE"] = "Articles - Recent Changes";
         }
-        public static void pageArticles_Index(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Index(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             int browseArticlesPage = Core.settings[SETTINGS_KEY].getInt(SETTINGS_BROWSE_ARTICLES_PAGE);
             int page;
@@ -893,7 +903,7 @@ namespace UberCMS.Plugins
             if (page < int.MaxValue && results.Rows.Count == browseArticlesPage) pageElements.setFlag("ARTICLES_PAGE_NEXT");
             pageElements["TITLE"] = "Articles - Index";
         }
-        public static void pageArticles_Delete(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Delete(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string threadid = request.QueryString["2"];
             if (threadid == null || !HttpContext.Current.User.Identity.IsAuthenticated) return;
@@ -923,7 +933,7 @@ namespace UberCMS.Plugins
             // Display confirmation/security-verification form
             content.Append(Core.templates["articles"]["thread_delete"]
                 .Replace("%THREADID%", HttpUtility.HtmlEncode(threadData[0]["threadid"]))
-                .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
                 .Replace("%CSRF%", HttpUtility.HtmlEncode(Common.AntiCSRF.getFormToken()))
                 .Replace("%TITLE%", HttpUtility.HtmlEncode(threadData[0]["title"]))
                 .Replace("%ARTICLE_COUNT%", HttpUtility.HtmlEncode(threadData[0]["article_count"]))
@@ -931,7 +941,7 @@ namespace UberCMS.Plugins
                 );
             pageElements["TITLE"] = "Articles - Delete Thread";
         }
-        public static void pageArticles_Pending(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Pending(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Check the user has publishing permissions
             if (!HttpContext.Current.User.Identity.IsAuthenticated || !conn.Query_Scalar("SELECT ug.access_media_publish FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS ug ON ug.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'").ToString().Equals("1"))
@@ -1007,7 +1017,7 @@ namespace UberCMS.Plugins
 ;
 ";
         public static DateTime lastUpdatedStats = DateTime.MinValue;
-        public static void pageArticles_Stats(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Stats(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Check if to update the cached statistical data
             int polling = Core.settings[SETTINGS_KEY].getInt(SETTINGS_STATS_POLLING);
@@ -1018,19 +1028,19 @@ namespace UberCMS.Plugins
                 // Update the cached values - we want to avoid doing this often, since it would put strain on the database
                 // hence it's easier to simply update every x often when the page is requested and cache the values
                 ResultRow data = conn.Query_Read(STATS_QUERY)[0];
-                statsCache_threadsTotal = int.Parse(data["threads_total"]).ToString();
-                statsCache_threadsAverageRevisions = float.Parse(data["threads_average_revisions"]).ToString("0");
-                statsCache_articlesTotal = float.Parse(data["articles_total"]).ToString();
-                statsCache_articlesStorageText = Misc.Plugins.getBytesString(long.Parse(data["articles_storage_text"]));
-                statsCache_articlesStorageThumbs = Misc.Plugins.getBytesString(long.Parse(data["articles_storage_thumbs"]));
-                statsCache_articlesAverageLength = float.Parse(data["articles_average_length"]).ToString("0") + " characters";
-                statsCache_articlesTotalThumbnails = float.Parse(data["articles_thumbs_total"]).ToString();
-                statsCache_tagsTotal = float.Parse(data["tags_total"]).ToString();
-                statsCache_tagsUnique = float.Parse(data["tags_unique"]).ToString();
-                statsCache_tagsAverage = float.Parse(data["tags_average"]).ToString("0");
-                statsCache_imagesTotal = float.Parse(data["images_total"]).ToString();
-                statsCache_imagesStorage = Misc.Plugins.getBytesString(long.Parse(data["images_storage"]));
-                statsCache_totalStorage = Misc.Plugins.getBytesString(long.Parse(data["images_storage"]) + long.Parse(data["articles_storage_thumbs"]) + long.Parse(data["articles_storage_text"]));
+                statsCache_threadsTotal = data["threads_total"].Length == 0 ? "0" : int.Parse(data["threads_total"]).ToString();
+                statsCache_threadsAverageRevisions = data["threads_average_revisions"].Length == 0 ? "0" : float.Parse(data["threads_average_revisions"]).ToString("0");
+                statsCache_articlesTotal = data["articles_total"].Length == 0 ? "0" : float.Parse(data["articles_total"]).ToString();
+                statsCache_articlesStorageText = data["articles_storage_text"].Length == 0 ? "0 B" : Misc.Plugins.getBytesString(long.Parse(data["articles_storage_text"]));
+                statsCache_articlesStorageThumbs = data["articles_storage_thumbs"].Length == 0 ? " 0 B" : Misc.Plugins.getBytesString(long.Parse(data["articles_storage_thumbs"]));
+                statsCache_articlesAverageLength = data["articles_average_length"].Length == 0 ? "0" : float.Parse(data["articles_average_length"]).ToString("0") + " characters";
+                statsCache_articlesTotalThumbnails = data["articles_thumbs_total"].Length == 0 ? "0" : float.Parse(data["articles_thumbs_total"]).ToString();
+                statsCache_tagsTotal = data["tags_total"].Length == 0 ? "0" : float.Parse(data["tags_total"]).ToString();
+                statsCache_tagsUnique = data["tags_unique"].Length == 0 ? "0" : float.Parse(data["tags_unique"]).ToString();
+                statsCache_tagsAverage = data["tags_average"].Length == 0 ? "0" : float.Parse(data["tags_average"]).ToString("0");
+                statsCache_imagesTotal = data["images_total"].Length == 0 ? "0" : float.Parse(data["images_total"]).ToString();
+                statsCache_imagesStorage = data["images_storage"].Length == 0 ? "0 B" : Misc.Plugins.getBytesString(long.Parse(data["images_storage"]));
+                statsCache_totalStorage = Misc.Plugins.getBytesString((data["images_storage"].Length == 0 ? 0 : long.Parse(data["images_storage"])) + (data["articles_storage_thumbs"].Length == 0 ? 0 : long.Parse(data["articles_storage_thumbs"])) + (data["articles_storage_text"].Length == 0 ? 0 : long.Parse(data["articles_storage_text"])));
             }
             // Output the page
             pageElements["TITLE"] = "Articles - Statistics";
@@ -1054,26 +1064,26 @@ namespace UberCMS.Plugins
         }
         #endregion
         #region "Images"
-        public static void pageArticles_Images(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent, bool permCreate, bool permDelete, bool permPublish)
+        public static void pageArticles_Images(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, bool permCreate, bool permDelete, bool permPublish)
         {
             switch (request.QueryString["2"])
             {
                 case null:
                     // Display existing images
-                    pageArticles_Images_Browse(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent, permCreate);
+                    pageArticles_Images_Browse(ref content, pluginid, conn, ref pageElements, request, response, permCreate);
                     break;
                 case "data":
-                    pageArticles_Images_Data(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageArticles_Images_Data(ref content, pluginid, conn, ref pageElements, request, response);
                     break;
                 case "upload":
-                    pageArticles_Images_Upload(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent, permCreate);
+                    pageArticles_Images_Upload(ref content, pluginid, conn, ref pageElements, request, response, permCreate);
                     break;
                 case "view":
-                    pageArticles_Images_View(ref content, pluginid, conn, ref pageElements, request, response, ref baseTemplateParent, permDelete);
+                    pageArticles_Images_View(ref content, pluginid, conn, ref pageElements, request, response, permDelete);
                     break;
             }
         }
-        public static void pageArticles_Images_Browse(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent, bool permCreate)
+        public static void pageArticles_Images_Browse(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, bool permCreate)
         {
             // Process request parameters
             int page;
@@ -1129,7 +1139,7 @@ namespace UberCMS.Plugins
             if (page > 1) pageElements.setFlag("ARTICLES_PAGE_PREVIOUS");
             if (page < int.MaxValue && data.Rows.Count == imagesPerPage) pageElements.setFlag("ARTICLES_PAGE_NEXT");
         }
-        public static void pageArticles_Images_Data(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticles_Images_Data(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string imageid = request.QueryString["3"];
             if (imageid == null && imageid.Length > 0) return;
@@ -1142,7 +1152,7 @@ namespace UberCMS.Plugins
             conn.Disconnect();
             response.End();
         }
-        public static void pageArticles_Images_View(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent, bool permDelete)
+        public static void pageArticles_Images_View(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, bool permDelete)
         {
             string imageid = request.QueryString["3"];
             if (imageid == null || imageid.Length == 0) return;
@@ -1205,7 +1215,7 @@ namespace UberCMS.Plugins
             if (page > 1) pageElements.setFlag("ARTICLES_PAGE_PREVIOUS");
             if (page < int.MaxValue && referencesData.Rows.Count == referencesPerPage) pageElements.setFlag("ARTICLES_PAGE_NEXT");
         }
-        public static void pageArticles_Images_Upload(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent, bool permCreate)
+        public static void pageArticles_Images_Upload(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, bool permCreate)
         {
             // Upload an image
             // -- Ensure the user has creation permissions, else we'll 404
@@ -1251,7 +1261,7 @@ namespace UberCMS.Plugins
             // Output form
             content.Append(
                 Core.templates["articles"]["image_uploader"]
-                .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", error) : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", error) : string.Empty)
                 .Replace("%TITLE%", HttpUtility.HtmlEncode(title))
                 );
             pageElements["TITLE"] = "Articles - Image Store - Upload";
@@ -1268,8 +1278,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        /// <param name="baseTemplateParent"></param>
-        public static void pageArticle_View(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageArticle_View(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Retrieve the article ID
             string articleid;
@@ -1354,22 +1363,22 @@ namespace UberCMS.Plugins
                 {
                     case "publish":
                         if (!permPublish) return; // Check the user has sufficient permission
-                        pageArticle_View_Publish(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        pageArticle_View_Publish(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
                         break;
                     case "delete":
                         // An owner of an unpublished article can delete it
                         if (!permDelete && !(owner && !published)) return; // Check the user has sufficient permission
-                        pageArticle_View_Delete(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        pageArticle_View_Delete(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
                         break;
                     case "history":
-                        pageArticle_View_History(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        pageArticle_View_History(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
                         break;
                     case "comments":
-                        pageArticle_View_Comments(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        pageArticle_View_Comments(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
                         break;
                     case "set":
                         if (!permPublish || !published) return;
-                        pageArticle_View_Set(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref baseTemplateParent, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        pageArticle_View_Set(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
                         break;
                     default:
                         return; // 404 - unknown sub-page
@@ -1442,7 +1451,7 @@ namespace UberCMS.Plugins
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
             Misc.Plugins.addHeaderJS(pageElements["URL"] + "/Content/JS/Article.js", ref pageElements);
         }
-        public static void pageArticle_View_Comments(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        public static void pageArticle_View_Comments(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
         {
             bool allowComments = article["allow_comments_thread"].Equals("1");
             if (!allowComments)
@@ -1529,11 +1538,11 @@ namespace UberCMS.Plugins
                         Core.templates["articles"]["comments_postbox"]
                     .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
                     .Replace("%SUBPAGE%", "history")
-                    .Replace("%ERROR%", commentError != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", commentError) : string.Empty)
+                    .Replace("%ERROR%", commentError != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", commentError) : string.Empty)
                     .Replace("%COMMENT_BODY%", HttpUtility.HtmlEncode(commentBody))
                     );
         }
-        public static void pageArticle_View_Delete(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        public static void pageArticle_View_Delete(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
         {
             string error = null;
             string captcha = request.Form["captcha"];
@@ -1570,14 +1579,14 @@ namespace UberCMS.Plugins
             // Display form
             if (error != null)
                 content.Append(
-                    Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error))
+                    Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error))
                     );
             content.Append(
                 Core.templates["articles"]["article_delete"]
                 .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
             );
         }
-        public static void pageArticle_View_History(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        public static void pageArticle_View_History(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
         {
             // Setup the page being viewed
             int page;
@@ -1621,7 +1630,7 @@ namespace UberCMS.Plugins
             if (page < int.MaxValue && articles.Rows.Count == historyPerPage)
                 pageElements.setFlag("ARTICLE_PAGE_NEXT");
         }
-        public static void pageArticle_View_Publish(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        public static void pageArticle_View_Publish(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
         {
             if (request.Form["confirm"] != null)
             {
@@ -1641,7 +1650,7 @@ namespace UberCMS.Plugins
                 .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
                 );
         }
-        public static void pageArticle_View_Set(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref string baseTemplateParent, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        public static void pageArticle_View_Set(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
         {
             conn.Query_Execute("UPDATE articles_thread SET articleid_current='" + Utils.Escape(article["articleid"]) + "' WHERE threadid='" + Utils.Escape(article["threadid"]) + "';" + insertEvent(RecentChanges_EventType.SetAsSelected, HttpContext.Current.User.Identity.Name, article["articleid"], article["threadid"]));
             conn.Disconnect();
@@ -1811,7 +1820,7 @@ namespace UberCMS.Plugins
         /// <param name="method"></param>
         public static void formattingAdd(Connector conn, string pluginid, string classpath, string method)
         {
-            conn.Query_Execute("INSERT INTO articles_format_providers (classpath, method, plugin) VALUES('" + Utils.Escape(classpath) + "', '" + Utils.Escape(method) + "', '" + Utils.Escape(pluginid) + "')");
+            conn.Query_Execute("INSERT INTO articles_format_providers (classpath, method, pluginid) VALUES('" + Utils.Escape(classpath) + "', '" + Utils.Escape(method) + "', '" + Utils.Escape(pluginid) + "')");
         }
         /// <summary>
         /// Removes a formatting provider based on classpath and method.

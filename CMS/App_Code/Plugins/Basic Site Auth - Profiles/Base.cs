@@ -1,4 +1,17 @@
-﻿using System;
+﻿ ﻿/*
+ * UBERMEAT FOSS
+ * ****************************************************************************************
+ * License:                 Creative Commons Attribution-ShareAlike 3.0 unported
+ *                          http://creativecommons.org/licenses/by-sa/3.0/
+ * 
+ * Project:                 Uber CMS / Plugins / Basic Site Auth - Profiles
+ * File:                    /App_Code/Plugins/Basic Site Auth - Profiles/Base.cs
+ * Author(s):               limpygnome						limpygnome@gmail.com
+ * To-do/bugs:              none
+ * 
+ * A plugin for providing a profiling system for basic site authentication.
+ */
+using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Text;
@@ -73,12 +86,12 @@ namespace UberCMS.Plugins
 
             return null;
         }
-        public static void requestEnd(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void requestEnd(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Add profiles flag
             pageElements.setFlag("BSA_PROFILES");
         }
-        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Add CSS
             Misc.Plugins.addHeaderCSS("/Content/CSS/BSA_Profiles.css", ref pageElements);
@@ -86,20 +99,20 @@ namespace UberCMS.Plugins
             switch (request.QueryString["page"])
             {
                 case "profile":
-                    pageProfile_Profile(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageProfile_Profile(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "members":
-                    pageMembers(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageMembers(pluginid, conn, ref pageElements, request, response);
                     break;
                 case "profile_image":
-                    pageProfileImage(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageProfileImage(pluginid, conn, ref pageElements, request, response);
                     break;
             }
         }
         #endregion
 
         #region "Methods - Pages"
-        public static void pageProfile_Profile(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageProfile_Profile(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Decide which user to display
             string userid = null;
@@ -146,13 +159,13 @@ namespace UberCMS.Plugins
             {
                 default:
                     // -- About page is default
-                    pageProfile_About(pluginid, ref profileData, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageProfile_About(pluginid, ref profileData, conn, ref pageElements, request, response);
                     break;
                 case "settings":
-                    pageProfile_Settings(pluginid, ref rawProfileDataQuery, ref profileData, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageProfile_Settings(pluginid, ref rawProfileDataQuery, ref profileData, conn, ref pageElements, request, response);
                     break;
                 case "upload":
-                    pageProfile_Upload(pluginid, ref profileData, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageProfile_Upload(pluginid, ref profileData, conn, ref pageElements, request, response);
                     break;
             }
             if (pageElements["PROFILE_CONTENT"] == null) return; // No content set, 404..
@@ -176,7 +189,7 @@ namespace UberCMS.Plugins
             ;
             pageElements["TITLE"] = "Profile - " + HttpUtility.HtmlEncode(profileData["username"]);
         }
-        public static void pageProfile_About(string pluginid, ref ResultRow profileData, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageProfile_About(string pluginid, ref ResultRow profileData, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Build contact details
             StringBuilder contact = new StringBuilder();
@@ -289,7 +302,7 @@ namespace UberCMS.Plugins
                 ;
             pageElements.setFlag("PROFILE_ABOUT");
         }
-        public static void pageProfile_Settings(string pluginid, ref string profileQuery, ref ResultRow profileData, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageProfile_Settings(string pluginid, ref string profileQuery, ref ResultRow profileData, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             bool updatedProfile = false;
             string error = null;
@@ -451,7 +464,7 @@ namespace UberCMS.Plugins
             // Set the content
             pageElements["PROFILE_CONTENT"] = Core.templates["bsa_profiles"]["profile_settings"]
                 .Replace("%USERID%", HttpUtility.HtmlEncode(profileData["userid"]))
-                .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : updatedProfile ? Core.templates[baseTemplateParent]["success"].Replace("%SUCCESS%", "Successfully updated profile settings!") : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : updatedProfile ? Core.templates[pageElements["TEMPLATE"]]["success"].Replace("%SUCCESS%", "Successfully updated profile settings!") : string.Empty)
                 .Replace("%ENABLED%", profileEnabledItems.ToString())
                 .Replace("%FRAME_BG_URL%", HttpUtility.HtmlEncode(profileData["background_url"]))
                 .Replace("%FRAME_BG_COLOUR%", HttpUtility.HtmlEncode(profileData["background_colour"]))
@@ -481,7 +494,7 @@ namespace UberCMS.Plugins
                 ;
             pageElements.setFlag("PROFILE_SETTINGS");
         }
-        public static void pageProfile_Upload(string pluginid, ref ResultRow profileData, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageProfile_Upload(string pluginid, ref ResultRow profileData, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             string error = null;
             HttpPostedFile image = request.Files["profile_picture"];
@@ -545,10 +558,10 @@ namespace UberCMS.Plugins
             }
             pageElements["PROFILE_CONTENT"] = Core.templates["bsa_profiles"]["profile_upload"]
                 .Replace("%USERID%", HttpUtility.HtmlEncode(profileData["userid"]))
-                .Replace("%ERROR%", error != null ? Core.templates[baseTemplateParent]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
             pageElements.setFlag("PROFILE_UPLOAD");
         }
-        public static void pageMembers(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageMembers(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             int itemsPerPage = 25;
             int page = 1;
@@ -580,7 +593,7 @@ namespace UberCMS.Plugins
             pageElements["TITLE"] = "Members";
         }
         public static byte[] pageProfileImage_CachedUnknown = null;
-        public static void pageProfileImage(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageProfileImage(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             response.ContentType = "image/jpeg";
             // Cache the unknown image - spam/bot or failed responses will be a lot easier on the web server in terms of I/O

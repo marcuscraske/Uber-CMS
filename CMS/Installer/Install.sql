@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS plugins
 	handles_request_start VARCHAR(1) DEFAULT 0,
 	handles_request_end VARCHAR(1) DEFAULT 0
 );
-CREATE TABLE IF NOT EXISTS settings2
+CREATE TABLE IF NOT EXISTS settings
 (
 	category VARCHAR(25),
 	keyname VARCHAR(30),

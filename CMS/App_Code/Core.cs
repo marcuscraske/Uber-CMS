@@ -61,6 +61,7 @@ namespace UberCMS
             {
                 // Set the base-path and check the CMS has been installed
                 basePath = AppDomain.CurrentDomain.BaseDirectory;
+                if (basePath.EndsWith("\\")) basePath = basePath.Remove(basePath.Length - 1, 1);
                 if (!File.Exists(basePath + "\\CMS.config"))
                 {
                     state = State.NotInstalled;
@@ -77,7 +78,11 @@ namespace UberCMS
                 // Set the global connector
                 globalConnector = connectorCreate(true);
                 // Load and start e-mail queue service
-                emailQueue = new Misc.EmailQueue(doc["settings"]["mail"]["host"].InnerText, int.Parse(doc["settings"]["mail"]["port"].InnerText), doc["settings"]["mail"]["username"].InnerText, doc["settings"]["mail"]["password"].InnerText, doc["settings"]["mail"]["address"].InnerText);
+                if (doc["settings"]["mail"]["host"].InnerText.Length == 0 || doc["settings"]["mail"]["port"].InnerText.Length == 0 || doc["settings"]["mail"]["username"].InnerText.Length == 0 || doc["settings"]["mail"]["address"].InnerText.Length == 0)
+                    // Create disabled e-mail queue
+                    emailQueue = new Misc.EmailQueue();
+                else
+                    emailQueue = new Misc.EmailQueue(doc["settings"]["mail"]["host"].InnerText, int.Parse(doc["settings"]["mail"]["port"].InnerText), doc["settings"]["mail"]["username"].InnerText, doc["settings"]["mail"]["password"].InnerText, doc["settings"]["mail"]["address"].InnerText);
                 emailQueue.start();
                 // Wipe the cache folder
                 string cachePath = basePath + "\\Cache";

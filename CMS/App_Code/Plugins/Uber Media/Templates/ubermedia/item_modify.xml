@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[item_modify]]></hkey><description><![CDATA[The page for modifying an item.]]></description><html><![CDATA[<h3>Modify</h3>
+<form method="post" action="<!--URL-->/ubermedia/item/%VITEMID%/modify">
+	<div class="R">
+		<div class="C">Title:</div>
+		<div class="C"><input type="text" name="title" value="%TITLE%" /></div>
+	</div>
+	<div class="R">
+		<div class="C">Type:</div>
+		<div class="C">
+			<select name="type_uid">
+			%TYPES%
+			</select>
+		</div>
+	</div>
+	<div class="R">
+		<div class="C">Description:</div>
+		<div class="C"><textarea name="description" cols="40" rows="3">%DESCRIPTION%</textarea></div>
+	</div>
+	<div class="R">
+		<div class="C"><input type="reset" class="BUTTON" value="Reset" /></div>
+		<div class="C"><input type="submit" class="BUTTON" value="Save" /></div>
+	</div>
+	<div class="clear"></div>
+</form>
+
+<div class="ERROR_BOX" style="<!--ERR_STYLE-->">
+<div><!--ERR_MSG--></div>
+</div>]]></html></template>

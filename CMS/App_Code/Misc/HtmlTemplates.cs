@@ -150,7 +150,7 @@ namespace UberCMS.Misc
             {
                 doc = new XmlDocument();
                 doc.LoadXml(File.ReadAllText(file));
-                conn.Query_Execute("INSERT INTO html_templates (pkey, hkey, description, html) VALUES('" + Utils.Escape(doc["template"]["pkey"].InnerText) + "', '" + Utils.Escape(doc["template"]["hkey"].InnerText) + "', '" + Utils.Escape(doc["template"]["description"].InnerText) + "', '" + Utils.Escape(doc["template"]["html"].InnerText) + "')");
+                conn.Query_Execute("INSERT IGNORE INTO html_templates (pkey, hkey, description, html) VALUES('" + Utils.Escape(doc["template"]["pkey"].InnerText) + "', '" + Utils.Escape(doc["template"]["hkey"].InnerText) + "', '" + Utils.Escape(doc["template"]["description"].InnerText) + "', '" + Utils.Escape(doc["template"]["html"].InnerText) + "')");
             }
         }
         /// <summary>

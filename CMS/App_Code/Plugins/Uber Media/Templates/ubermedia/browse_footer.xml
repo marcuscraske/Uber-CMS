@@ -1,0 +1,2 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[browse_footer]]></hkey><description><![CDATA[The footer cointainer.]]></description><html><![CDATA[<div class="clear"></div>
+<div class="B_FOOTER">%BUTTONS%Page: %PAGE%</div>]]></html></template>

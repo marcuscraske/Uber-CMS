@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_requests]]></hkey><description><![CDATA[Admin external requests page.]]></description><html><![CDATA[<h2>External Requests</h2>
+Any external requests are listed below; external requests are made to e.g. retrieve media information from third-party sources.
+
+<h3>Requests</h3>
+<div class="ADMIN_REQ">
+
+<div class="R H">
+<div class="A">Reason</div>
+<div class="B">Date &amp; Time</div>
+<div class="C">URL</div>
+<div class="clear"></div>
+</div>
+
+%ITEMS%
+</div>
+<br />
+<div class="B_FOOTER"><a href="<!--URL-->/admin/requests?p=%P_P%" class="B_PREV">Previous</a><a href="<!--URL-->/admin/requests?p=%P_N%" class="B_NEXT">Next</a>Page: %PAGE%</div>
+<br />
+<h3>Options</h3>
+<a href="<!--URL-->/admin/requests?clear=1" class="BUTTON">Remove All Log Entries</a>]]></html></template>

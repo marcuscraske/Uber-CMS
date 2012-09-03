@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_settings_header]]></hkey><description><![CDATA[Admin settings page header.]]></description><html><![CDATA[<h2>Settings</h3>
+You should <strong>NOT</strong> touch this page if you are not sure what you're doing!
+<br /><br />
+<form method="post" action="<!--URL-->/admin/settings">]]></html></template>

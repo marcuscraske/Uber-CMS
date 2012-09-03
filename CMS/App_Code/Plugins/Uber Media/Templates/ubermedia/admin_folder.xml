@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_folder]]></hkey><description><![CDATA[Admin folder page used to modify/control a folder.]]></description><html><![CDATA[<h2><a href="<!--URL-->/ubermedia/admin/folders">Configure Main Folders</a> &gt; <a href="<!--URL-->/ubermedia/admin/folder/%PFOLDERID%">%TITLE%</a></h2>
+<h3>Stats</h3>
+<div class="R">
+
+<div class="C">Total items:</div>
+<div class="C">%TOTAL_ITEMS%</div>
+
+<div class="C">Total folders:</div>
+<div class="C">%TOTAL_FOLDERS%</div>
+
+<div class="C">Total views:</div>
+<div class="C">%TOTAL_VIEWS%</div>
+
+<div class="clear"></div>
+</div>
+<h3>Options</h3>
+<a href="<!--URL-->/ubermedia/admin/folder/%PFOLDERID%/index" class="BUTTON FL M">Run Indexer</a>
+<a href="<!--URL-->/ubermedia/admin/folder/%PFOLDERID%/remove" class="BUTTON FL M">Remove</a>
+<a href="<!--URL-->/ubermedia/admin/folder/%PFOLDERID%/rebuild_thumbnails" class="BUTTON FL M">Rebuild Thumbnails</a>
+<div class="clear"></div>
+
+<h3>Add Item Type</h3>
+Below you can add the types of media you want indexed in your media library for this folder.
+
+<form method="post" action="<!--URL-->/ubermedia/admin/folder/%PFOLDERID%/add_type">
+<div class="R">
+
+<div class="C">Type:</div>
+<div class="C"><select name="type">%TYPES%</select></div>
+
+<div class="C">You should press the "Run Indexer" button in the options area for changes to occur.</div>
+<div class="C"><input type="submit" class="BUTTON" value="Add" /></div>
+
+<div class="clear"></div>
+</div>
+</form>
+
+<h3>Remove Item Types</h3>
+%TYPES_REMOVE%
+
+<h3>Modify</h3>
+<form method="post" action="<!--URL-->/ubermedia/admin/folder/%PFOLDERID%">
+<div class="R">
+
+<div class="C">Title:</div>
+<div class="C"><input type="text" name="title" value="%TITLE%" /></div>
+
+<div class="C">Path:</div>
+<div class="C"><input type="text" name="path" value="%PATH%" /></div>
+
+<div class="C">Allow web synopsis:</div>
+<div class="C"><input type="checkbox" name="synopsis" %SYNOPSIS%/></div>
+
+<div class="clear"></div><br /><br />
+
+<div class="C">When changing the path, ensure it is correct or you could loose all of your media information for this folder!</div>
+<div class="C"><input type="submit" class="BUTTON" value="Save" /></div>
+
+<div class="clear"></div>
+</div>
+<div class="clear"></div>
+<div class="ERROR_BOX" style="<!--ERR_STYLE-->">
+<div><!--ERR_MSG--></div>
+</div>
+</form>]]></html></template>

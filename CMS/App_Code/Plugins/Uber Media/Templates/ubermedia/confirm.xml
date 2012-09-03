@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[confirm]]></hkey><description><![CDATA[Confirmation template.]]></description><html><![CDATA[<h2>Confirm Action - %ACTION_TITLE%</h2>
+<form method="post" action="%ACTION_URL%">
+<p>%ACTION_DESC%</p>
+<input type="submit" name="confirm" value="Continue" class="BUTTON" /> <a href="%ACTION_BACK%" class="BUTTON">Back</a>
+</form>]]></html></template>

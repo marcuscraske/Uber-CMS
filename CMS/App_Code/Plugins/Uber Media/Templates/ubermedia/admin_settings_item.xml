@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_settings_item]]></hkey><description><![CDATA[Settings item on the admin settings page.]]></description><html><![CDATA[<div class="R RD">
+<div class="C">%KEYNAME%<br /><i>%DESCRIPTION%</i></div>
+<div class="C"><input type="text" name="setting_%KEYNAME%" value="%VALUE%"/></div>
+<div class="clear"></div>
+</div>]]></html></template>

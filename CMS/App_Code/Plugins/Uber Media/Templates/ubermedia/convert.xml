@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[convert]]></hkey><description><![CDATA[The page for converting a vitemid.]]></description><html><![CDATA[<h2>Convert File(s)</h2>
+<p>
+	This process can take a very long time; therefore you should ensure any media queued for conversion has been processed before shutting down the machine running this website!
+</p>
+<div class="ERROR_BOX" style="%ERROR_STYLE%"><div>%ERROR_MSG%</div></div>
+<h3>Settings</h3>
+<form method="post" action="<!--URL-->/ubermedia/convert%PARAMS%">
+	<div class="R">
+		<div class="C">
+			New format:
+		</div>
+		<div class="C">
+			<select name="convert_format">
+				%FORMATS%
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="R">
+		<div class="C">
+			Action to old file:
+		</div>
+		<div class="C">
+			<select name="convert_action">
+				%ACTIONS%
+			</select>
+		</div>
+	</div>
+	<div class="R">
+		<div class="C">
+			Move location (if you selected move as action):
+		</div>
+		<div class="C">
+			<select name="convert_action_move">
+				%ACTIONS_MOVE%
+			</select>
+		</div>
+	</div>
+	<h3>Optional Settings</h3>
+	<div class="R">
+		<div class="C">
+			Video bitrate:
+		</div>
+		<div class="C">
+			<input type="text" name="convert_video_bitrate" value="%VIDEO_BITRATE%" />
+		</div>
+	</div>
+	<div class="R">
+		<div class="C">
+			Audio bitrate:
+		</div>
+		<div class="C">
+			<input type="text" name="convert_audio_bitrate" value="%AUDIO_BITRATE%" />
+		</div>
+	</div>
+	<div class="R">
+		<div class="C">
+			Audio sample-rate:
+		</div>
+		<div class="C">
+			<input type="text" name="convert_audio_samplerate" value="%AUDIO_SAMPLERATE%" />
+		</div>
+	</div>
+	<div class="R">
+		<div class="C">
+			Video Width:
+		</div>
+		<div class="C">
+			<input type="text" name="convert_video_width" value="%VIDEO_WIDTH%" />
+		</div>
+	</div>
+	<div class="R">
+		<div class="C">
+			Video Height:
+		</div>
+		<div class="C">
+			<input type="text" name="convert_video_height" value="%VIDEO_HEIGHT%" />
+		</div>
+	</div>
+	<div class="R">
+		<div class="C">&nbsp;</div>
+		<div class="C">
+			<input type="submit" value="Convert" class="BUTTON" />
+		</div>
+	</div>
+</form>
+<h3>Files to be converted</h3>
+<form method="get" action="<!--URL-->/ubermedia/convert%PARAMS_NOFILTER%">
+<div class="R">
+	<div class="C">Filter:</div>
+	<div class="C">
+		<select name="filter">
+			%FILTER%
+		</select>
+	</div>
+</div>
+<div class="R">
+	<div class="C">&nbsp;</div>
+	<div class="C"><input type="submit" class="BUTTON" value="Apply" /></div>
+</div>
+</form>
+<div class="clear"></div>
+<ul>
+	%FILES%
+</ul>]]></html></template>

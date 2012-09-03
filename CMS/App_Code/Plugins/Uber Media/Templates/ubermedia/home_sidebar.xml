@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[home_sidebar]]></hkey><description><![CDATA[The sidebar of the homepage.]]></description><html><![CDATA[<h2>Items</h2>
+<a href="<!--URL-->/ubermedia/browse"><img src="<!--URL-->/Content/Images/ubermedia/folders.png" alt="Browse" />Browse</a>
+<a href="<!--URL-->/ubermedia/newest"><img src="<!--URL-->/Content/Images/ubermedia/newest.png" alt="Newest" />Newest</a>
+<a href="<!--URL-->/ubermedia/popular"><img src="<!--URL-->/Content/Images/ubermedia/popular.png" alt="Popular" />Popular</a>
+<h2>Main Folders</h2>
+%FOLDERS%
+<h2>Management</h2>
+<a href="<!--URL-->/ubermedia/admin"><img src="<!--URL-->/Content/Images/ubermedia/configure.png" alt="Admin" />Admin</a>
+<a href="<!--URL-->/ubermedia/status"><img src="<!--URL-->/Content/Images/ubermedia/Status/terminal.png" alt="Status of Terminals Icon" />Status of Terminals</a>
+<h2>Links</h2>
+<a href="http://www.ubermeat.co.uk"><img src="<!--URL-->/Content/Images/ubermedia/external.png" alt="External" />&Uuml;berMeat</a>
+<a href="https://github.com/ubermeat/Uber-Media"><img src="<!--URL-->/Content/Images/ubermedia/external.png" alt="External" />&Uuml;ber Media on Github</a>
+<a href="<!--URL-->/ubermedia/credits"><img src="<!--URL-->/Content/Images/ubermedia/credits.png" alt="External" />Credits</a>]]></html></template>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_home]]></hkey><description><![CDATA[The home of the admin page.]]></description><html><![CDATA[<h2>Info</h2>
+<p>From here you can control your media library and change settings; below you can view the mechanical status of your media library.</p>
+
+<h2>Status - Indexing Service</h2>
+<div id="service_indexing">%INDEXING%</div>
+
+<h2>Status - Thumbnail Service</h2>
+<div id="service_thumbnail">%THUMBNAIL%</div>
+
+<h2>Status - Film Information Service</h2>
+<div id="service_filminformation">%FILMINFORMATION%</div>
+
+<h2>Status - Conversion Service</h2>
+<div id="service_conversion">%CONVERSION%</div>]]></html></template>

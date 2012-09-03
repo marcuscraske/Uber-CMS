@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[browse_youtube_na]]></hkey><description><![CDATA[Displayed when the user attempts to add a YouTube outside of any drive.]]></description><html><![CDATA[<h2>Add YouTube Video - Not Available</h2>
+<p>
+You cannot add a YouTube video because you are not in a directory.
+</p>]]></html></template>

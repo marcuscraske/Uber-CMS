@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[browse_side_folder]]></hkey><description><![CDATA[Sidebar folder link/item.]]></description><html><![CDATA[<a href="%IURL%" class="%CLASS%"><img src="%ICON%" alt="Folder" />%TITLE%</a>]]></html></template>

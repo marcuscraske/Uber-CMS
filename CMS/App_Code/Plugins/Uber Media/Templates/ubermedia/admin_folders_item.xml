@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_folders_item]]></hkey><description><![CDATA[A folder item on the admin_folders page.]]></description><html><![CDATA[<a class="FOLDER" href="<!--URL-->/ubermedia/admin/folder/%PFOLDERID%">
+<span>%TITLE%</span>
+<div>%PATH%</div>
+<div>Synopsis: %SYNOPSIS%</div>
+<div class="clear"></div>
+</a>]]></html></template>

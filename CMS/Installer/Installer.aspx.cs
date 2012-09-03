@@ -61,7 +61,7 @@ public partial class Installer_Installer : System.Web.UI.Page
                 break;
         }
 #else
-        pageFinish(ref pageElements, Request, Response, ref content);
+        Response.Redirect(ResolveUrl(""));
 #endif
         // Build and display the final output
         pageElements["CONTENT"] = content.ToString();
@@ -86,12 +86,12 @@ public partial class Installer_Installer : System.Web.UI.Page
     public static void pageSetup(ref UberCMS.Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref StringBuilder content)
     {
 #if INSTALLED
-        response.Redirect(baseURL + "/finish");
+        response.Redirect(pageElements["URL"] + "/finish");
 #else
         // Check the database is not already installed
         if (dbSettings != null)
             // -- Skip to the installer page
-            response.Redirect(pageElements["URL"] + "/installer");
+            response.Redirect(pageElements["URL"] + "/install");
         string error = null;
         // Check for postback
         string dbHost = request.Form["db_host"];
@@ -181,7 +181,7 @@ public partial class Installer_Installer : System.Web.UI.Page
                             writer.WriteCData(dbUsername);
                             writer.WriteEndElement();
                             writer.WriteStartElement("password");
-                            writer.WriteCData(dbHost);
+                            writer.WriteCData(dbPassword);
                             writer.WriteEndElement();
                             writer.WriteEndElement();
                             // E-mail
@@ -208,7 +208,7 @@ public partial class Installer_Installer : System.Web.UI.Page
                             // Flush and write to file
                             writer.Flush();
                             writer.Close();
-                            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "\\CMS.config", writer.ToString());
+                            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "\\CMS.config", cmsConfig.ToString());
                         }
                         catch(Exception ex2)
                         {
@@ -262,7 +262,7 @@ public partial class Installer_Installer : System.Web.UI.Page
     public static void pageInstall(ref UberCMS.Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref StringBuilder content)
     {
 #if INSTALLED
-        response.Redirect(baseURL + "/finish");
+        response.Redirect(pageElements["URL"] + "/finish");
 #else
         // Create connector object
         Connector conn = dbSettings.create();
@@ -278,7 +278,6 @@ public partial class Installer_Installer : System.Web.UI.Page
                     m.Invoke(null, new object[] { conn });
                 }
                 else s += clas.FullName + "<br />";
-            throw new Exception("failed. - " + s);
             // Successful - write success to web.config
             UberCMS.Misc.Plugins.preprocessorDirective_Add("INSTALLED");
             // Redirect to finish page
@@ -298,18 +297,6 @@ public partial class Installer_Installer : System.Web.UI.Page
         // Dispose connector
         conn.Disconnect();
 #endif
-    }
-    /// <summary>
-    /// Displays a confirmation to the user that the CMS has been installed successfully.
-    /// </summary>
-    /// <param name="request"></param>
-    /// <param name="response"></param>
-    /// <param name="content"></param>
-    public static void pageFinish(ref UberCMS.Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref StringBuilder content)
-    {
-        content.Append(
-            templates[TEMPLATES_KEY]["finish"]
-        );
     }
 }
 public class DbSettings

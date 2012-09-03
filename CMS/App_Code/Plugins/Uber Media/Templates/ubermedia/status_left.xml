@@ -1,0 +1,3 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[status_left]]></hkey><description><![CDATA[The left-hand sub-menu of the status page.]]></description><html><![CDATA[<h2>Options</h2>
+<a href="<!--URL-->/ubermedia/status/shutdown"><img src="<!--URL-->/Content/Images/ubermedia/Status/shutdown.png" alt="Shutdown Icon" title="Shutdown Icon" />Shutdown All Terminals</a>
+<a href="<!--URL-->/ubermedia/status/restart"><img src="<!--URL-->/Content/Images/ubermedia/Status/restart.png" alt="Restart Icon" title="Restart Icon" />Restart All Terminals</a>]]></html></template>

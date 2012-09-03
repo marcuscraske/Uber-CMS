@@ -1,0 +1,2 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_reload_settings]]></hkey><description><![CDATA[Displayed to the user when they reload the core settings.]]></description><html><![CDATA[<h2>Reload Settings - Successful</h2>
+<p>You have successfully reloaded the core settings!</p>]]></html></template>

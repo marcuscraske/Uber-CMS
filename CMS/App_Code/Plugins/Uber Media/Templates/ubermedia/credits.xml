@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[credits]]></hkey><description><![CDATA[A page of credits.]]></description><html><![CDATA[<h2>Credits</h2>
+<center>
+<img src="<!--URL-->/Content/Images/ubermedia/Credits/reptile.png" alt="Ubie - Reptile" title="Ubie - Reptile" />
+</center>
+<h3>Project Developers</h3>
+<div class="R">
+	<div class="C3">
+		<img src="<!--URL-->/Content/Images/ubermedia/Credits/dev.png" alt="Developer icon" />
+		limpygnome
+	</div>
+	<div class="C3">
+		Lead developer, tester &amp; founder
+	</div>
+	<div class="C3">
+		<a href="mailto:limpygnome@gmail.com">limpygnome@gmail.com</a>
+	</div>
+	<div class="clear"></div>
+</div>
+<h3>Third-Party Content</h3>
+<div class="R">
+	<div class="C3">
+		<img src="<!--URL-->/Content/Images/ubermedia/Credits/youtube.png" alt="YouTube icon" />
+		YouTube (Google)
+	</div>
+	<div class="C3">
+		Media interface
+	</div>
+	<div class="C3">
+		<a href="http://www.youtube.com/">http://www.youtube.com/</a>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="R">
+	<div class="C3">
+		<img src="<!--URL-->/Content/Images/ubermedia/Credits/vlc.png" alt="YouTube icon" />
+		VLC (VideoLAN)
+	</div>
+	<div class="C3">
+		Media interface &amp; watch-now player
+	</div>
+	<div class="C3">
+		<a href="http://www.videolan.com/">http://www.videolan.com/</a>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="R">
+	<div class="C3">
+		<img src="<!--URL-->/Content/Images/ubermedia/Credits/vlc.png" alt="YouTube icon" />
+		VLC Wrapper (nVLC - Roman Ginzburg)
+	</div>
+	<div class="C3">
+		VLC wrapper for interface
+	</div>
+	<div class="C3">
+		<a href="http://www.codeproject.com/Articles/109639/nVLC">http://www.codeproject.com/Articles/109639/nVLC</a>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="R">
+	<div class="C3">
+		<img src="<!--URL-->/Content/Images/ubermedia/Credits/keepalive.png" alt="YouTube icon" />
+		Paul Wilson
+	</div>
+	<div class="C3">
+		Keep-Alive class
+	</div>
+	<div class="C3">
+		<a href="http://authors.aspalliance.com/PaulWilson/">http://authors.aspalliance.com/PaulWilson/</a>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="R">
+	<div class="C3">
+		<img src="<!--URL-->/Content/Images/ubermedia/Credits/keepalive.png" alt="YouTube icon" />
+		Hamed J.I
+	</div>
+	<div class="C3">
+		ID3 Tags Library
+	</div>
+	<div class="C3">
+		<a href="http://www.codeproject.com/Articles/36856/Professional-Tag-Editor-for-MP3-ID3-and-WMA">[Click here]</a>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="R">
+	<div class="C3">
+		<img src="<!--URL-->/Content/Images/ubermedia/Credits/icons.png" alt="YouTube icon" />
+		Fatcow Fresh-Farm Web Icons
+	</div>
+	<div class="C3">
+		Icons
+	</div>
+	<div class="C3">
+		<a href="http://www.fatcow.com/free-icons">http://www.fatcow.com/free-icons</a>
+	</div>
+	<div class="clear"></div>
+</div>
+<h3>Trivia &amp; Help</h3>
+<div class="R">
+	<div class="C3">
+		<img src="<!--URL-->/Content/Images/ubermedia/Credits/dev.png" alt="Dev icon" />
+		Provided the name 'Ubie' for the Uber Media creature (at the top of this page)
+	</div>
+	<div class="C3">
+		Chaz Brett
+	</div>
+	<div class="C3">
+		<a href="mailto:supercool360@hotmail.co.uk">supercool360@hotmail.co.uk</a>
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

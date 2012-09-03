@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[admin_startup]]></hkey><description><![CDATA[The startup guide of the admin page.]]></description><html><![CDATA[<h2 id="introduction">Introduction</h2>
+<img src="<!--URL-->/Content/Images/ubermedia/credits/reptile.png" alt="Ubie" title="Ubie" class="FR" />
+<p>
+Welcome to your new installation of Uber Media!
+</p>
+<p>
+You're currently in the admin section of the site, which is responsible for controlling the automated indexing (adding and removal) of media files (such as films &amp; music).
+</p>
+<p>
+Below is a guide to understanding and using the full-potential of your new media library; if you have a question, issue or anything else, you can visit our site at:
+</p>
+<p>
+<a href="http://www.ubermeat.com">http://www.ubermeat.co.uk/</a>
+</p>
+
+<h3>Contents</h3>
+<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#media_folders">Media Folders</a></li>
+<li><a href="#terminals">Terminals</a></li>
+<li><a href="#external_requests">External Requests</a></li>
+</ol>
+
+<h2 id="media_folders">Media Folders</h2>
+<p>
+Files are automatically added and removed from physical folders, a process called "indexing"; you will first need to add physical folders by going to <a href="<!--URL-->/ubermedia/admin/folders">Configure Main Folders</a>.
+</p>
+
+<h3>Adding Media Types</h3>
+<p>When adding a physical folder you will need to configure the types of media added to your library; this prevents unrelated files, such as sub-titles and text files, from being added.</p>
+
+<h3>Indexing</h3>
+<p>
+Indexing is a process where this Uber Media website/node will add and remove files to your virtual library from physical folders; this also allows something called the thumbnail service to generate thumbnails for new additions to your virtual library.
+</p>
+<p>
+If you cannot find new items in your media library, you should go to the folder in the admin page (<a href="<!--URL-->/ubermedia/admin/folders">Admin -&gt; Configure Main Folders</a>) and press the "Run Indexer" button.
+</p>
+<p>
+But why use a virtual library?
+</p>
+
+<h3>Virtual Library</h3>
+<p>
+A virtual library allows attachment of information to media files, which can be outsourced from third-party websites such as IMDB and Rotten Tomatoes; therefore when you add new files and go to play them, you'll be presented with an e.g. synopsis for other members using your library who're not familar with any items added.
+</p>
+<p>
+But also a virtual library allows you to change the physical path of items, as well as change the path of virtual items without touching the physical path.
+</p>
+
+<h3>Thumbnails Service</h3>
+<p>
+The thumbnails service is responsible for taking items from your media library and generating a thumbnail preview; this allows you to e.g. visually recall a film you've seen or perceive if a piece of media is a video.
+</p>
+<h2 id="terminals">Terminals</h2>
+<p>
+Terminals are computers which connect to this media library to play media; if you haven't installed a terminal already, you should visit our <a href="http://www.ubermeat.com/">site</a> and download the Terminal installation. You should install this on a computer connected to a TV, since you'll be controlling the terminal by using the <a href="<!--URL-->/ubermedia/control">Control</a> page.
+</p>
+
+<h2 id="external_requests">External Requests</h2>
+<p>
+Any third-party servers contacted, typically for media information, are logged on the <a href="<!--URL-->/ubermedia/admin/requests">View External Requests</a> section of the admin system; this shows the time/date, reason and URL of the request. Privacy is important and therefore we wanted to be as transparent as possible to the user, you.
+</p>]]></html></template>

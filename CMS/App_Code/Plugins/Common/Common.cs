@@ -1,4 +1,18 @@
-﻿#define COMMON
+﻿ ﻿/*
+ * UBERMEAT FOSS
+ * ****************************************************************************************
+ * License:                 Creative Commons Attribution-ShareAlike 3.0 unported
+ *                          http://creativecommons.org/licenses/by-sa/3.0/
+ * 
+ * Project:                 Uber CMS / Plugins / Common
+ * File:                    /App_Code/Plugins/Common/Common.cs
+ * Author(s):               limpygnome						limpygnome@gmail.com
+ * To-do/bugs:              none
+ * 
+ * A plugin with various common functions for other plugins, such as captcha verficiation,
+ * validation, BB Code rendering and much more.
+ */
+#define COMMON
 
 using System;
 using System.Collections.Generic;
@@ -59,13 +73,13 @@ namespace UberCMS.Plugins
 
             return null;
         }
-        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             switch (request.QueryString["page"])
             {
                 case "captcha":
                     if (!Core.settings[SETTINGS_KEY].getBool(SETTINGS_KEY_CAPTCHA_ENABLED)) return;
-                    pageCaptcha(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                    pageCaptcha(pluginid, conn, ref pageElements, request, response);
                     break;
             }
         }
@@ -80,7 +94,7 @@ namespace UberCMS.Plugins
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
         /// <param name="response"></param>
-        private static void pageCaptcha(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        private static void pageCaptcha(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Set the content-type to an image
             response.ContentType = "image/png";

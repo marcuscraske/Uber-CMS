@@ -1,4 +1,17 @@
-﻿using System;
+﻿ ﻿/*
+ * UBERMEAT FOSS
+ * ****************************************************************************************
+ * License:                 Creative Commons Attribution-ShareAlike 3.0 unported
+ *                          http://creativecommons.org/licenses/by-sa/3.0/
+ * 
+ * Project:                 Uber CMS / Plugins/ CC128 Energy Monitor
+ * File:                    /App_Code/Plugins/CC128 Energy Monitor/Base.cs
+ * Author(s):               limpygnome						limpygnome@gmail.com
+ * To-do/bugs:              none
+ * 
+ * A plugin for logging and interacting with data from a CC128 Energy Monitor.
+ */
+using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Text;
@@ -68,7 +81,7 @@ namespace UberCMS.Plugins
         #endregion
 
         #region "Methods - Requests"
-        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Add headers - CSS and JS
             if (pageElements["HEADER"] == null) pageElements["HEADER"] = string.Empty;
@@ -77,7 +90,7 @@ namespace UberCMS.Plugins
             // Determine which page the user wants
             string subPage = request.QueryString["1"];
             if (subPage != null && subPage == "history")
-                pageHistory(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pageHistory(pluginid, conn, ref pageElements, request, response);
             else if (subPage == "ajax")
             {
                 // Write the last watt reading
@@ -86,12 +99,12 @@ namespace UberCMS.Plugins
                 response.End();
             }
             else
-                pagePower(pluginid, conn, ref pageElements, request, response, ref baseTemplateParent);
+                pagePower(pluginid, conn, ref pageElements, request, response);
             // Set the base content
             pageElements["TITLE"] = "CC128 Energy Monitor - <!--CC128_TITLE-->";
             pageElements["CONTENT"] = Core.templates["cc128"]["base"];
         }
-        public static void pagePower(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pagePower(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Set JS onload event
             if (pageElements["BODY_ONLOAD"] == null) pageElements["BODY_ONLOAD"] = string.Empty;
@@ -101,7 +114,7 @@ namespace UberCMS.Plugins
             pageElements["CC128_TITLE"] = "Current Power Usage";
             pageElements.setFlag("CC128_CURR");
         }
-        public static void pageHistory(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void pageHistory(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             switch (request.QueryString["2"])
             {
@@ -333,7 +346,7 @@ namespace UberCMS.Plugins
                     break;
             }
         }
-        public static void requestEnd(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void requestEnd(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             pageElements["CC128_WATTS"] = lastReadingWatts.ToString();
             pageElements["CC128_MAXWATTS"] = maxWatts.ToString();

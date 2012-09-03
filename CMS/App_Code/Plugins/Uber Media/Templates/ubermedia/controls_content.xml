@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[controls_content]]></hkey><description><![CDATA[The HTML of the controls page.]]></description><html><![CDATA[<div class="CONTROLS">
+<a href="<!--URL-->/ubermedia/control?cmd=c_pi&amp;manual=1&amp;mc=<!--MEDIACOMPUTER-->" onclick="return controlsButton('<!--MEDIACOMPUTER-->', 'c_pi');" class="B BPREV" title="Previous">&nbsp;</a>
+<a href="<!--URL-->/ubermedia/control?cmd=c_sb&amp;manual=1&amp;mc=<!--MEDIACOMPUTER-->" onclick="return controlsButton('<!--MEDIACOMPUTER-->', 'c_sb');" class="B BSKIP_B" title="Skip backwards">&nbsp;</a>
+<a href="<!--URL-->/ubermedia/control?cmd=c_s&amp;manual=1&amp;mc=<!--MEDIACOMPUTER-->" onclick="return controlsButton('<!--MEDIACOMPUTER-->', 'c_s');" class="B BSTOP" title="Stop">&nbsp;</a>
+<a href="<!--URL-->/ubermedia/control?cmd=c_p&amp;manual=1&amp;mc=<!--MEDIACOMPUTER-->" onclick="return controlsButton('<!--MEDIACOMPUTER-->', 'c_p');" class="B BPLAY" title="Play" id="PLAY">&nbsp;</a>
+<a href="<!--URL-->/ubermedia/control?cmd=c_sf&amp;manual=1&amp;mc=<!--MEDIACOMPUTER-->" onclick="return controlsButton('<!--MEDIACOMPUTER-->', 'c_sf');" class="B BSKIP_F" title="Skip forwards">&nbsp;</a>
+<a href="<!--URL-->/ubermedia/control?cmd=c_ni&amp;manual=1&amp;mc=<!--MEDIACOMPUTER-->" onclick="return controlsButton('<!--MEDIACOMPUTER-->', 'c_ni');" class="B BNEXT" title="Next item">&nbsp;</a>
+</div>
+<div class="clear"></div>
+<input type="range" min="0" max="100" step="1" id="POSITION" value="0" onmousedown="grip(true);" onmouseup="grip(false); controlsButton('<!--MEDIACOMPUTER-->', 'c_pos&amp;v=' + this.value);" />
+<div id="TIME">00:00:00/00:00:00</div>
+<div class="VOLUME">
+<input type="range" min="0.0" max="1.0" value="1.0" step="0.01" id="VOLUME" onmousedown="grip(true);" onmouseup="grip(false); controlsButton('<!--MEDIACOMPUTER-->', 'c_vol&amp;v=' + this.value)" /><a href="control?cmd=c_mute&amp;mc=<!--MEDIACOMPUTER-->" title="Toggle Mute" class="MUTE" id="MUTE" onclick="return controlsButton('<!--MEDIACOMPUTER-->', 'c_mute');">&nbsp;</a>
+</div>
+<div class="clear"></div>
+<h2>Currently Playing</h2>
+<div id="PLAYING">
+<!--PLAYING-->
+</div>
+<h2>Upcoming</h2>
+<div id="UPCOMING">
+<!--UPCOMING-->
+</div>]]></html></template>

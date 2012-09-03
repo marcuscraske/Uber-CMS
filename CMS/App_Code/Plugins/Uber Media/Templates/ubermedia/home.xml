@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[home]]></hkey><description><![CDATA[Used for the homepage.]]></description><html><![CDATA[<h2>Info</h2>
+<p>Welcome to your Uber Media portal!</p>
+<p>Use the menu or search-box above to find content to play on your media computer...</p>
+<h2>Newest Additions</h2>
+%NEWEST%
+<h2>Random Items</h2>
+%RANDOM%]]></html></template>

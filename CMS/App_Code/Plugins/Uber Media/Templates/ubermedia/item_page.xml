@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[item_page]]></hkey><description><![CDATA[The HTML of an items page.]]></description><html><![CDATA[<h3>Description</h3>
+<img src="<!--URL-->/ubermedia/thumbnail/%VITEMID%" class="I_THUMBNAIL" alt="Thumbnail" title="%TITLE%'s thumbnail" />
+<p class="I_DESC">%DESCRIPTION%</p>
+
+<h3>Information</h3>
+<div class="R">
+	<div class="C"><img src="<!--URL-->/Content/Images/ubermedia/Item/type.png" alt="Icon" />Type:</div>
+	<div class="C">%TYPE%</div>
+</div>
+<div class="R">
+	<div class="C"><img src="<!--URL-->/Content/Images/ubermedia/Item/views.png" alt="Icon" />Views:</div>
+	<div class="C">%VIEWS%</div>
+</div>
+<div class="R">
+	<div class="C"><img src="<!--URL-->/Content/Images/ubermedia/Item/date_added.png" alt="Icon" />Date added:</div>
+	<div class="C">%DATE_ADDED%</div>
+</div>
+<div class="R">
+	<div class="C"><img src="<!--URL-->/Content/Images/ubermedia/Item/path.png" alt="Icon" />Physical Path:</div>
+	<div class="C">%PATH%</div>
+</div>
+<br />
+<h3>Tags</h3>
+%TAGS%
+
+<h3>Add Tag</h3>
+<form method="post" action="<!--URL-->/ubermedia/item/%VITEMID%">
+<div class="R">
+	<div class="C">Tag:</div>
+	<div class="C"><select name="tag">%OPTIONS_TAGS%</select></div>
+</div>
+<div class="R">
+	<div class="C">&nbsp;</div>
+	<div class="C"><input type="submit" class="BUTTON" value="Add" /></div>
+</div>
+<div class="clear"></div>
+</form>]]></html></template>

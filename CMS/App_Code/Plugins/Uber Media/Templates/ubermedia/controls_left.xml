@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[controls_left]]></hkey><description><![CDATA[The left side-menu of the controls page.]]></description><html><![CDATA[<h2>Options</h2>
+<a onclick="return controlsButton('<!--MEDIACOMPUTER-->', 'remove_all');" href="<!--URL-->/ubermedia/control?mc=<!--MEDIACOMPUTER-->&amp;cmd=remove_all&amp;manual=1"><img src="<!--URL-->/Content/Images/ubermedia/delete.png" alt="Remove Upcoming Items" />Remove Upcoming Items</a>
+<a href="<!--URL-->/ubermedia/shutdown"><img src="<!--URL-->/Content/Images/ubermedia/shutdown.png" alt="Shutdown" />Shutdown Terminal</a>
+<a href="<!--URL-->/ubermedia/restart"><img src="<!--URL-->/Content/Images/ubermedia/restart.png" alt="Restart" />Restart Terminal</a>
+<h2>Global Options</h2>
+<a href="<!--URL-->/ubermedia/admin"><img src="<!--URL-->/Content/Images/ubermedia/configure.png" alt="Admin" />Admin</a>
+<a href="<!--URL-->/ubermedia/status"><img src="<!--URL-->/Content/Images/ubermedia/Status/terminal.png" alt="Status of Terminals Icon" />Status of Terminals</a>]]></html></template>

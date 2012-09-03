@@ -1,0 +1,9 @@
+﻿// Add the local files
+%LOCAL%\*,\
+
+// Add CSS
+%GLOBAL%\Content\CSS\UberMedia.css,\Content\CSS
+// Add JS
+%GLOBAL%\Content\JS\ubermedia\*,\Content\JS
+// Add images
+%GLOBAL%\Content\Images\ubermedia\*,\Content\Images

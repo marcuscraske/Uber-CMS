@@ -1,0 +1,2 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[controls_error]]></hkey><description><![CDATA[Displayed when the user has no media-computer selected.]]></description><html><![CDATA[<h2>Controls - Error</h2>
+Please select a media-computer in the top-right menu or make sure you have at least one media-computer installed!]]></html></template>

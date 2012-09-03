@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[ubermedia]]></pkey><hkey><![CDATA[item_tag]]></hkey><description><![CDATA[A tag on an item page; this has a template because it's slightly long to be hard-written.]]></description><html><![CDATA[<div class="TAG_REMOVE">
+	<a class="TAG" href="<!--URL-->/ubermedia/browse?tag=%TAGID%">%TITLE%</a>
+	<a class="RL" href="<!--URL-->/ubermedia/item/%VITEMID%/remove_tag?t=%TAGID%" title="Remove tag">[x]</a>
+</div>]]></html></template>
