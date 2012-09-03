@@ -99,6 +99,7 @@ namespace UberCMS.Plugins
                     string line;
                     string[] file;
                     string destination;
+                    string destFolder;
                     foreach (string rawline in File.ReadAllText(basePath + "\\files.list").Replace("\r", "").Split('\n'))
                     {
                         line = rawline.Trim();
@@ -113,21 +114,36 @@ namespace UberCMS.Plugins
                                 // Check if the line is a directory or file
                                 if (file[0].EndsWith("\\*"))
                                 {
-                                    // Iterate and sync each file
-                                    output.Append("<br />").Append(file[0]);
-                                    foreach (string f in Directory.GetFiles(file[0].Remove(file[0].Length - 1, 1), "*", SearchOption.AllDirectories))
+                                    if (Directory.Exists((destFolder = file[0].Remove(file[0].Length - 1, 1))))
                                     {
-                                        destination = basePath + file[1] + "\\" + f.Remove(0, file[0].Length - 1);
-                                        pageSync_file(f, destination);
-                                        output.Append("<br />-> <i>").Append(destination).Append("</i>");
+                                        // Iterate and sync each file
+                                        output.Append("<br />").Append(file[0]);
+                                        foreach (string f in Directory.GetFiles(destFolder, "*", SearchOption.AllDirectories))
+                                        {
+                                            if (f.EndsWith("\\Thumbs.db"))
+                                                excluded.Append("<br />").Append(f);
+                                            else
+                                            {
+                                                destination = basePath + file[1] + "\\" + f.Remove(0, file[0].Length - 1);
+                                                pageSync_file(f, destination);
+                                                output.Append("<br />-> <i>").Append(destination).Append("</i>");
+                                            }
+                                        }
                                     }
+                                    else
+                                        excluded.Append("<br />").Append(destFolder + " (FOLDER - doesn't exist)");
                                 }
                                 else
                                 {
                                     // Sync the file
-                                    destination = basePath + "\\" + file[1] + "\\" + Path.GetFileName(file[0]);
-                                    pageSync_file(file[0], destination);
-                                    output.Append("<br />").Append(file[0]).Append("<br />-> <i>").Append(destination).Append("</i>");
+                                    if (File.Exists(file[0]))
+                                    {
+                                        destination = basePath + "\\" + file[1] + "\\" + Path.GetFileName(file[0]);
+                                        pageSync_file(file[0], destination);
+                                        output.Append("<br />").Append(file[0]).Append("<br />-> <i>").Append(destination).Append("</i>");
+                                    }
+                                    else
+                                        excluded.Append("<br />").Append(file[0] + " (doesn't exist)");
                                 }
                             }
                             else
@@ -141,10 +157,19 @@ namespace UberCMS.Plugins
         }
         private static void pageSync_file(string origin, string destination)
         {
+            // Check if js file
+            if (destination.EndsWith(".js")) destination += ".file";
             // Check the parent directory of the destination exists, else create it
             string dir = Path.GetDirectoryName(destination);
             if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
+                try
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                catch (NotSupportedException ex)
+                {
+                    throw new Exception("Failed to sync file, could not create directory '" + dir + "' for '" + destination + "'!");
+                }
             else if (File.Exists(destination))
                 return; // File exists - abort
             // Copy the file

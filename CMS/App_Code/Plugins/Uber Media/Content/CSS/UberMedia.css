@@ -1,0 +1,713 @@
+﻿/* Shared */
+.FR
+{
+    float: right;
+}
+/* Main Body */
+body
+{
+    margin: 0em;
+    background: #690;
+    font: normal 12px Verdana;
+    color: #000;
+}
+a
+{
+    color: #360;
+}
+a:hover
+{
+    color: #999;
+}
+.clear
+{
+    clear: both;
+}
+::-webkit-scrollbar
+{
+    width: 1.25em;
+}
+::-webkit-scrollbar-thumb
+{
+    background: #333;
+    border-radius: 0.5em;
+}
+::-webkit-scrollbar-track
+{
+    background: #999;
+}
+h1
+{
+    -webkit-text-shadow: 0px 0px 5px #360;
+    -moz-text-shadow: 0px 0px 5px #360;
+    text-shadow: 0px 0px 5px #360;
+}
+.AREA_SHADE
+{
+    position: fixed;
+    top: 0em;
+    left: 0em;
+    width: 100%;
+    height: 6.5em;
+    background: #9C0;
+}
+.AREA_SHADE2
+{
+    position: fixed;
+    top: 6.5em;
+    width: 100%;
+    left: 0em;
+    height: 1em;
+    background: #360;
+}
+.AREA_WRAPPER, .AREA_FOOTER
+{
+    width: 80em;
+    margin: auto;
+}
+.AREA_WRAPPER
+{
+    position: relative;
+}
+.AREA_BANNER
+{
+    line-height: 3em;
+    height: 3em;
+    color: #FFF;
+    padding-left: 0.8em;
+}
+.AREA_BANNER div
+{
+    float: right;
+}
+.AREA_NAVIGATION
+{
+    background: #360;
+    height: 2.5em;
+    line-height: 2.5em;
+    padding: 0em 0em 0em 1em;
+    margin-bottom: 0.5em;
+    border-radius: 5px 5px 0px 0px;
+}
+.AREA_NAVIGATION select, .AREA_NAVIGATION input[type=text]
+{
+    border: solid 0.1em #CCC;
+    width: 12em;
+}
+.AREA_NAVIGATION span
+{
+    float: left;
+    width: 0.1em;
+    background: #CCC;
+    margin: 0.5em 0.5em 0.5em 0.5em;
+    height: 1.5em;
+}
+.AREA_NAVIGATION div
+{
+    float: right;
+    margin: 0em 1em 0em 0em;
+    color: #FFF;
+    font-size: smaller;
+}
+.AREA_NAVIGATION div a
+{
+    margin: 0em !important;
+    padding: 0em !important;
+    float: none;
+}
+.AREA_NAVIGATION div a:hover, .AREA_NAVIGATION div a:focus
+{
+    background: none !important;
+    color: #CCC;
+}
+.AREA_NAVIGATION a
+{
+    float: left;
+    text-decoration: none;
+    margin: 0em 0.2em 0em 0.2em;
+    padding: 0em 1.5em 0em 1.5em;
+    color: #FFF;
+    -webkit-transition: 0.3s linear;
+    -moz-transition: 0.3s linear;
+    -o-transition: 0.3s linear;
+    transition: 0.3s linear;
+    border-radius: 0px 0px 5px 5px;
+}
+.AREA_NAVIGATION a:hover, .AREA_NAVIGATION a:focus, .AREA_NAVIGATION a.selected
+{
+    background: #9C0;
+}
+.AREA_CONTENT #LEFT
+{
+    float: left;
+    width: 16em;
+    margin: 1em 0.5em 1em 0em;
+    background: #FFF;
+}
+.AREA_CONTENT #RIGHT
+{
+    float: right;
+    width: 60em;
+    margin: 1em 0em 1em 0.5em;
+    min-height: 30em;
+    background: #FFF;
+}
+.AREA_CONTENT #LEFT, .AREA_CONTENT #RIGHT
+{
+    padding: 0.5em;
+    -webkit-box-shadow: 0px 0px 5px #360; 
+    -moz-box-shadow: 0px 0px 5px #360; 
+    box-shadow: 0px 0px 5px #360;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.AREA_FOOTER
+{
+    padding-top: 0.5em;
+    text-align: center;
+    color: #330;
+}
+.AREA_FOOTER a
+{
+    color: #330;
+}
+/* Content Area */
+.AREA_CONTENT #LEFT h2, .AREA_CONTENT #RIGHT h2, .AREA_CONTENT #RIGHT h3
+{
+    font-size: inherit;
+    padding: 0.5em;
+    border-radius: 5px;
+    clear: both;
+    margin-bottom: 0.5em;
+}
+.AREA_CONTENT #LEFT h2, .AREA_CONTENT #RIGHT h2
+{
+    background: #360;
+    color: #FFF;
+}
+.AREA_CONTENT #LEFT h2 a, .AREA_CONTENT #RIGHT h2 a
+{
+    color: #FFF;
+    margin-left: 0.5em;
+}
+.AREA_CONTENT #RIGHT h3
+{
+    color: #333;
+    background: #CCC;
+}
+.AREA_CONTENT #LEFT a
+{
+    display: block;
+    float: left;
+    clear: left;
+    width: 14em;
+    text-decoration: none;
+    border-bottom: dashed 1px #CCC;
+    color: #000;
+    min-height: 2em;
+    line-height: 2em;
+    padding: 0em 0.5em 0em 1.5em;
+}
+.AREA_CONTENT #LEFT a:hover
+{
+    background: #CCC;
+}
+.AREA_CONTENT #LEFT .selected
+{
+    background: #9C0;
+    color: #360;
+}
+.AREA_CONTENT #LEFT a img
+{
+    float: left;
+    margin: 0.4em;
+    margin-left: -1.5em;
+    width: 1.25em; height: 1.25em;
+    border: none;
+}
+.AREA_CONTENT #RIGHT a.TAG
+{
+    float: left;
+    border: solid 0.1em #999;
+    background: #CCC;
+    padding: 0.25em;
+    margin: 0em 0.5em 0.5em 0em;
+    border-radius: 5px;
+    color: #333;
+    text-decoration: none;
+    overflow: hidden;
+}
+.AREA_CONTENT #RIGHT a.TAG:hover, .AREA_CONTENT #RIGHT a.TAG:focus
+{
+    background: #EEE;
+}
+.AREA_CONTENT #RIGHT .TAG_REMOVE
+{
+    float: left;
+}
+.AREA_CONTENT #RIGHT .TAG_REMOVE .RL
+{
+    color: #360;
+    margin-right: 0.5em;
+    text-decoration: none;
+}
+.AREA_CONTENT #RIGHT .ITEM
+{
+    float: left;
+    width: 19em;
+    overflow: hidden;
+    border: solid 0.1em #CCC;
+    margin: 0em 0.5em 0.5em 0em;
+}
+.AREA_CONTENT #RIGHT .ITEM .THUMB
+{
+    float: left;
+    width: 7em;
+    height: 5em;
+    margin-right: 0.5em;
+    border: none;
+}
+.AREA_CONTENT #RIGHT .ITEM .INFO
+{
+    float: right;
+    width: 100%;
+    height: 5em;
+    text-decoration: none;
+}
+.AREA_CONTENT #RIGHT .ITEM .INFO:hover
+{
+    background: #9C0;
+    color: #360;
+}
+.AREA_CONTENT #RIGHT .ITEM .OPTIONS
+{
+    clear: both;
+    float: right;
+    height: 2.5em;
+    width: 100%;
+    background: #CCC;
+}
+.AREA_CONTENT #RIGHT .ITEM .OPTIONS img
+{
+    width: 1.5em;
+    height: 1.5em;
+    padding: 0.5em;
+    float: right;
+    border: none;
+}
+.AREA_CONTENT #RIGHT div.B_FOOTER
+{
+    width: 100%;
+    text-align: center;
+}
+.AREA_CONTENT #RIGHT a.B_NEXT
+{
+    float: right;
+}
+.AREA_CONTENT #RIGHT a.B_PREV
+{
+    float: left;
+}
+.AREA_CONTENT #RIGHT a.B_NEXT, .AREA_CONTENT #RIGHT a.B_PREV
+{
+    border-radius: 5px;
+    background: #360;
+    padding: 0.5em 0.75em 0.5em 0.75em;
+    text-decoration: none;
+    color: #FFF;
+}
+.AREA_CONTENT #RIGHT a.B_NEXT:hover, .AREA_CONTENT #RIGHT a.B_PREV:hover, .AREA_CONTENT #RIGHT a.B_NEXT:focus, .AREA_CONTENT #RIGHT a.B_PREV:focus
+{
+    background: #CCC;
+    color: #333;
+}
+/* Items page */
+.AREA_CONTENT #RIGHT .I_THUMBNAIL
+{
+	float: left;
+	border: solid 1px #CCC;
+	margin: 0em 1em 1em 0em;
+}
+.AREA_CONTENT #RIGHT .I_DESC
+{
+    min-height: 7em;
+}
+.AREA_CONTENT #RIGHT .ITEM_IMG
+{
+    max-width: 100%;
+}
+/* Admin System */
+.BUTTON
+{
+    background: #360;
+    color: #FFF;
+    border-radius: 5px;
+    border: none;
+    min-height: 2em;
+    line-height: 2em;
+    min-width: 4em;
+    cursor: pointer;
+    padding: 0.1em 0.7em;
+}
+.BUTTON:hover
+{
+    background: #CCC;
+    color: #333;
+}
+input.BUTTON
+{
+    float: right;
+}
+a.BUTTON
+{
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+}
+a.BUTTON.M
+{
+    margin-right: 0.5em;
+}
+/* Table */
+.R /* Row */
+{
+    clear: both;
+    width: 100%;
+    padding-bottom: 0.25em;
+    margin-bottom: 0.25em;
+}
+.RD /* -- Row dotted */
+{
+    border-bottom: dotted 0.2em #CCC;
+}
+.RH /* Row header */
+{
+    background: #CCC;
+    color: #333;
+    font-weight: bold;
+    border-radius: 5px;
+}
+.R .C, .R .C3 /* Cell of a row */
+{
+    float: left;
+}
+.R .C /* Rpw with two cells */
+{
+    width: 50%;
+}
+.R .C3 /* Row with three cells */
+{
+    width: 33%;
+}
+.R .C .P, .R .C3 .P
+{
+    padding: 0.5em;
+}
+.R .C .P2, .R .C3 .P2
+{
+    padding: 0.25em 0.5em;
+}
+.R .C img, .R .C3 img /* Cell icon */
+{
+    margin-right: 0.5em;
+}
+/* Table - form items */
+.R input[type=reset]
+{
+    float: left;
+}
+.R textarea, .R input[type=text], .R select
+{
+    border: solid 0.1em #CCC;
+    color: #360;
+}
+.R textarea:hover, .R input[type=text]:hover, .R textarea:focus, .R input[type=text]:focus, .R select:hover, .R select:focus
+{
+    border: solid 0.1em #333;
+    background: #CCC;
+}
+/* Error message */
+.ERROR_BOX
+{
+    margin-top: 0.5em;
+    display: none;
+    visibility: hidden;
+    width: 100%;
+    color: #F00;
+    background: #FCC;
+    border: solid 0.2em #F00;
+}
+.ERROR_BOX div
+{
+    padding: 0.5em;
+}
+/* Admin -------------------------------------------------------------------------------------------------------- *
+/* Folders */
+.FOLDER
+{
+    display: block;
+    border: solid 0.1em transparent;
+    border-bottom: solid 0.2em #360;
+    padding: 0.5em;
+    text-decoration: none;
+    color: #000;
+}
+.FOLDER span
+{
+    font-size: large;
+    color: #360;
+}
+.FOLDER:hover
+{
+    background: #CCC;
+    border: solid 0.1em #333;
+    border-bottom: solid 0.2em #333;
+}
+/* Terminals */
+.TERMINAL
+{
+    display: block;
+    text-decoration: none;
+    color: #000;
+    border: solid 0.1em transparent;
+    border-bottom: solid 0.2em #360;
+    padding: 0.5em;
+}
+.TERMINAL span
+{
+    font-size: large;
+    color: #360;
+}
+.TERMINAL div div
+{
+    width: 12em;
+    float: left;
+}
+.TERMINAL:hover
+{
+    background: #CCC;
+    border: solid 0.1em #333;
+    border-bottom: solid 0.2em #333;
+}
+/* External Requests */
+.ADMIN_REQ .R /* Row */
+{
+    clear: both;
+    border-bottom: solid 0.2em #CCC;
+    word-wrap: break-word;
+}
+.ADMIN_REQ .H /* Header */
+{
+    border-bottom: solid 0.2em #333;
+    font-weight: bold;
+    color: #333;
+}
+.ADMIN_REQ .R .A, .ADMIN_REQ .R .B, .ADMIN_REQ .R .C
+{
+    float: left;
+    padding: 0.5em;
+}
+.ADMIN_REQ .R .A
+{
+    width: 10em;
+}
+.ADMIN_REQ .R .B
+{
+    width: 15em;
+}
+.ADMIN_REQ .R .C
+{
+    width: 32em;
+}
+
+/* --- CONTROLS --- */
+/* Actual controls such as play etc */
+.CONTROLS
+{
+    width: 36em;
+    margin: auto;
+}
+.B
+{
+    float: left;
+    display: block;
+    width: 6em;
+    height: 6em;
+    background-size: 100%;
+    text-decoration: none;
+}
+.BPREV
+{
+    background: url('../Images/ubermedia/Controls/previous.png');
+}
+.BPREV:hover
+{
+    background: url('../Images/ubermedia/Controls/previous_h.png');
+}
+.BSKIP_B
+{
+    background: url('../Images/ubermedia/Controls/skip_backward.png');
+}
+.BSKIP_B:hover
+{
+    background: url('../Images/ubermedia/Controls/skip_backward_h.png');
+}
+.BSTOP
+{
+    background: url('../Images/ubermedia/Controls/stop.png');
+}
+.BSTOP:hover
+{
+    background: url('../Images/ubermedia/Controls/stop_h.png');
+}
+.BPLAY
+{
+    background: url('../Images/ubermedia/Controls/play.png');
+}
+.BPLAY:hover
+{
+    background: url('../Images/ubermedia/Controls/play_h.png');
+}
+.BPAUSE
+{
+    background: url('../Images/ubermedia/Controls/pause.png');
+}
+.BPAUSE:hover
+{
+    background: url('../Images/ubermedia/Controls/pause_h.png');
+}
+.BSKIP_F
+{
+    background: url('../Images/ubermedia/Controls/skip_forward.png');
+}
+.BSKIP_F:hover
+{
+    background: url('../Images/ubermedia/Controls/skip_forward_h.png');
+}
+.BNEXT
+{
+    background: url('../Images/ubermedia/Controls/next.png');
+}
+.BNEXT:hover
+{
+    background: url('../Images/ubermedia/Controls/next_h.png');
+}
+#TIME
+{
+    float: left;
+}
+.VOLUME
+{
+    float: right;
+}
+.MUTE, .UNMUTE
+{
+    display: block;
+    width: 2em; height: 2em;
+    float: right;
+    background-size: 100%;
+    text-decoration: none;
+}
+.MUTE
+{
+    background: url('../Images/ubermedia/Controls/mute.png');
+}
+.UNMUTE
+{
+    background: url('../Images/ubermedia/Controls/unmute.png');
+}
+input[type=range]
+{
+    -webkit-appearance: none !important;
+    background: #9C0;
+    height: 1em;
+    cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb
+{
+    -webkit-appearance: none !important;
+    background: #360;
+    height: 1em;
+    width: 1em;
+}
+#POSITION
+{
+    width: 100%;
+}
+#VOLUME
+{
+    width: 8em;
+}
+/* Playlist item */
+.PITEM
+{
+    display: block;
+    text-decoration: none;
+    width: 59em;
+    height: 4em;
+    border: solid 0.1em #000;
+    vertical-align: top;
+    background: #9C0;
+    -webkit-box-shadow: 0px 0px 5px #999;
+    -moz-box-shadow: 0px 0px 5px #999;
+    box-shadow: 0px 0px 5px #999;
+    float: left;
+    margin: 0em 1em 1em 0em;
+}
+.PITEM a.i
+{
+    text-decoration: none;
+}
+.PITEM a.t
+{
+    display: block;
+    text-decoration: none;
+    padding: 0.5em;
+    width: 50em;
+    height: 3em;
+}
+.PITEM a.t:hover, .PITEM a.t:focus
+{
+    background: #CCC;
+    color: #333;
+}
+.PITEM a.i:hover
+{
+    opacity: 0.8;
+}
+.PITEM img
+{
+    width: 5em;
+    height: 4em;
+    border: none;
+    border-right: solid 0.1em #000;
+    background-size: 100%;
+}
+.PITEM a
+{
+    float: left;
+}
+.PITEM a.x
+{
+    display: block;
+    float: right;
+    width: 1.5em;
+    height: 100%;
+    line-height: 4em;
+    text-decoration: none;
+    font-weight: bold;
+    color: #9C0;
+    background: #000;
+    text-align: center;
+    border-left: solid 0.1em #000;
+}
+.PITEM a.x:hover
+{
+    background: #9C0;
+    color: #000;
+}
+.PITEM div
+{
+    float: left;
+    padding: 0.5em;
+}

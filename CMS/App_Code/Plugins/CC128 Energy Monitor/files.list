@@ -1,7 +1,7 @@
 ﻿%LOCAL%\*,\
-%GLOBAL%\Content\CSS\CC128.css,%LOCAL%\Content\CSS
-%GLOBAL%\Content\Images\CC128\*,%LOCAL%\Content\Images\CC128
-%GLOBAL%\Content\JS\CC128.js,%LOCAL%\Content\JS
+%GLOBAL%\Content\CSS\CC128.css,\Content\CSS
+%GLOBAL%\Content\Images\CC128\*,\Content\Images\CC128
+%GLOBAL%\Content\JS\CC128.js,\Content\JS
 
 // Exclude psd's
 -%LOCAL%\Bar.psd
