@@ -83,6 +83,9 @@ namespace UberCMS.Plugins.UberMedia
             // Install content
             if ((error = Misc.Plugins.contentInstall(basePath + "\\Content")) != null)
                 return error;
+            // Install templates
+            if ((error = Misc.Plugins.templatesInstall(basePath + "\\Templates", conn)) != null)
+                return error;
             // Install settings
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_ROTTEN_TOMATOES_API_KEY, string.Empty, "Your API key for Rotten Tomatoes to retrieve third-party media information.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_TERMINALS_AUTOMATIC_REGISTER, "1", "Specifies if terminals can self-register themselves to your media library; this allows for easier installation of terminals/media-computers.", false);
@@ -115,6 +118,9 @@ namespace UberCMS.Plugins.UberMedia
                 return error;
             // Uninstall content
             if ((error = Misc.Plugins.contentUninstall(basePath + "\\Content")) != null)
+                return error;
+            // Uninstall templates
+            if ((error = Misc.Plugins.templatesUninstall(TEMPLATE, conn)) != null)
                 return error;
 
             return null;

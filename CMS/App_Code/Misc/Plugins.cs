@@ -474,8 +474,12 @@ namespace UberCMS.Misc
                         else if (symbols.EndsWith("," + symbol))
                             symbols = symbols.Remove(symbols.Length - (symbol.Length + 1), symbol.Length + 1);
                         else
+                        {
                             // Remove the symbol, which could be like /d:<symbol>, *or* ,<symbol>,
-                            symbols = symbols.Replace("/d:" + symbol + ",", "/d:").Replace("," + symbol + ",", string.Empty);
+                            symbols = symbols.Replace("/d:" + symbol + ",", "/d:").Replace("," + symbol + ",", ",");
+                            // Remove ending ,<symbol>
+                            if (symbols.EndsWith("," + symbol)) symbols = symbols.Remove(symbols.Length - (symbol.Length + 1), symbol.Length + 1);
+                        }
                         // -- Update the modified flags
                         compiler.Attributes["compilerOptions"].Value = symbols;
                     }
