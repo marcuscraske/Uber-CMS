@@ -509,7 +509,7 @@ namespace UberCMS.Plugins.UberMedia
             // Build sidebar
             contentLeft.Append("<h2>Main Folders</h2>");
             // -- Build a list of all the main drives
-            contentLeft.Append(Core.templates[Base.TEMPLATE]["browse_side_folder"].Replace("%CLASS%", request.QueryString["2"] == null ? "selected" : string.Empty).Replace("%IURL%", pageElements["URL"] + "/browse").Replace("%TITLE%", "All").Replace("%ICON%", pageElements["URL"] + "/Content/Images/ubermedia/folders.png"));
+            contentLeft.Append(Core.templates[Base.TEMPLATE]["browse_side_folder"].Replace("%CLASS%", request.QueryString["2"] == null ? "selected" : string.Empty).Replace("%IURL%", pageElements["URL"] + "/ubermedia/browse").Replace("%TITLE%", "All").Replace("%ICON%", pageElements["URL"] + "/Content/Images/ubermedia/folders.png"));
             foreach (ResultRow drive in conn.Query_Read("SELECT pfolderid, title FROM um_physical_folders ORDER BY title ASC"))
                 contentLeft.Append(Core.templates[Base.TEMPLATE]["browse_side_folder"]
                     .Replace("%IURL%", pageElements["URL"] + "/ubermedia/browse/" + drive["pfolderid"] + "?" + current_params)
