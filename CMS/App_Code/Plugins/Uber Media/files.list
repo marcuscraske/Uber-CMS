@@ -6,4 +6,4 @@
 // Add JS
 %GLOBAL%\Content\JS\ubermedia\*,\Content\JS
 // Add images
-%GLOBAL%\Content\Images\ubermedia\*,\Content\Images
+%GLOBAL%\Content\Images\ubermedia\*,\Content\Images\ubermedia
