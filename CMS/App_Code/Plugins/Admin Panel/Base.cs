@@ -311,7 +311,7 @@ namespace UberCMS.Plugins
             {
                 rawKey = request.Form.Keys[i].Split('$');
                 value = request.Form[i];
-                if (rawKey.Length == 2 && rawKey[0].StartsWith("setting_") && rawKey[0].Length > 10 && Plugins.BasicSiteAuth.validateAlphaNumericUnderscroll(key = rawKey[0].Substring(8)))
+                if (rawKey.Length == 2 && rawKey[0].StartsWith("setting_") && rawKey[0].Length > 10 && validateAlphaNumericUnderscroll(key = rawKey[0].Substring(8)))
                     updatedSettings.Add(new string[] { key, rawKey[1] }, value);
             }
             if (updatedSettings.Count > 0)
@@ -549,6 +549,23 @@ namespace UberCMS.Plugins
         public static void addAlert(Connector conn, string message)
         {
             conn.Query_Execute("INSERT INTO admin_alerts (message, datetime) VALUES('" + Utils.Escape(message) + "', NOW())");
+        }
+        #endregion
+
+        #region "Methods - Misc"
+        /// <summary>
+        /// Checks each char in the specified string is alpha-numeric or an underscroll.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static bool validateAlphaNumericUnderscroll(string text)
+        {
+            foreach (char c in text.ToCharArray())
+            {
+                if (!(c >= 48 && c <= 57) && !(c >= 65 && c <= 90) && !(c >= 97 && c <= 122) && c != 95)
+                    return false;
+            }
+            return true;
         }
         #endregion
     }

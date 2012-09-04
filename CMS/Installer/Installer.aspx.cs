@@ -45,6 +45,7 @@ public partial class Installer_Installer : System.Web.UI.Page
         // Invoke the correct page to handle the request
         UberCMS.Misc.PageElements pageElements = new UberCMS.Misc.PageElements();
         pageElements["URL"] = ResolveUrl("/install");
+        pageElements["BASE_URL"] = ResolveUrl("/");
         StringBuilder content = new StringBuilder();
 #if !INSTALLED
         switch (Request.QueryString["1"])
@@ -86,7 +87,7 @@ public partial class Installer_Installer : System.Web.UI.Page
     public static void pageSetup(ref UberCMS.Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref StringBuilder content)
     {
 #if INSTALLED
-        response.Redirect(pageElements["URL"] + "/finish");
+        response.Redirect(pageElements["BASE_URL"]);
 #else
         // Check the database is not already installed
         if (dbSettings != null)
@@ -238,11 +239,11 @@ public partial class Installer_Installer : System.Web.UI.Page
         content.Append(
             templates[TEMPLATES_KEY]["general_settings"]
             .Replace("%ERROR%", error != null ? templates[TEMPLATES_KEY]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
-            .Replace("%DB_HOST%", HttpUtility.HtmlEncode(dbHost))
-            .Replace("%DB_PORT%", HttpUtility.HtmlEncode(dbPort))
-            .Replace("%DB_USERNAME%", HttpUtility.HtmlEncode(dbUsername))
-            .Replace("%DB_PASSWORD%", HttpUtility.HtmlEncode(dbPassword))
-            .Replace("%DB_DATABASE%", HttpUtility.HtmlEncode(dbDatabase))
+            .Replace("%DB_HOST%", HttpUtility.HtmlEncode(dbHost ?? "localhost"))
+            .Replace("%DB_PORT%", HttpUtility.HtmlEncode(dbPort ?? "3306"))
+            .Replace("%DB_USERNAME%", HttpUtility.HtmlEncode(dbUsername ?? "root"))
+            .Replace("%DB_PASSWORD%", HttpUtility.HtmlEncode(dbPassword ?? string.Empty))
+            .Replace("%DB_DATABASE%", HttpUtility.HtmlEncode(dbDatabase ?? "ubercms"))
             .Replace("%MAIL_HOST%", HttpUtility.HtmlEncode(mailHost))
             .Replace("%MAIL_PORT%", HttpUtility.HtmlEncode(mailPort))
             .Replace("%MAIL_USERNAME%", HttpUtility.HtmlEncode(mailUsername))
@@ -262,7 +263,7 @@ public partial class Installer_Installer : System.Web.UI.Page
     public static void pageInstall(ref UberCMS.Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref StringBuilder content)
     {
 #if INSTALLED
-        response.Redirect(pageElements["URL"] + "/finish");
+        response.Redirect(pageElements["BASE_URL"]);
 #else
         // Create connector object
         Connector conn = dbSettings.create();
@@ -281,7 +282,7 @@ public partial class Installer_Installer : System.Web.UI.Page
             // Successful - write success to web.config
             UberCMS.Misc.Plugins.preprocessorDirective_Add("INSTALLED");
             // Redirect to finish page
-            response.Redirect(pageElements["URL"] + "/finish");
+            response.Redirect(pageElements["BASE_URL"]);
         }
         catch (Exception ex)
         {
