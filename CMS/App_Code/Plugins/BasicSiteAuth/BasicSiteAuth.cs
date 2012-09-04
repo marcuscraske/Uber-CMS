@@ -161,9 +161,9 @@ namespace UberCMS.Plugins
             if (error != null) return error;
 #if ADMIN_PANEL
             // Remove admin pages
-            AdminPanel.adminPage_Uninstall("UberCMS.Plugins.BSA_Admin", "pageUsers", conn);
-            AdminPanel.adminPage_Uninstall("UberCMS.Plugins.BSA_Admin", "pageUserGroups", conn);
-            AdminPanel.adminPage_Uninstall("UberCMS.Plugins.BSA_Admin", "pageUserLogs", conn);
+            AdminPanel.adminPage_Uninstall("UberCMS.BasicSiteAuth.Admin", "pageUsers", conn);
+            AdminPanel.adminPage_Uninstall("UberCMS.BasicSiteAuth.Admin", "pageUserGroups", conn);
+            AdminPanel.adminPage_Uninstall("UberCMS.BasicSiteAuth.Admin", "pageUserLogs", conn);
 #endif
             // No error occurred, return null
             return null;
