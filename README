@@ -14,17 +14,60 @@ Features
 -- Ability to temporarily disable plugins.
 -- Shared methods for easily install/uninstall of functions such as content and SQL.
 -- Can be uploaded via zip archives within the admin panel.
+-- Abiltiy to add/remove pre-processor directives.
 > Easy URL rewriting support.
 > Template engine:
 -- Conditional markup blocks using <!--IF:flag--><!--ELSE--><!--ENDIF--> with nesting support.
 -- Templates cached during runtime for faster page rendering.
+> Multi-threaded e-mail queue.
+
+Plugins
+===========================================================================================
+> Plugins (official as apart of this project):
+-- Admin Panel:
+   -- Manage the CMS, settings and plugins, as well as monitor services.
+   -- Open-ended support for other plugins.
+-- Articles:
+   -- Basic Site Auth based aritcle application for creating site pages with a revisioning
+      system like a Wiki.
+   -- BBCode and HTML supported.
+   -- Supports URL rewriting.
+   -- Supports group roles of Basic Sie auth and publishing system.
+   -- Features a shared image-store for embedding shared imagery with tagging/tracking.
+-- Basic 404 Page:
+   -- An example of how to produce a simple plugin to handle a HTTP/1.1 404 occurrence.
+-- Basic Site Auth:
+   -- A simple group-based authentication system with captcha security.
+   -- Passwords are hashed using two salts, a custom shifting algorithm and SHA-512.
+   -- Supports banning.
+   -- Supports Admin Panel plugin.
+   -- Account logging.
+-- Basic Site Auth - Profiles:
+   -- A profiling system for the Basic Site Auth plugin.
+   -- Supports many contact methods.
+   -- Allows profile customisation with custom background image and colours.
+   -- Allows users to upload an avatar/display picture.
+-- CC128 Energy Monitor:
+   -- Allows you to view the power consumption captured from a CC128 energy monitor.
+   -- Contains daily, monthly, yearly and total information views.
+   -- Ability to view consumption of a day via a dynamically created chart, which can
+      also be saved (generated as an image).
+-- Common:
+   -- A plugin with commonly used and shared methods for e.g. validation and BBCode.
+-- DevPackage:
+   -- A developer's plugin which allows you to easily dump HTML templates, upload HTML
+      templates to the database, zip plugins, sync global files to the local plugin
+	  directory and much more.
+-- Uber Media:
+   -- The website core used to organize media information and terminal control.
 
 License
 ===========================================================================================
 Creative Commons Attribution-ShareAlike 3.0 unported
+http://creativecommons.org/licenses/by-sa/3.0/
 
 Current Issues
 ===========================================================================================
 > Needs testing on Mono:
 -- URL rewriting issues will be the most likely issue.
-> BasicSiteAuth plugin needs re-testing; this will occur soon after no more criticl changes will be made.
+-- Can't test at the moment, my Raspberry Pi is having issues.
