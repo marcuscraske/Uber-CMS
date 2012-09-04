@@ -81,9 +81,9 @@ namespace UberCMS.Misc
         /// <param name="subject"></param>
         /// <param name="body"></param>
         /// <param name="html"></param>
-        public void add(string email, string subject, string body, bool html)
+        public void add(Connector conn, string email, string subject, string body, bool html)
         {
-            Core.globalConnector.Query_Execute("INSERT INTO email_queue (email, subject, body, html) VALUES('" + Utils.Escape(email) + "', '" + Utils.Escape(subject) + "', '" + Utils.Escape(body) + "', '" + (html ? "1" : "0") + "')");
+            conn.Query_Execute("INSERT INTO email_queue (email, subject, body, html) VALUES('" + Utils.Escape(email) + "', '" + Utils.Escape(subject) + "', '" + Utils.Escape(body) + "', '" + (html ? "1" : "0") + "')");
         }
         /// <summary>
         /// Infinitely checks for e-mails to send.

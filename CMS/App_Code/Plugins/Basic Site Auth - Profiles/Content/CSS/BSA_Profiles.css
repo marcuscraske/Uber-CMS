@@ -24,7 +24,7 @@
 {
     max-height: 10em;
     max-width: 10em;
-    border: solid 0.2em #CCC;
+    border: none;
 }
 .BSA_PROFILES_FRAME .LEFT .PANE .ICON
 {
@@ -49,6 +49,7 @@
     border-top-left-radius: 0.5em;
     border-top-right-radius: 0.5em;
     margin-right: 0.5em;
+	color: inherit;
 }
 .BSA_PROFILES_FRAME .RIGHT .TABS a:not(.SELECTED)
 {

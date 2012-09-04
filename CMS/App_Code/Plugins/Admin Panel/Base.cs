@@ -323,6 +323,8 @@ namespace UberCMS.Plugins
                 {
                     conn.Query_Execute(updateQuery.ToString());
                     successfullyUpdated = true;
+                    // Reload settings
+                    Core.settings.reload(conn);
                 }
                 catch (Exception ex)
                 {
@@ -402,6 +404,11 @@ namespace UberCMS.Plugins
                         error = Misc.Plugins.enable(pluginidData[0]["pluginid"], conn);
                         if (error == null) // Operation successful
                         {
+                            // Reload settings
+                            Core.settings.reload(conn);
+                            // Reload templates
+                            Core.templates.reloadDb(conn);
+
                             conn.Disconnect();
                             response.Redirect(pageElements["ADMIN_URL"], true);
                         }
@@ -418,6 +425,11 @@ namespace UberCMS.Plugins
                         error = Misc.Plugins.disable(pluginidData[0]["pluginid"], conn);
                         if (error == null) // Operation successful
                         {
+                            // Reload settings
+                            Core.settings.reload(conn);
+                            // Reload templates
+                            Core.templates.reloadDb(conn);
+
                             conn.Disconnect();
                             response.Redirect(pageElements["ADMIN_URL"], true);
                         }
@@ -438,6 +450,11 @@ namespace UberCMS.Plugins
                             error = Misc.Plugins.uninstall(pluginidData[0]["pluginid"], request.Form["delete_path"] != null, conn);
                             if (error == null) // Operation successful
                             {
+                                // Reload settings
+                                Core.settings.reload(conn);
+                                // Reload templates
+                                Core.templates.reloadDb(conn);
+
                                 conn.Disconnect();
                                 response.Redirect(pageElements["ADMIN_URL"], true);
                             }

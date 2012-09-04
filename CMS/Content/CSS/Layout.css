@@ -97,7 +97,7 @@ body
 }
 .AREA_NAV .ITEM a /* Menu item container item */
 {
-	float: left;
+	display: block;
 	width: 100%;
 	height: 2em;
 	color: #FFF;
@@ -136,7 +136,11 @@ body
 }
 .AREA_NAV .NAV_BUTTON, .AREA_NAV .NAV_SEP
 {
-    float: right;
+    float: left;
+}
+.AREA_NAV .ACCOUNT .NAV_SEP
+{
+	float: right;
 }
 .AREA_NAV .NAV_BUTTON
 {
@@ -168,12 +172,20 @@ body
 	z-index: 1;
 	width: 100%;
 	background: #FFF;
-	color: #360;
+	color: #000;
 	padding: 0.5em;
 	min-height: 25em;
 	border-radius: 0.5em;
 	border-top-left-radius: 0em;
 	border-top-right-radius: 0em;
+}
+.AREA_CONTENT a
+{
+	color: #360;
+}
+.AREA_CONTENT a:hover, .AREA_CONTENT a:focus
+{
+	color: #666;
 }
 .AREA_FOOTER, .AREA_FOOTER a
 {
@@ -209,7 +221,8 @@ h3
 {
 	background: #CCC;
 	color: #666;
-	margin: 0em;
+	margin: 0em 0em 0.5em 0em;
+	border-radius: 0.5em;
 }
 /* -- Content region -- */
 .FL
@@ -251,7 +264,7 @@ h3
 {
     display: inline-block;
     background: #CCC;
-    color: #333;
+    color: #333 !important;
     border: none;
     border-radius: 0.4em;
     padding: 0.5em;
@@ -260,11 +273,12 @@ h3
     font: inherit;
     line-height: 1em;
     margin: 0.25em;
+	font-style: normal !important;
 }
 .BUTTON:hover, .BUTTON:focus
 {
     background: #333;
-    color: #FFF;
+    color: #FFF !important;
 }
 /* Textbox and Textarea */
 .TEXTBOX

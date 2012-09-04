@@ -503,7 +503,7 @@ namespace UberCMS.Plugins
                                         .Replace("%DATE_TIME%", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
                                 }
                                 // Add e-mail to queue
-                                Core.emailQueue.add(email, Core.settings[SETTINGS_SITE_NAME] + " - Registration", emailMessage.ToString(), true);
+                                Core.emailQueue.add(conn, email, Core.settings[SETTINGS_CATEGORY][SETTINGS_SITE_NAME] + " - Registration", emailMessage.ToString(), true);
                                 // Show registration success page
                                 conn.Disconnect();
                                 response.Redirect(pageElements["URL"] + "/register/success", true);
@@ -768,7 +768,7 @@ namespace UberCMS.Plugins
                                     .Replace("%BROWSER%", request.UserAgent)
                                     .Replace("%DATE_TIME%", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
                                 // Add e-mail to queue
-                                Core.emailQueue.add(info[0]["email"], Core.settings[SETTINGS_SITE_NAME] + " - Account Recovery", message.ToString(), true);
+                                Core.emailQueue.add(conn, info[0]["email"], Core.settings[SETTINGS_CATEGORY][SETTINGS_SITE_NAME] + " - Account Recovery", message.ToString(), true);
                                 // Set dispatched flag to true to show success message
                                 emailDispatched = true;
                             }

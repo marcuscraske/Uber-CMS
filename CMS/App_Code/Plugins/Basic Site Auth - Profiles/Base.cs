@@ -209,7 +209,7 @@ namespace UberCMS.Plugins
             if (profileData["contact_email"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
                     .Replace("%URL%", "mailto:" + profileData["contact_email"])
-                    .Replace("%IMAGE%", "http://facebook.com/favicon.ico")
+                    .Replace("%IMAGE%", pageElements["ADMIN_URL"] + "/Content/Images/bsa_profiles/website.png")
                     .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_email"])));
             // -- Facebook
             if(profileData["contact_facebook"].Length > 0)
@@ -295,9 +295,15 @@ namespace UberCMS.Plugins
                     .Replace("%URL%", "http://" + profileData["contact_deviantart"] + ".deviantart.com/")
                     .Replace("%IMAGE%", "http://deviantart.com/favicon.ico")
                     .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_deviantart"])));
+            // Set nutshell
+            StringBuilder nutshell = new StringBuilder(HttpUtility.HtmlEncode(profileData["nutshell"]));
+            if(nutshell.Length == 0)
+                nutshell.Append("User has not specified a nutshell.");
+            else
+                Common.format(ref nutshell, ref pageElements, true, true);
             // Set content
             pageElements["PROFILE_CONTENT"] = Core.templates["bsa_profiles"]["profile_about"]
-                .Replace("%NUTSHELL%", profileData["nutshell"].Length > 0 ? HttpUtility.HtmlEncode(profileData["nutshell"]) : "User has not specified a nutshell.")
+                .Replace("%NUTSHELL%", nutshell.ToString())
                 .Replace("%CONTACT%", contact.Length == 0 ? "User has not specified any contact details." : contact.ToString())
                 ;
             pageElements.setFlag("PROFILE_ABOUT");

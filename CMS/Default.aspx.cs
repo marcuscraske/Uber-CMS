@@ -74,11 +74,14 @@ public partial class _Default : System.Web.UI.Page
             Plugins.invokeMethod(handler.ClassPath, "handleRequest", new object[] { handler.Pluginid, conn, elements, Request, Response });
         }
         // If no content has been set, a 404 has occurred - hence find a plugin to handle this issue
-        handlers = Plugins.Request.getRequest404s(conn);
-        for (i = 0; i < handlers.count() && elements["CONTENT"] == null; i++)
+        if (elements["CONTENT"] == null)
         {
-            handler = handlers[i];
-            Plugins.invokeMethod(handler.ClassPath, "handleRequestNotFound", new object[] { handler.Pluginid, conn, elements, Request, Response });
+            handlers = Plugins.Request.getRequest404s(conn);
+            for (i = 0; i < handlers.count() && elements["CONTENT"] == null; i++)
+            {
+                handler = handlers[i];
+                Plugins.invokeMethod(handler.ClassPath, "handleRequestNotFound", new object[] { handler.Pluginid, conn, elements, Request, Response });
+            }
         }
         // Check if any content has still not been set - if so we'll display a manual error to inform the user/developer/administrator/operator
         if(elements["CONTENT"] == null)

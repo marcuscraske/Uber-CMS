@@ -5,6 +5,10 @@
 	}
 	.BSAPCT
 	{
+		color: #%PANE_TEXT_COLOUR% !important;
+	}
+	.BSAPCT a
+	{
 		color: #%PANE_TEXT_COLOUR%;
 	}
 </style>
