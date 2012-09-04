@@ -71,3 +71,7 @@ Current Issues
 > Needs testing on Mono:
 -- URL rewriting issues will be the most likely issue.
 -- Can't test at the moment, my Raspberry Pi is having issues.
+> Get plugins to cache providers into a static array (or just Result) to speed up request
+  times:
+-- Admin menu providers
+-- BB code providers (common and articles)
