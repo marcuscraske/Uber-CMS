@@ -41,7 +41,7 @@ namespace UberCMS.Installer
             // instead simply unextract the zips to the App_Code\Plugins directory under a folder with the same name as the "directory" tag in the plugins'
             // Config.xml file.
             if (Core.criticalFailureError != null) throw new Exception(Core.criticalFailureError.GetBaseException().StackTrace);
-            if (Core.settings == null) throw new Exception("fuck");
+            if (Core.settings == null) throw new Exception("Core settings missing; fatal error.");
 
             // Install common
             string commonPluginid = null;
