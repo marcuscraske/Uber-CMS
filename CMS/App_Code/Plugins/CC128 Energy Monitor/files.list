@@ -5,3 +5,4 @@
 
 // Exclude psd's
 -%LOCAL%\Bar.psd
+-%LOCAL%\Service\Config.xml
