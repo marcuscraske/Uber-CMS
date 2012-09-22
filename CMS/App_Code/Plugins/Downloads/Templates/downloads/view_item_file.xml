@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[view_item_file]]></hkey><description><![CDATA[File item on view downloads page.]]></description><html><![CDATA[<a class="DOWNLOAD_ITEM" href="<!--URL-->/download/%DOWNLOADID%/%TITLE_URL%">
+	<span class="COL IMG">
+		<span class="P">
+			<img src="<!--URL-->/downloads/icon/%ICONID%/%EXTENSION%" alt="File icon" />
+		</span>
+	</span>
+	<span class="COL T">
+		<span class="P">
+			%TITLE%
+		</span>
+	</span>
+	<span class="COL FS">
+		<span class="P">
+			%FILE_SIZE%
+		</span>
+	</span>
+	<span class="COL DT" title="%DATETIME%">
+		<span class="P">
+			%DATETIME_SHORT%
+		</span>
+	</span>
+	<span class="clear"></span>
+</a>]]></html></template>

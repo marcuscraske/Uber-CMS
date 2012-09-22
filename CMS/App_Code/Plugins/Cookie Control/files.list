@@ -1,0 +1,8 @@
+﻿// Add all of the files within the plugin
+%LOCAL%\*,\
+-%LOCAL%\toggle.psd
+
+// Add content files
+%GLOBAL%\Content\CSS\CookieControl.css,\Content\CSS
+%GLOBAL%\Content\JS\CookieControl.js,\Content\JS
+%GLOBAL%\Content\Images\cookiecontrol\*,\Content\Images\cookiecontrol

@@ -3,19 +3,19 @@
 </p>
 <div class="ROW HEADER">
 	<div class="CELL3">
-		<a href="%SORT_DATE%">Date</a>
+		<a href="<SORT_DATE>">Date</a>
 	</div>
 	<div class="CELL3">
-		<a href="%SORT_EVENT%">Event</a>
+		<a href="<SORT_EVENT>">Event</a>
 	</div>
 	<div class="CELL3">
 		Info
 	</div>
 	<div class="clear"></div>
 </div>
-%EVENTS%
+<EVENTS>
 <div class="LOG TC">
-	<a href="%URL_PREVIOUS%" class="BUTTON FL">Previous</a>
-	<a href="%URL_NEXT%" class="BUTTON FR">Next</a>
-	Page: %PAGE%
+	<a href="<URL_PREVIOUS>" class="BUTTON FL">Previous</a>
+	<a href="<URL_NEXT>" class="BUTTON FR">Next</a>
+	Page: <PAGE>
 </div>]]></html></template>

@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[download_get]]></hkey><description><![CDATA[Downloads information page.]]></description><html><![CDATA[<div class="DOWNLOAD_NAV_BAR">
+	<!--IF:DOWNLOADS_ADMIN-->
+		<a class="FR" href="<!--URL-->/download/%DOWNLOADID%/delete">Delete</a>
+		<a class="FR" href="<!--URL-->/download/%DOWNLOADID%/move">Move</a>
+		<a class="FR" href="<!--URL-->/download/%DOWNLOADID%/reset_downloads">Reset Downloads</a>
+		<a class="FR" href="<!--URL-->/download/%DOWNLOADID%/edit">Edit</a>
+	<!--ENDIF-->
+	Path: %NAV%
+</div>
+<div class="ROW">
+	<div class="CELL1">
+		<p>
+			<img src="<!--URL-->/downloads/icon/%ICONID%/%EXTENSION%" alt="Icon" class="DOWNLOAD_DESC_ICON" />
+			%DESCRIPTION%
+		</p>
+		<p>
+			Total size: %FILESIZE%
+		</p>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		BBCode embed:<br />
+		<img src="<!--URL-->/download/%DOWNLOADID%/embed" alt="BBCode Embed image" />
+		<input type="text" value="[download=%DOWNLOADID%]" class="TEXTBOX" /><br />
+		Direct download link:<br />
+		<textarea class="TEXTAREA" cols="30" row="1">%DIRECT_LINK%</textarea>
+	</div>
+	<div class="CELL2">
+		<a href="<!--URL-->/download/%DOWNLOADID%/get" class="DOWNLOAD_BUTTON">Download</a>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="ROW">
+	<div class="CELL2">
+		Total downloads: %DOWNLOADS_TOTAL%
+	</div>
+	<div class="CELL2">
+		Unique downloads: %DOWNLOADS_UNIQUE%
+	</div>
+	<div class="clear"></div>
+</div>]]></html></template>

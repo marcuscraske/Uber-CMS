@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[]]></pkey><hkey><![CDATA[success]]></hkey><description><![CDATA[Success container.]]></description><html><![CDATA[<div class="SUCCESS">
 	<div class="TEXT">
-		%SUCCESS%
+		<SUCCESS>
 	</div>
 </div>]]></html></template>

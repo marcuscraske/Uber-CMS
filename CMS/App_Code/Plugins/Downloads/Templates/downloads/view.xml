@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[view]]></hkey><description><![CDATA[View base-page.]]></description><html><![CDATA[<div class="DOWNLOAD_NAV_BAR">
+	<!--IF:DOWNLOADS_ADMIN-->
+		<a class="FR" href="<!--URL-->/downloads/delete_folder/%FOLDERID%">Delete Folder</a>
+		<a class="FR" href="<!--URL-->/downloads/upload/%FOLDERID%">Upload</a>
+		<a class="FR" href="<!--URL-->/downloads/run_indexer">Run Indexer</a>
+	<!--ENDIF-->
+	Path: %NAV%
+</div>
+
+%ITEMS%
+
+<div class="DOWNLOADS_PAGES">
+	<!--IF:DOWNLOADS_PAGE_PREV-->
+	<a class="BUTTON FL" href="<!--URL-->/downloads/view/%PATH%?pg=%PAGE_PREVIOUS%">Previous</a>
+	<!--ENDIF-->
+	Page %PAGE%
+	<!--IF:DOWNLOADS_PAGE_NEXT-->
+	<a class="BUTTON FR" href="<!--URL-->/downloads/view/%PATH%?pg=%PAGE_NEXT%">Next</a>
+	<!--ENDIF-->
+</div>]]></html></template>

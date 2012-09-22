@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[delete_folder]]></hkey><description><![CDATA[Confirmation page for deleting a folder.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/downloads/delete_folder/%FOLDERID%">
+	<div class="ROW">
+		<div class="CELL1">
+			Are you sure you want to delete the following path?
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<b>'%PHYSICAL_PATH%' (%PATH%)</b>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			%ITEMS%
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			<a href="<!--URL-->/downloads/view/%PATH%" class="BUTTON FL">Back</a>
+		</div>
+		<div class="CELL2">
+			<input type="submit" class="BUTTON FR" value="Delete" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<input type="hidden" name="confirm" value="1" />
+</form>]]></html></template>

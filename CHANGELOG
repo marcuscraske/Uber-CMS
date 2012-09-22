@@ -1,0 +1,58 @@
+v1.1.0:
+-	Added changelog.
+-	Updated Base.cs method parameters based on the changes made to the base template mechanism.
+-	Core database variables made public.
+-	Security improvements by deprecating % for < to avoid page breaking from user I/O.
+-	Added favicon.
+-	Added Downloads plugin:
+	-	Allows downloading, with tracking, of files.
+	-	Allows files to be uploaded or alternatively placed within the directory; these files
+		should then be automatically picked up by the file-watcher if the app-pool is alive;
+		else when the app-pool is next active, an indexer will add the new item(s) to the
+		database.
+	-	Thumbnails are generated for application icons and images; these are stored in the
+		database with hashes, to allow for higher storage efficiency for common items.
+	-	BBCode support for Articles plugin.
+	-	Uses admin permission from BasicSiteAuth for security; if BSA is not available, admin
+		features are disabled - hence the plugin is only dependent on Common.
+-	Added Cookie Control plugin:
+	-	Disables all cookies except the ASP.NET session ID cookie for.
+	-	Useful for compliance with new EU laws/regulations on cookies.
+		-	http://www.ico.gov.uk/for_organisations/privacy_and_electronic_communications/the_guide/cookies.aspx
+-	Misc.cs updates:
+	-	Fixed minor type attribute bug for method addHeaderJS.
+	-	Added methods:
+		-	addHeaderCssOnce
+		-	addHeaderJsOnce
+-	PageElements.cs
+	-	Added appendToKey to append data to a key which may or may not exist.
+-	Admin Panel:
+	-	Added ability on the plugins page to add a plugin by directory name.
+-	Articles:
+	-	Added caching of articles to reduce overall performance and server-load,
+		as well as protect older articles from being broken from possible future
+		BB code updates in plugins.
+	-	Added home-page feature.
+	-	Preprocessor directive "ARTICLES" added.
+-	Basic Site Auth:
+	-	Major performance improvement for the anti-sql injection protection.
+	-	Clean-up with CSS include.
+-	CC128:
+	-	Data mining is now conducted through a background service; this means the website can be allowed to idle and recycle.
+	-	Identified drawing bug, where the max value came from the wrong source i.e. the maximum watts over a period of time
+		since the monitor started, opposed to a twenty-four hour period.
+-	Common:
+	-	Added code tags to syntax-highlight code using SyntaxHighlighter v3.0.83 by Alex Gorbatchev (http://alexgorbatchev.com/SyntaxHighlighter/).
+	-	Minor adjustment to parameters for BBCode formatting (now requires connector).
+	-	Improved randomText method.
+v1.0.0:
+-	Initial public release of CMS.
+-	Included (optional) plugins:
+	-	Admin Panel
+	-	Articles
+	-	Base 404 Page
+	-	Basic Site Auth - Profiles
+	-	CC128 Energy Monitor
+	-	Common
+	-	DevPackage
+	-	Uber Media (website core)

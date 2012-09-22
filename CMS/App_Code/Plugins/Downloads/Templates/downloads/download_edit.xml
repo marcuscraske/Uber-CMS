@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[download_edit]]></hkey><description><![CDATA[Form used to edit a file/download.]]></description><html><![CDATA[%ERROR%
+
+<form method="post" action="<!--URL-->/download/%DOWNLOADID%/edit">
+	<div class="ROW">
+		<div class="CELL2">
+			Title:
+		</div>
+		<div class="CELL2">
+			<input type="text" name="title" value="%TITLE%" class="TEXTBOX" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			Description:<br />
+			<textarea name="description" class="TEXTAREA" cols="100" rows="10">%DESCRIPTION%</textarea>
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			<a href="<!--URL-->/download/%DOWNLOADID%" class="BUTTON FL">Back</a>
+		</div>
+		<div class="CELL2">
+			<input type="submit" class="BUTTON FR" value="Save" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>]]></html></template>

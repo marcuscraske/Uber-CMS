@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[profile_upload]]></hkey><description><![CDATA[The page used by users to change their display picture.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/profile/upload?userid=%USERID%" enctype="multipart/form-data">
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[profile_upload]]></hkey><description><![CDATA[The page used by users to change their display picture.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/profile/upload?userid=<USERID>" enctype="multipart/form-data">
 	<div class="ROW">
 		<div class="CELL2">
 			Image:
@@ -15,4 +15,4 @@
 		<div class="clear"></div>
 	</div>
 </form>
-%ERROR%]]></html></template>
+<ERROR>]]></html></template>

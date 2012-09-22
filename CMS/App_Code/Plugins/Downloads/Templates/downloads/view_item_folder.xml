@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[view_item_folder]]></hkey><description><![CDATA[Directory item on view downloads page.]]></description><html><![CDATA[<a class="DOWNLOAD_ITEM" href="<!--URL-->/downloads/view/%PATH%">
+	<span class="COL IMG">
+		<span class="P">
+			<img src="<!--URL-->/Content/Images/downloads/folder.png" alt="Directory icon" />
+		</span>
+	</span>
+	<span class="COL T">
+		<span class="P">
+			%TITLE%
+		</span>
+	</span>
+	<span class="COL FS">
+		<span class="P">
+			--
+		</span>
+	</span>
+	<span class="COL DT" title="%DATETIME%">
+		<span class="P">
+			%DATETIME_SHORT%
+		</span>
+	</span>
+	<span class="clear"></span>
+</a>]]></html></template>

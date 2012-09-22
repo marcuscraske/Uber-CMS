@@ -6,4 +6,6 @@
 
 // Add content files
 %GLOBAL%\Content\CSS\Common.css,\Content\CSS
+%GLOBAL%\Content\JS\Common\*,\Content\JS\Common
+%GLOBAL%\Content\CSS\Common\*,\Content\CSS\Common
 %GLOBAL%\Content\Images\common\*,\Content\Images\common

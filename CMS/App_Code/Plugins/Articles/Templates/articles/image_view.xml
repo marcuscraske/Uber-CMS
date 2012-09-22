@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[image_view]]></hkey><description><![CDATA[The page for viewing an image.]]></description><html><![CDATA[<div class="ARTICLE_IMAGE">
-	<a href="<!--URL-->/articles/images/data/%IMAGEID%">
-		<img src="<!--URL-->/articles/images/data/%IMAGEID%" alt="Image" />
+	<a href="<!--URL-->/articles/images/data/<IMAGEID>">
+		<img src="<!--URL-->/articles/images/data/<IMAGEID>" alt="Image" />
 	</a>
 </div>
 <div class="ARTICLE_INFO">
@@ -9,7 +9,7 @@
 			<div class="P H">Uploader:</div>
 		</div>
 		<div class="C">
-			<div class="P"><a href="<!--URL-->/profile?userid=%USERID%">%USERNAME%</a></div>
+			<div class="P"><a href="<!--URL-->/profile?userid=<USERID>"><USERNAME></a></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -18,7 +18,7 @@
 			<div class="P H">Date:</div>
 		</div>
 		<div class="C">
-			<div class="P">%DATETIME%</div>
+			<div class="P"><DATETIME></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -27,7 +27,7 @@
 			<div class="P H">Article Embedding BBCode:</div>
 		</div>
 		<div class="C">
-			<div class="P"><input type="text" class="TEXTBOX" onclick="selectText(this);" value="[img]%IMAGEID%[/img]" /></div>
+			<div class="P"><input type="text" class="TEXTBOX" onclick="selectText(this);" value="[img]<IMAGEID>[/img]" /></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -35,7 +35,7 @@
 <div>
 	<!--IF:IMAGE_DELETE-->
 		Options:&nbsp;
-		<a href="<!--URL-->/articles/images/view/%IMAGEID%/delete" class="BUTTON">
+		<a href="<!--URL-->/articles/images/view/<IMAGEID>/delete" class="BUTTON">
 			Delete
 		</a>
 	<!--ENDIF-->
@@ -44,6 +44,6 @@
 	Referencing Articles
 </div>
 <div class="ARTICLE_IMAGE_REFERENCES">
-	%REFERENCES%
+	<REFERENCES>
 	<div class="clear"></div>
 </div>]]></html></template>

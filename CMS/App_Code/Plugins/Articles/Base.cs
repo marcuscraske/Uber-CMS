@@ -20,6 +20,7 @@ using UberLib.Connector;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace UberCMS.Plugins
 {
@@ -33,8 +34,13 @@ namespace UberCMS.Plugins
             Published = 1003,
             Deleted = 1004,
             DeletedThread = 1005,
-            SetAsSelected = 1006
+            SetAsSelected = 1006,
+            RebuiltArticleCache = 1007
         }
+        #endregion
+
+        #region "Constants"
+        public const string PREPROCESSOR_DIRECTIVE = "ARTICLES";
         #endregion
 
         #region "Constants - Settings"
@@ -93,11 +99,18 @@ namespace UberCMS.Plugins
         public const string REGEX_IMAGE_STORE_CUSTOM_WH = @"\[img=([0-9]{4}px|[0-9]{3}px|[0-9]{2}px|[0-9]{1}px|[0-9]{4}em|[0-9]{3}em|[0-9]{2}em|[0-9]{1}em),([0-9]{4}px|[0-9]{3}px|[0-9]{2}px|[0-9]{1}px|[0-9]{4}em|[0-9]{3}em|[0-9]{2}em|[0-9]{1}em)\]([0-9]+)\[\/img\]";
         #endregion
 
+        #region "Variables"
+        public static Thread threadRebuildCache = null;
+        #endregion
+
         #region "Methods - Plugin Event Handlers"
         public static string enable(string pluginid, Connector conn)
         {
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
             string error = null;
+            // Install pre-processor directive
+            if ((error = Misc.Plugins.preprocessorDirective_Add(PREPROCESSOR_DIRECTIVE)) != null)
+                return error;
             // Install content
             if((error = Misc.Plugins.contentInstall(basePath + "\\Content")) != null)
                 return error;
@@ -146,7 +159,7 @@ namespace UberCMS.Plugins
             // Install default provider(s)
             formattingAdd(conn, pluginid, "UberCMS.Plugins.Common", "format");
             // Reserve URLS
-            if ((error = Misc.Plugins.reserveURLs(pluginid, null, new string[] { "article", "articles" }, conn)) != null)
+            if ((error = Misc.Plugins.reserveURLs(pluginid, null, new string[] { "home", "article", "articles" }, conn)) != null)
                 return error;
 
             return null;
@@ -171,6 +184,9 @@ namespace UberCMS.Plugins
         {
             string basePath = Misc.Plugins.getPluginBasePath(pluginid, conn);
             string error = null;
+            // Uninstall pre-processor directive
+            if ((error = Misc.Plugins.preprocessorDirective_Remove(PREPROCESSOR_DIRECTIVE)) != null)
+                return error;
             // Uninstall SQL
             if ((error = Misc.Plugins.executeSQL(basePath + "\\SQL\\Uninstall.sql", conn)) != null)
                 return error;
@@ -181,8 +197,18 @@ namespace UberCMS.Plugins
         }
         public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
+            // Check the cache is not being rebuilt, else display a page informing the user the system is currently unavailable
+            if (threadRebuildCache != null)
+            {
+                pageUnavailableCacheReconstruction(pluginid, conn, ref pageElements, request, response);
+                return;
+            }
+            // Delegate request
             switch (request.QueryString["page"])
             {
+                case "home":
+                    pageHome(pluginid, conn, ref pageElements, request, response);
+                    break;
                 case "article":
                     pageArticle(pluginid, conn, ref pageElements, request, response);
                     break;
@@ -233,26 +259,44 @@ namespace UberCMS.Plugins
             string tag = request.QueryString["2"];
             string search = request.QueryString["keywords"];
             // Invoke the sub-page for content
-            if (subpg == null)
-                pageArticles_Browse(ref content, pluginid, conn, ref pageElements, request, response);
-            else if (subpg == "images")
-                pageArticles_Images(ref content, pluginid, conn, ref pageElements, request, response, permCreate, permDelete, permPublish);
-            else if (subpg == "recent_changes")
-                pageArticles_RecentChanges(ref content, pluginid, conn, ref pageElements, request, response, adminAccess);
-            else if (subpg == "search" && search != null && search.Length > 0 && search.Length < 40)
-                pageArticles_Search(ref content, pluginid, conn, ref pageElements, request, response);
-            else if (subpg == "tag" && tag != null && tag.Length >= Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_TITLE_MIN) && tag.Length <= Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_TITLE_MAX))
-                pageArticles_Tag(ref content, pluginid, conn, ref pageElements, request, response);
-            else if (subpg == "stats")
-                pageArticles_Stats(ref content, pluginid, conn, ref pageElements, request, response);
-            else if (subpg == "pending")
-                pageArticles_Pending(ref content, pluginid, conn, ref pageElements, request, response);
-            else if (subpg == "delete")
-                pageArticles_Delete(ref content, pluginid, conn, ref pageElements, request, response);
-            else if (subpg == "index")
-                pageArticles_Index(ref content, pluginid, conn, ref pageElements, request, response);
-            else
-                return; // Incorrect sub-page or parameters specified, abort the request and cause 404
+            switch (subpg)
+            {
+                case null:
+                    pageArticles_Browse(ref content, pluginid, conn, ref pageElements, request, response);
+                    break;
+                case "images":
+                    pageArticles_Images(ref content, pluginid, conn, ref pageElements, request, response, permCreate, permDelete, permPublish);
+                    break;
+                case "recent_changes":
+                    pageArticles_RecentChanges(ref content, pluginid, conn, ref pageElements, request, response, adminAccess);
+                    break;
+                case "search":
+                    if(search == null || search.Length < 1 || search.Length > 40) return;
+                    pageArticles_Search(ref content, pluginid, conn, ref pageElements, request, response);
+                    break;
+                case "tag":
+                    if(tag.Length < Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_TITLE_MIN) || tag.Length > Core.settings[SETTINGS_KEY].getInt(SETTINGS_TAGS_TITLE_MAX))
+                        return;
+                    pageArticles_Tag(ref content, pluginid, conn, ref pageElements, request, response);
+                    break;
+                case "stats":
+                    pageArticles_Stats(ref content, pluginid, conn, ref pageElements, request, response);
+                    break;
+                case "pending":
+                    pageArticles_Pending(ref content, pluginid, conn, ref pageElements, request, response);
+                    break;
+                case "delete":
+                    pageArticles_Delete(ref content, pluginid, conn, ref pageElements, request, response);
+                    break;
+                case "index":
+                    pageArticles_Index(ref content, pluginid, conn, ref pageElements, request, response);
+                    break;
+                case "rebuild_cache":
+                    pageArticles_RebuildCache(ref content, pluginid, conn, ref pageElements, request, response);
+                    break;
+                default:
+                    return;
+            }
             // Check content has been set, else 404
             if (content.Length == 0) return;
             // Build tag categories
@@ -269,9 +313,14 @@ namespace UberCMS.Plugins
             else
                 tagCategories.Append("No categories/tags exist!");
             // Set flags
-            if (permPublish) pageElements.setFlag("ARTICLES_PUBLISH");
-            pageElements.setFlag("ARTICLES_STATS");
-            if (permCreate) pageElements.setFlag("ARTICLES_CREATE");
+            if (permPublish)
+                pageElements.setFlag("ARTICLES_PUBLISH");
+            if(Core.settings[SETTINGS_KEY].getInt(SETTINGS_STATS_POLLING) > 0)
+                pageElements.setFlag("ARTICLES_STATS");
+            if (permCreate)
+                pageElements.setFlag("ARTICLES_CREATE");
+            if (adminAccess)
+                pageElements.setFlag("ARTICLES_ADMIN");
             // Add CSS
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
             // Output page
@@ -299,6 +348,50 @@ namespace UberCMS.Plugins
                     pageArticle_Preview(pluginid, conn, ref pageElements, request, response);
                     break;
             }
+        }
+        #endregion
+
+        #region "Methods - Pages"
+        public static void pageHome(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
+        {
+            int page;
+            if (request.QueryString["pg"] == null || !int.TryParse(request.QueryString["pg"], out page) || page < 1) page = 1;
+            const int newsPostsPerPage = 3;
+            // Build list of posts
+            StringBuilder content = new StringBuilder();
+            Result articles = conn.Query_Read("SELECT a.articleid, a.title, a.body_cached, at.relative_url, u.username, a.datetime, a.userid FROM articles AS a LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid LEFT OUTER JOIN articles_thread AS at ON at.threadid=a.threadid WHERE a.articleid IN (SELECT articleid_current FROM articles_thread) AND a.articleid IN (SELECT ata.articleid FROM articles_tags_article AS ata, articles_tags AS at WHERE ata.tagid=at.tagid AND at.keyword='homepage') ORDER BY a.datetime DESC LIMIT " + ((page * newsPostsPerPage) - newsPostsPerPage) + "," + newsPostsPerPage);
+            if (articles.Rows.Count > 0)
+                foreach (ResultRow article in articles)
+                    content.Append(
+                        Core.templates["articles"]["home_item"]
+                        .Replace("<TITLE>", HttpUtility.HtmlEncode(article["title"]))
+                        .Replace("<BODY>", article["body_cached"])
+                        .Replace("<DATETIME>", article["datetime"].Length > 0 ? HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"]))) : "unknown")
+                        .Replace("<URL>", HttpUtility.HtmlEncode(article["relative_url"].Length > 0 ? pageElements["URL"] + "/" + article["relative_url"] : pageElements["URL"] + "/article/" + article["articleid"]))
+                        .Replace("<USERID>", HttpUtility.HtmlEncode(article["userid"]))
+                        .Replace("<USERNAME>", HttpUtility.HtmlEncode(article["username"]))
+                        );
+            else
+                content.Append("No more news articles available!");
+            // Set page nav flags
+            if (page > 1) pageElements.setFlag("PAGE_PREVIOUS");
+            if (page < int.MaxValue && articles.Rows.Count == newsPostsPerPage) pageElements.setFlag("PAGE_NEXT");
+            // Render page
+            pageElements["CONTENT"] = Core.templates["articles"]["home"]
+                .Replace("<PAGE>", page.ToString())
+                .Replace("<PAGE_PREVIOUS>", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("<PAGE_NEXT>", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                .Replace("<ITEMS>", content.ToString())
+                ;
+            pageElements["TITLE"] = "News";
+            // Add includes
+            Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
+            Common.formatInsertDependencies(ref pageElements);
+        }
+        public static void pageUnavailableCacheReconstruction(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
+        {
+            pageElements["TITLE"] = "Articles - Unavailable";
+            pageElements["CONTENT"] = "The articles system is currently unavailable because the cache is being rebuilt; please try your request again in a few minutes...";
         }
         #endregion
 
@@ -397,6 +490,10 @@ namespace UberCMS.Plugins
                             // Ensure no thumbnail processing errors occur, else do not continue
                             if (error == null)
                             {
+                                // Format the body formatting for caching
+                                StringBuilder cached = new StringBuilder(body);
+                                articleViewRebuildCache(conn, ref cached, allowHTML, ref pageElements);
+
                                 // Posted data is valid, check if the thread exists - else create it
                                 bool updateArticle = false; // If the article is being modified and it has not been published and it's owned by the same user -> update it (user may make a small change)
                                 string threadid;
@@ -426,6 +523,7 @@ namespace UberCMS.Plugins
                                         .Append("UPDATE articles SET title='").Append(Utils.Escape(title))
                                         .Append("', thumbnailid=").Append(thumbnailid != null ? "'" + Utils.Escape(thumbnailid) + "'" : "NULL")
                                         .Append(", body='").Append(Utils.Escape(body))
+                                        .Append("', body_cached='").Append(Utils.Escape(cached.ToString()))
                                         .Append("', allow_comments='").Append(allowComments ? "1" : "0")
                                         .Append("', allow_html='").Append(allowHTML ? "1" : "0")
                                         .Append("', show_pane='").Append(showPane).Append("' WHERE articleid='").Append(Utils.Escape(articleid)).Append("';");
@@ -445,11 +543,12 @@ namespace UberCMS.Plugins
                                     // Insert article and link to the thread
                                     StringBuilder query = new StringBuilder();
                                     query
-                                        .Append("INSERT INTO articles (threadid, title, userid, body, moderator_userid, published, allow_comments, allow_html, show_pane, thumbnailid, datetime) VALUES('")
+                                        .Append("INSERT INTO articles (threadid, title, userid, body, body_cached, moderator_userid, published, allow_comments, allow_html, show_pane, thumbnailid, datetime) VALUES('")
                                         .Append(Utils.Escape(threadid))
                                         .Append("', '").Append(Utils.Escape(title))
                                         .Append("', '").Append(Utils.Escape(HttpContext.Current.User.Identity.Name))
                                         .Append("', '").Append(Utils.Escape(body))
+                                        .Append("', '").Append(Utils.Escape(cached.ToString()))
                                         .Append("', ").Append(publishAuto ? "'" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'" : "NULL")
                                         .Append(", '").Append(publishAuto ? "1" : "0")
                                         .Append("', '").Append(allowComments ? "1" : "0")
@@ -519,7 +618,7 @@ namespace UberCMS.Plugins
             }
             // Display form
             pageElements["CONTENT"] = Core.templates["articles"]["editor"]
-                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty)
                 .Replace("%PARAMS%", preData != null ? "articleid=" + HttpUtility.UrlEncode(preData[0]["articleid"]) : string.Empty)
                 .Replace("%TITLE%", HttpUtility.HtmlEncode(title ?? (preDataRow != null ? preDataRow["title"] : string.Empty)))
                 .Replace("%RELATIVE_PATH%", HttpUtility.HtmlEncode(relativeUrl ?? (preDataRow != null ? preDataRow["relative_url"] : string.Empty)))
@@ -933,7 +1032,7 @@ namespace UberCMS.Plugins
             // Display confirmation/security-verification form
             content.Append(Core.templates["articles"]["thread_delete"]
                 .Replace("%THREADID%", HttpUtility.HtmlEncode(threadData[0]["threadid"]))
-                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty)
                 .Replace("%CSRF%", HttpUtility.HtmlEncode(Common.AntiCSRF.getFormToken()))
                 .Replace("%TITLE%", HttpUtility.HtmlEncode(threadData[0]["title"]))
                 .Replace("%ARTICLE_COUNT%", HttpUtility.HtmlEncode(threadData[0]["article_count"]))
@@ -1147,7 +1246,7 @@ namespace UberCMS.Plugins
             Result data = conn.Query_Read("SELECT data FROM articles_images WHERE imageid='" + Utils.Escape(imageid) + "'");
             if (data.Rows.Count != 1 || data[0].ColumnsByteArray == null) return;
             // Output the image
-            response.ContentType = "image/jpeg";
+            response.ContentType = "image/png";
             response.BinaryWrite(data[0].GetByteArray("data"));
             conn.Disconnect();
             response.End();
@@ -1184,21 +1283,21 @@ namespace UberCMS.Plugins
                 foreach(ResultRow reference in referencesData)
                     references.Append(
                         Core.templates["articles"]["image_view_reference"]
-                        .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(reference["articleid"]))
-                        .Replace("%TITLE%", HttpUtility.HtmlEncode(reference["title"]))
-                        .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(DateTime.Parse(reference["datetime"]))))
-                        .Replace("%DATETIME%", HttpUtility.HtmlEncode(reference["datetime"]))
+                        .Replace("<ARTICLEID>", HttpUtility.HtmlEncode(reference["articleid"]))
+                        .Replace("<TITLE>", HttpUtility.HtmlEncode(reference["title"]))
+                        .Replace("<DATETIME_SHORT>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(DateTime.Parse(reference["datetime"]))))
+                        .Replace("<DATETIME>", HttpUtility.HtmlEncode(reference["datetime"]))
                         );
             else
                 references.Append("No articles reference this image.");
             // Output the page
             content.Append(
                 Core.templates["articles"]["image_view"]
-                .Replace("%IMAGEID%", HttpUtility.HtmlEncode(image["imageid"]))
-                .Replace("%USERID%", HttpUtility.HtmlEncode(image["userid"]))
-                .Replace("%USERNAME%", HttpUtility.HtmlEncode(image["username"]))
-                .Replace("%DATETIME%", HttpUtility.HtmlEncode(image["datetime"]))
-                .Replace("%REFERENCES%", references.ToString())
+                .Replace("<IMAGEID>", HttpUtility.HtmlEncode(image["imageid"]))
+                .Replace("<USERID>", HttpUtility.HtmlEncode(image["userid"]))
+                .Replace("<USERNAME>", HttpUtility.HtmlEncode(image["username"]))
+                .Replace("<DATETIME>", HttpUtility.HtmlEncode(image["datetime"]))
+                .Replace("<REFERENCES>", references.ToString())
                 );
             pageElements["TITLE"] = "Articles - Image Store - " + HttpUtility.HtmlEncode(image["title"]);
             // Add JS file for copypasta of embedding bbcode
@@ -1261,12 +1360,71 @@ namespace UberCMS.Plugins
             // Output form
             content.Append(
                 Core.templates["articles"]["image_uploader"]
-                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", error) : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", error) : string.Empty)
                 .Replace("%TITLE%", HttpUtility.HtmlEncode(title))
                 );
             pageElements["TITLE"] = "Articles - Image Store - Upload";
         }
         #endregion
+        public static void pageArticles_RebuildCache(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
+        {
+            if (request.Form["confirm"] != null && Common.AntiCSRF.isValidTokenForm(request.Form["csrf"]))
+            {
+                cacheRebuild();
+                conn.Disconnect();
+                response.Redirect(pageElements["URL"] + "/articles");
+            }
+            content.Append(Core.templates["articles"]["rebuild_cache"].Replace("%CSRF%", Common.AntiCSRF.getFormToken()));
+            pageElements["TITLE"] = "Articles - Confirm Rebuilding Cache";
+        }
+        #endregion
+
+        #region "Methods - Cache Rebuilding"
+        public static void cacheRebuild()
+        {
+            threadRebuildCache = new Thread(cacheRebuilder);
+            threadRebuildCache.Priority = ThreadPriority.AboveNormal;
+            threadRebuildCache.Start();
+        }
+        private static void cacheRebuilder()
+        {
+            // Create an independent connector; we don't want issues with other plugins
+            Connector conn = Core.connectorCreate(true);
+            // Begin rebuilding each article's body
+            int totalArticles = conn.Query_Count("SELECT COUNT('') FROM articles");
+            StringBuilder text;
+            Result articleData;
+            Misc.PageElements pe = new Misc.PageElements(); // Used for referencing; has no purpose.
+            StringBuilder articlesUpdateBuffer = new StringBuilder();
+            int articlesUpdateBufferCount = 0;
+            int totalArticlesInBuffer = 8;
+            for (int i = 0; i < totalArticles; i++) // We do this in-case there are thousands of articles - in-which case, we'd run out of memory
+            {
+                articleData = conn.Query_Read("SELECT articleid, body FROM articles LIMIT " + i.ToString() + ",1");
+                if (articleData.Rows.Count == 1)
+                {
+                    // Update the cached text
+                    text = new StringBuilder(articleData[0]["body"]);
+                    articleFormat(conn, ref text, ref pe, true, true);
+                    // Add to buffer
+                    articlesUpdateBuffer.Append("UPDATE articles SET body_cached='" + Utils.Escape(text.ToString()) + "' WHERE articleid='" + Utils.Escape(articleData[0]["articleid"]) + "';");
+                    articlesUpdateBufferCount++;
+                }
+                // Check if the buffer is full or we've reached the end of the articles, and hence should be executed
+                if (articlesUpdateBufferCount >= totalArticlesInBuffer || i + 1 == totalArticles)
+                {
+                    conn.Query_Execute(articlesUpdateBuffer.ToString());
+                    articlesUpdateBuffer = new StringBuilder();
+                    articlesUpdateBufferCount = 0;
+                    // Sleep to avoid overkilling the database
+                    Thread.Sleep(10);
+                }
+            }
+            // End of reconstruction
+            threadRebuildCache = null;
+            conn.Disconnect();
+            conn = null;
+        }
         #endregion
 
         #region "Methods - Pages - View Article"
@@ -1317,7 +1475,7 @@ namespace UberCMS.Plugins
             // Check we have an articleid that is not null and greater than zero, else 404
             if (articleid == null || articleid.Length == 0) return;
             // Load the article's data
-            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.articleid, a.threadid, a.title, a.userid, a.body, a.moderator_userid, a.published, a.allow_comments, a.allow_html, a.show_pane, a.datetime, at.relative_url, at.articleid_current, u.username FROM (articles AS a, articles_thread AS at) LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
+            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.articleid, a.threadid, a.title, a.userid, a.body, a.body_cached, a.moderator_userid, a.published, a.allow_comments, a.allow_html, a.show_pane, a.datetime, at.relative_url, at.articleid_current, u.username FROM (articles AS a, articles_thread AS at) LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
             if (articleRaw.Rows.Count != 1)
                 return; // 404 - no data found - the article is corrupt (thread and article not linked) or the article does not exist
             ResultRow article = articleRaw[0];
@@ -1380,6 +1538,9 @@ namespace UberCMS.Plugins
                         if (!permPublish || !published) return;
                         pageArticle_View_Set(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
                         break;
+                    case "rebuild":
+                        pageArticle_View_Rebuild(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        break;
                     default:
                         return; // 404 - unknown sub-page
                 }
@@ -1392,13 +1553,13 @@ namespace UberCMS.Plugins
                     // Wrap content in HTML protection container (against e.g. malicious uploads)
                     subpageContent.Append(
                         Core.templates["articles"]["article_html_protect"]
-                        .Replace("%DATA%", article["body"].Replace("<", "&lt;").Replace(">", "&gt;"))
+                        .Replace("%DATA%", article["body_cached"].Replace("<", "&lt;").Replace(">", "&gt;"))
                         );
                 }
                 else
-                    subpageContent.Append(article["allow_html"].Equals("1") ? article["body"] : HttpUtility.HtmlEncode(article["body"]));
-                // Render the article
-                articleFormat(conn, ref subpageContent, ref pageElements, true, true);
+                    subpageContent.Append(article["body_cached"]);
+                // Insert article dependencies
+                Common.formatInsertDependencies(ref pageElements);
                 // Generate tags
                 StringBuilder tags = new StringBuilder();
                 StringBuilder metaTags = new StringBuilder("<meta name=\"keywords\" content=\"");
@@ -1511,12 +1672,12 @@ namespace UberCMS.Plugins
                 {
                     content.Append(
                         (HttpContext.Current.User.Identity.IsAuthenticated && (permDelete || HttpContext.Current.User.Identity.Name == comment["userid"]) ? Core.templates["articles"]["comment_delete"] : Core.templates["articles"]["comment"])
-                        .Replace("%USERID%", comment["userid"])
-                        .Replace("%ARTICLEID%", article["articleid"])
-                        .Replace("%COMMENTID%", comment["commentid"])
-                        .Replace("%USERNAME%", HttpUtility.HtmlEncode(comment["username"]))
-                        .Replace("%DATETIME%", HttpUtility.HtmlEncode(comment["datetime"]))
-                        .Replace("%BODY%", HttpUtility.HtmlEncode(comment["message"]))
+                        .Replace("<USERID>", comment["userid"])
+                        .Replace("<ARTICLEID>", article["articleid"])
+                        .Replace("<COMMENTID>", comment["commentid"])
+                        .Replace("<USERNAME>", HttpUtility.HtmlEncode(comment["username"]))
+                        .Replace("<DATETIME>", HttpUtility.HtmlEncode(comment["datetime"]))
+                        .Replace("<BODY>", HttpUtility.HtmlEncode(comment["message"]))
                         );
                 }
             // Set navigator
@@ -1538,7 +1699,7 @@ namespace UberCMS.Plugins
                         Core.templates["articles"]["comments_postbox"]
                     .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
                     .Replace("%SUBPAGE%", "history")
-                    .Replace("%ERROR%", commentError != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", commentError) : string.Empty)
+                    .Replace("%ERROR%", commentError != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", commentError) : string.Empty)
                     .Replace("%COMMENT_BODY%", HttpUtility.HtmlEncode(commentBody))
                     );
         }
@@ -1579,7 +1740,7 @@ namespace UberCMS.Plugins
             // Display form
             if (error != null)
                 content.Append(
-                    Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error))
+                    Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error))
                     );
             content.Append(
                 Core.templates["articles"]["article_delete"]
@@ -1655,6 +1816,21 @@ namespace UberCMS.Plugins
             conn.Query_Execute("UPDATE articles_thread SET articleid_current='" + Utils.Escape(article["articleid"]) + "' WHERE threadid='" + Utils.Escape(article["threadid"]) + "';" + insertEvent(RecentChanges_EventType.SetAsSelected, HttpContext.Current.User.Identity.Name, article["articleid"], article["threadid"]));
             conn.Disconnect();
             response.Redirect(pageElements["URL"] + "/article/" + article["articleid"], true);
+        }
+        public static void pageArticle_View_Rebuild(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        {
+            if (!permPublish) return;
+            StringBuilder cached = new StringBuilder(article["body"]);
+            articleViewRebuildCache(conn, ref cached, article["allow_html"].Equals("1"), ref pageElements);
+            conn.Query_Execute("UPDATE articles SET body_cached='" + Utils.Escape(cached.ToString()) + "' WHERE articleid='" + Utils.Escape(article["articleid"]) + "';" + insertEvent(RecentChanges_EventType.RebuiltArticleCache, HttpContext.Current.User.Identity.Name, article["articleid"], article["threadid"]));
+            conn.Disconnect();
+            response.Redirect(pageElements["URL"] + "/article/" + article["articleid"], true);
+        }
+        static void articleViewRebuildCache(Connector conn, ref StringBuilder text, bool allowHTML, ref Misc.PageElements pageElements)
+        {
+            if (!allowHTML)
+                text.Replace("<", "&lt;").Replace(">", "&gt;");
+            articleFormat(conn, ref text, ref pageElements, true, true);
         }
         #endregion
 
@@ -1752,7 +1928,7 @@ namespace UberCMS.Plugins
                 image = null;
                 // Write the data to a byte array
                 MemoryStream ms = new MemoryStream();
-                compressedImage.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                compressedImage.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                 compressedImage.Dispose();
                 compressedImage = null;
                 byte[] thumbRawData = ms.ToArray();
@@ -1820,7 +1996,11 @@ namespace UberCMS.Plugins
         /// <param name="method"></param>
         public static void formattingAdd(Connector conn, string pluginid, string classpath, string method)
         {
-            conn.Query_Execute("INSERT INTO articles_format_providers (classpath, method, pluginid) VALUES('" + Utils.Escape(classpath) + "', '" + Utils.Escape(method) + "', '" + Utils.Escape(pluginid) + "')");
+            try
+            {
+                conn.Query_Execute("INSERT INTO articles_format_providers (classpath, method, pluginid) VALUES('" + Utils.Escape(classpath) + "', '" + Utils.Escape(method) + "', '" + Utils.Escape(pluginid) + "')");
+            }
+            catch { }
         }
         /// <summary>
         /// Removes a formatting provider based on classpath and method.
@@ -1857,7 +2037,7 @@ namespace UberCMS.Plugins
             if ((++currTree) > 5) return; // We've reached the maximum of five recursions, time to return home
             // Invoke other providers
             foreach (ResultRow formatProvider in conn.Query_Read("SELECT classpath, method FROM articles_format_providers ORDER BY method ASC"))
-                Misc.Plugins.invokeMethod(formatProvider["classpath"], formatProvider["method"], new object[] { originalText, pageElements, true, true });
+                Misc.Plugins.invokeMethod(formatProvider["classpath"], formatProvider["method"], new object[] { conn, originalText, pageElements, true, true });
             // Invoke local providers
             formatImage(ref originalText, ref pageElements);
             formatTemplate(conn, ref originalText, ref pageElements, currTree);

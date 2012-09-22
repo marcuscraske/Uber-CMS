@@ -11,6 +11,7 @@
 <!--
 <!--BENCH_MARK-->
 -->
+<!--BODY_HEADER-->
 	<div class="FAUX_NAV">
 		&nbsp;
 	</div>
@@ -28,29 +29,73 @@
 					</span>
 				</a>
 			</div>
+			<div class="NAV_SEP"></div>
 			<div class="ITEM">
-				<a href="<!--URL-->/home">
+				<a href="<!--URL-->/projects">
 					<span>
-						Dropdown Menu
+						Projects
 					</span>
 				</a>
 				<div>
-					<a href="./test sub item">
+					<a href="<!--URL-->/projects/uber-cms">
 						<span>
-							test
+							&Uuml;ber CMS
 						</span>
 					</a>
-					<a href="./test sub item">
+					<a href="<!--URL-->/projects/uber-media">
 						<span>
-							test
+							&Uuml;ber Media
 						</span>
 					</a>
-					<a href="./test sub item">
+					<a href="<!--URL-->/projects/uber-connector">
 						<span>
-							test
+							&Uuml;ber Connector
+						</span>
+					</a>
+					<a href="<!--URL-->/projects/portable-postgres">
+						<span>
+							Portable Postgres
 						</span>
 					</a>
 				</div>
+			</div>
+			<div class="NAV_SEP"></div>
+			<div class="ITEM">
+				<a href="<!--URL-->/articles">
+					<span>
+						Wiki
+					</span>
+				</a>
+				<div>
+					<a href="<!--URL-->/wiki/programming">
+						<span>
+							Programming
+						</span>
+					</a>
+					<a href="<!--URL-->/wiki/maths">
+						<span>
+							Maths
+						</span>
+					</a>
+					<a href="<!--URL-->/wiki/hardware">
+						<span>
+							Electronics &amp Hardware
+						</span>
+					</a>
+					<a href="<!--URL-->/wiki/music">
+						<span>
+							Music
+						</span>
+					</a>
+				</div>
+			</div>
+			<div class="NAV_SEP"></div>
+			<div class="ITEM">
+				<a href="<!--URL-->/portfolio">
+					<span>
+						Portfolio
+					</span>
+				</a>
 			</div>
 			
 			<div class="ACCOUNT">
@@ -127,5 +172,6 @@
 			The license of content on this site varies between copyright and open-source licenses such as Creative-Commons; please view our <a href="./license">license</a> page for information on using our work. This site also uses cookies for session-management; by using this site, you agree to using cookies - for more information visit our <a href="./privacy">privacy</a> page.
 		</div>
 	</div>
+<!--BODY_FOOTER-->
 </body>
 </html>]]></html></template>

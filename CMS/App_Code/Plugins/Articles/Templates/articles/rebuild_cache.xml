@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[rebuild_cache]]></hkey><description><![CDATA[Confirmation form for rebuilding the article cache.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/articles/rebuild_cache">
+	<div class="ROW">
+		<div class="CELL1">
+			Are you sure you want to rebuild the body of every article?
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			Points to consider:
+			<ul>
+				<li>Older articles could become broken.</li>
+				<li>If you have a few thousand articles, the articles system may be unavailable for a very long time. You may also want to ensure the site is not left idle to ensure the app-pool doesn't recycle during this process.</li>
+				<li>This process will put a heavy load on the database; hence this should not be executed during peak times.</li>
+			</ul>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			<a href="<!--URL-->/articles" class="BUTTON FL">Back</a>
+		</div>
+		<div class="CELL2">
+			<input type="submit" value="Rebuild Cache" class="BUTTON FR" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<input type="hidden" name="confirm" value="1" />
+	<input type="hidden" name="csrf" value="%CSRF%" />
+</form>]]></html></template>

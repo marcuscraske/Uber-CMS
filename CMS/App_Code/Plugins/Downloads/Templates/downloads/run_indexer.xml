@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[run_indexer]]></hkey><description><![CDATA[Confirmation page for run indexer.]]></description><html><![CDATA[<p>
+The indexer will now verify the integrity of the current structure, as well as seek out new files; this process could take a few minutes.
+</p>
+<a href="<!--URL-->/downloads" class="BUTTON FR">Back</a>]]></html></template>

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[upload]]></hkey><description><![CDATA[The upload form for the upload page.]]></description><html><![CDATA[%ERROR%
+
+<form method="post" action="<!--URL-->/downloads/upload/%FOLDERID%" enctype="multipart/form-data">
+	<div class="ROW">
+		<div class="CELL2">
+			File:
+		</div>
+		<div class="CELL2">
+			<input type="file" name="file_upload" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<input type="submit" class="BUTTON FR" value="Upload" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>]]></html></template>

@@ -1,3 +1,3 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[profile_about_contact]]></hkey><description><![CDATA[A contact item on the about page.]]></description><html><![CDATA[<a class="ABOUT_CONTACT BSAPCT" href="%URL%">
-<img src="%IMAGE%" alt="%TITLE%" />%TITLE%
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[profile_about_contact]]></hkey><description><![CDATA[A contact item on the about page.]]></description><html><![CDATA[<a class="ABOUT_CONTACT BSAPCT" href="<URL>">
+<img src="<IMAGE>" alt="<TITLE>" /><TITLE>
 </a>]]></html></template>

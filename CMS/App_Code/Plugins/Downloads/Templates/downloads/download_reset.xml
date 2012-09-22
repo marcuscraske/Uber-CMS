@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[download_reset]]></hkey><description><![CDATA[Confirmation page for resetting the downloads.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/download/%DOWNLOADID%/reset_downloads">
+	<div class="ROW">
+		<div class="CELL1">
+			Are you sure you want to reset the downloads for this item?
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			<a href="<!--URL-->/download/%DOWNLOADID%" class="BUTTON FL">Back</a>
+		</div>
+		<div class="CELL2">
+			<input type="submit" class="BUTTON FR" value="Reset Downloads" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<input type="hidden" name="confirm" value="1" />
+</form>]]></html></template>

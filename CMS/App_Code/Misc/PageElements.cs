@@ -223,6 +223,18 @@ namespace UberCMS.Misc
         {
             return elements.ContainsKey(key);
         }
+        /// <summary>
+        /// Appends a value to a key, regardless if it exists or not; this is good to avoid checking if a key has been set already.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void appendToKey(string key, string value)
+        {
+            if (!elements.ContainsKey(key))
+                elements.Add(key, value);
+            else
+                elements[key] += value;
+        }
         #endregion
     }
 }

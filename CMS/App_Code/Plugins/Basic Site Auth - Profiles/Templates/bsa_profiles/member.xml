@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[member]]></hkey><description><![CDATA[The page used for individual members listed.]]></description><html><![CDATA[<a class="MEMBER" href="<!--URL-->/profile?userid=%USERID%">
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[member]]></hkey><description><![CDATA[The page used for individual members listed.]]></description><html><![CDATA[<a class="MEMBER" href="<!--URL-->/profile?userid=<USERID>">
 	<div class="IMAGE">
-		<img src="<!--URL-->/profile_image/%USERID%" alt="Profile picture" />
+		<img src="<!--URL-->/profile_image/<USERID>" alt="Profile picture" />
 	</div>
 	<div class="TEXT">
-		<span>%USERNAME%</span><br />
-		%GROUP_TITLE%
+		<span><USERNAME></span><br />
+		<GROUP_TITLE>
 	</div>
 	<div class="clear"></div>
 </a>]]></html></template>

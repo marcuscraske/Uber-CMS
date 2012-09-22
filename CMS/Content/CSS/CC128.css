@@ -1,0 +1,92 @@
+﻿.CC128_LEFT
+{
+    float: left;
+    width: 10em;
+    height: 100%;
+}
+.CC128_LEFT a
+{
+    display: block;
+    padding: 0.5em;
+    background: #CCC;
+    color: #333;
+    margin-bottom: 0.5em;
+    text-decoration: none;
+    border-radius: 0.5em;
+}
+.CC128_LEFT a:hover, .CC128_LEFT a:focus, .CC128_LEFT a.SELECTED
+{
+    background: #333;
+    color: #FFF;
+}
+.CC128_RIGHT
+{
+    float: right;
+    width: 49em;
+    height: 100%;
+}
+.CC128_METER
+{
+}
+.CC128_METER .BAR_CONTAINER
+{
+    position: relative;
+    float: left;
+    width: 8em;
+    height: 20em;
+    border: solid 0.4em #CCC;
+    vertical-align: bottom;
+    background: #CCC;
+}
+.CC128_METER .BAR_CONTAINER div
+{
+    position: absolute;
+    bottom: 0em;
+    width: 100%;
+    background: url('../Images/CC128/Bar.png') 100%;
+}
+.CC128_METER .USAGE
+{
+    float: left;
+    width: 25em;
+    text-align: right;
+}
+.CC128_METER .USAGE #USAGE
+{
+    font-size: 8em;
+}
+.CC128_METER .USAGE .WATTS
+{
+    font-size: 4em;
+}
+.CC128_METER .UPDATED
+{
+    padding-left: 3em;
+    text-align: left;
+}
+.CC128_BAR
+{
+    min-height: 3em;
+    line-height: 3em;
+    border-bottom: solid 0.2em #CCC;
+    padding-bottom: 0.5em;
+    margin-bottom: 0.5em;
+}
+.CC128_BAR .TITLE
+{
+    float: left;
+    width: 17em;
+}
+.CC128_BAR .BAR
+{
+    float: right;
+    width: 30em;
+    height: 2em;
+    border: solid 0.1em #CCC;
+    padding: 0.5em;
+}
+.CC128_BAR .BAR div
+{
+    background: #333;
+    height: 2em;
+}

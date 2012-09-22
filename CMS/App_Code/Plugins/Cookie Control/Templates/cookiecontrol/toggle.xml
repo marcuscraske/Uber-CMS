@@ -1,0 +1,3 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[cookiecontrol]]></pkey><hkey><![CDATA[toggle]]></hkey><description><![CDATA[The toggle button to enable/disable cookies.]]></description><html><![CDATA[<a href="<!--URL-->/cookiecontrol" class="COOKIECONTROL" title="Toggle cookies <!--IF:COOKIES_ON-->off<!--ELSE-->on<!--ENDIF-->" onclick="return cookieControlToggle();">
+<img id="cookie-control-toggle" src="<!--URL-->/Content/Images/cookiecontrol/toggle_<!--IF:COOKIES_ON-->on<!--ELSE-->off<!--ENDIF-->.png" alt="Toggle cookies" />
+</a>]]></html></template>

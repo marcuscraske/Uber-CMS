@@ -777,6 +777,52 @@ namespace UberCMS.Misc
         }
         #endregion
 
+        #region "Methods - CSS & JS"
+        /// <summary>
+        /// Adds a CSS file to the header.
+        /// </summary>
+        /// <param name="path"></param>
+        public static void addHeaderCSS(string path, ref PageElements pageElements)
+        {
+            if (!pageElements.containsElementKey("HEADER")) pageElements["HEADER"] = string.Empty;
+            pageElements["HEADER"] += "<link href=\"" + pageElements["URL"] + path + "\" type=\"text/css\" rel=\"Stylesheet\" />";
+        }
+        /// <summary>
+        /// Adds a JS file to the header.
+        /// </summary>
+        /// <param name="path"></param>
+        public static void addHeaderJS(string path, ref PageElements pageElements)
+        {
+            if (!pageElements.containsElementKey("HEADER")) pageElements["HEADER"] = string.Empty;
+            pageElements["HEADER"] += "<script type=\"text/javascript\" src=\"" + pageElements["URL"] + path + "\"></script>";
+        }
+
+        /// <summary>
+        /// Adds a CSS file to the header, but only once.
+        /// </summary>
+        /// <param name="path"></param>
+        public static void addHeaderCssOnce(string path, ref PageElements pageElements)
+        {
+            bool notDefined = false;
+            if ((notDefined = !pageElements.containsElementKey("HEADER"))) pageElements["HEADER"] = string.Empty;
+            string data = "<link href=\"" + pageElements["URL"] + path + "\" type=\"text/css\" rel=\"Stylesheet\" />";
+            if (notDefined || !pageElements["HEADER"].Contains(data))
+                pageElements["HEADER"] += data;
+        }
+        /// <summary>
+        /// Adds a JS file to the header, but only once.
+        /// </summary>
+        /// <param name="path"></param>
+        public static void addHeaderJsOnce(string path, ref PageElements pageElements)
+        {
+            bool notDefined = false;
+            if ((notDefined = !pageElements.containsElementKey("HEADER"))) pageElements["HEADER"] = string.Empty;
+            string data = "<script src=\"" + pageElements["URL"] + path + "\"></script>";
+            if (notDefined || !pageElements["HEADER"].Contains(data))
+                pageElements["HEADER"] += data;
+        }
+        #endregion
+
         #region "Methods - Misc"
         /// <summary>
         /// Returns how long ago the specified date occurred; this is to make dates
@@ -797,24 +843,6 @@ namespace UberCMS.Misc
                 return t.TotalDays < 2 ? "1 day ago" : Math.Round(t.TotalDays, 0) + " days ago";
             else
                 return date.ToString("dd/MM/yyyy HH:mm:ss");
-        }
-        /// <summary>
-        /// Adds a CSS file to the header.
-        /// </summary>
-        /// <param name="path"></param>
-        public static void addHeaderCSS(string path, ref PageElements pageElements)
-        {
-            if (!pageElements.containsElementKey("HEADER")) pageElements["HEADER"] = string.Empty;
-            pageElements["HEADER"] += "<link href=\"" + pageElements["URL"] + path + "\" type=\"text/css\" rel=\"Stylesheet\" />";
-        }
-        /// <summary>
-        /// Adds a JS file to the header.
-        /// </summary>
-        /// <param name="path"></param>
-        public static void addHeaderJS(string path, ref PageElements pageElements)
-        {
-            if (!pageElements.containsElementKey("HEADER")) pageElements["HEADER"] = string.Empty;
-            pageElements["HEADER"] += "<script src=\"" + pageElements["URL"] + path + "\"></script>";
         }
         /// <summary>
         /// Validates if a string consists of numeric characters (0 to 9); can accept null.

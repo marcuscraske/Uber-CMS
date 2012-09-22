@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[home]]></hkey><description><![CDATA[Home page.]]></description><html><![CDATA[<ITEMS>
+
+<div class="ARTICLE_HOME_NAV">
+	<!--IF:PAGE_PREVIOUS-->
+	<a href="<!--URL-->/home?pg=<PAGE_PREVIOUS>" class="BUTTON FL">Previous</a>
+	<!--ENDIF-->
+	Page <PAGE>
+	<!--IF:PAGE_NEXT-->
+	<a href="<!--URL-->/home?pg=<PAGE_NEXT>" class="BUTTON FR">Next</a>
+	<!--ENDIF-->
+</div>]]></html></template>

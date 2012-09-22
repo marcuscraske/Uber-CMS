@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[download_move]]></hkey><description><![CDATA[Used to move a file/download to a new folder.]]></description><html><![CDATA[%ERROR%
+
+<form method="post" action="<!--URL-->/download/%DOWNLOADID%/move">
+	<div class="ROW">
+		<div class="CELL2">
+			Destination:
+		</div>
+		<div class="CELL2">
+			<select class="TEXTBOX" name="folderid">
+				%FOLDERS%
+			</select>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL2">
+			<a href="<!--URL-->/download/%DOWNLOADID%" class="BUTTON FL">Back</a>
+		</div>
+		<div class="CELL2">
+			<input type="submit" class="BUTTON FR" value="Move" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>]]></html></template>

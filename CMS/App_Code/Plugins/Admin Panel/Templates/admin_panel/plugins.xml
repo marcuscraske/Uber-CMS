@@ -17,6 +17,23 @@
 	</div>
 </form>
 <div class="ROW HEADER">
+	<div class="CELL1">Install Plugin - Directory</div>
+	<div class="clear"></div>
+</div>
+<form method="post" action="<!--ADMIN_URL-->?action=install_dir">
+	<div class="ROW">
+		<div class="CELL2">
+			Directory Name:
+		</div>
+		<div class="CELL2">
+			<input type="text" class="TEXTBOX" name="directory" />
+		</div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1"><input type="submit" class="BUTTON FR" value="Add" /></div>
+	</div>
+</form>
+<div class="ROW HEADER">
 	<div class="CELL1">
 		Plugins
 	</div>

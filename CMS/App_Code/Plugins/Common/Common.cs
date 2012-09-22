@@ -259,6 +259,7 @@ namespace UberCMS.Plugins
         #region "Class - Utils"
         public static class Utils
         {
+            private static Random rand = null;
             /// <summary>
             /// Generates a string with random alpha-numeric characters of a specified length.
             /// </summary>
@@ -266,17 +267,50 @@ namespace UberCMS.Plugins
             /// <returns></returns>
             public static string randomText(int length)
             {
+                if (rand == null)
+                    rand = new Random((DateTime.Now.Day * DateTime.Now.Month) + DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + DateTime.Now.Millisecond);
                 string chars = "abcdefghijklmnopqrstuvwxyz01234567890";
                 StringBuilder text = new StringBuilder();
-                Random ran = new Random(DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + DateTime.Now.Millisecond);
                 for (int i = 0; i < length; i++)
-                    text.Append(chars[ran.Next(0, chars.Length - 1)].ToString());
+                    text.Append(chars[rand.Next(0, chars.Length - 1)].ToString());
                 return text.ToString();
             }
         }
         #endregion
 
         #region "Class - BBCode"
+        /// <summary>
+        /// This is required to insert the required dependencies for formatted pages; this is only needed for e.g. cached or preview documents.
+        /// </summary>
+        public static void formatInsertDependencies(ref Misc.PageElements pageElements)
+        {
+            Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common.css", ref pageElements);
+            // Code syntax highlighter: base
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shCore.js", ref pageElements);
+            Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common/shCore.css", ref pageElements);
+            Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common/shThemeDefault.css", ref pageElements);
+            // Code syntax highlighter: languages - admittedly this is heavy...
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushAS3.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushBash.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushColdFusion.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCpp.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCSharp.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCss.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushDelphi.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushJava.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushJScript.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPerl.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPhp.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPowerShell.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPython.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushRuby.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushScala.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushSql.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushVb.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushXml.js", ref pageElements);
+            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPlain.js", ref pageElements);
+            pageElements.appendToKey("BODY_FOOTER", "<script type=\"text/javascript\">SyntaxHighlighter.all()</script>");
+        }
         /// <summary>
         /// Formats BB Code within text (http://en.wikipedia.org/wiki/BBCode); supported tags:
         /// 
@@ -287,11 +321,11 @@ namespace UberCMS.Plugins
         /// <param name="originalText"></param>
         /// <param name="textFormatting"></param>
         /// <param name="objectFormatting"></param>
-        public static void format(ref StringBuilder originalText, ref Misc.PageElements pageElements, bool textFormatting, bool objectFormatting)
+        public static void format(Connector conn, ref StringBuilder originalText, ref Misc.PageElements pageElements, bool textFormatting, bool objectFormatting)
         {
             // Attach styling file if at least one bool is true
             if (textFormatting || objectFormatting)
-                Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Common.css", ref pageElements);
+                Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common.css", ref pageElements);
             // Begin formatting
             if (textFormatting)
             {
@@ -354,6 +388,8 @@ namespace UberCMS.Plugins
                 BBCode.formatHtml5Video(ref originalText);
                 // Pastebin
                 BBCode.formatPastebin(ref originalText);
+                // Code
+                BBCode.formatCode(ref originalText, ref pageElements);
             }
         }
         public static class BBCode
@@ -568,9 +604,9 @@ namespace UberCMS.Plugins
             /// <param name="text"></param>
             public static void formatUrl(ref StringBuilder text)
             {
-                foreach (Match m in Regex.Matches(text.ToString(), @"\[url=([a-zA-Z0-9]+)\:\/\/([a-zA-Z0-9\/\._\-]+)\](.*?)\[\/url\]", RegexOptions.Multiline))
+                foreach (Match m in Regex.Matches(text.ToString(), @"\[url=([a-zA-Z0-9]+)\:\/\/([a-zA-Z0-9\/\._\-\=\?]+)\](.*?)\[\/url\]", RegexOptions.Multiline))
                     text.Replace(m.Value, "<a href=\"" + m.Groups[1].Value + "://" + m.Groups[2].Value + "\">" + m.Groups[3].Value + "</a>");
-                foreach (Match m in Regex.Matches(text.ToString(), @"\[url\]([a-zA-Z0-9]+)\:\/\/([a-zA-Z0-9\/\._\-]+)\[\/url\]", RegexOptions.Multiline))
+                foreach (Match m in Regex.Matches(text.ToString(), @"\[url\]([a-zA-Z0-9]+)\:\/\/([a-zA-Z0-9\/\._\-\=\?]+)\[\/url\]", RegexOptions.Multiline))
                     text.Replace(m.Value, "<a href=\"" + m.Groups[1].Value + "://" + m.Groups[2].Value + "\">" + m.Groups[1].Value + "://" + m.Groups[2].Value + "</a>");
             }
             /// <summary>
@@ -806,6 +842,81 @@ namespace UberCMS.Plugins
             {
                 foreach (Match m in Regex.Matches(text.ToString(), @"\[pastebin\]http://(?:www.)?pastebin.com/([a-zA-Z0-9]+)\[\/pastebin\]", RegexOptions.Multiline))
                     text.Replace(m.Value, "<script src=\"http://pastebin.com/embed_js.php?i=" + m.Groups[1].Value + "\"></script>");
+            }
+            public static void formatCode(ref StringBuilder text, ref Misc.PageElements pageElements)
+            {
+                StringBuilder code;
+                foreach (Match m in Regex.Matches(text.ToString(), @"\[code=(as3|bash|coldfusion|cpp|csharp|c#|css|delphi|java|jscript|perl|php|plain|powershell|python|ruby|scala|sql|vb|xml)\](.*?)\[\/code\]", RegexOptions.Multiline))
+                {
+                    code = new StringBuilder(m.Groups[2].Value);
+                    // Replace tag symbols
+                    code.Replace("<br />", "\n").Replace("<", "&lt;").Replace(">", "&gt;").Append("</pre>");
+                    // Include language core
+                    switch (m.Groups[1].Value)
+                    {
+                        case "as3":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushAS3.js", ref pageElements);
+                            break;
+                        case "bash":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushBash.js", ref pageElements);
+                            break;
+                        case "coldfusion":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushColdFusion.js", ref pageElements);
+                            break;
+                        case "cpp":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCpp.js", ref pageElements);
+                            break;
+                        case "csharp":
+                        case "c#":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCSharp.js", ref pageElements);
+                            break;
+                        case "css":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCss.js", ref pageElements);
+                            break;
+                        case "delphi":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushDelphi.js", ref pageElements);
+                            break;
+                        case "java":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushJava.js", ref pageElements);
+                            break;
+                        case "jscript":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushJScript.js", ref pageElements);
+                            break;
+                        case "perl":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPerl.js", ref pageElements);
+                            break;
+                        case "php":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPhp.js", ref pageElements);
+                            break;
+                        case "powershell":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPowerShell.js", ref pageElements);
+                            break;
+                        case "python":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPython.js", ref pageElements);
+                            break;
+                        case "ruby":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushRuby.js", ref pageElements);
+                            break;
+                        case "scala":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushScala.js", ref pageElements);
+                            break;
+                        case "sql":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushSql.js", ref pageElements);
+                            break;
+                        case "vb":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushVb.js", ref pageElements);
+                            break;
+                        case "xml":
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushXml.js", ref pageElements);
+                            break;
+                        case "plain":
+                        default:
+                            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPlain.js", ref pageElements);
+                            break;
+                    }
+                    // Replace text
+                    text.Replace(m.Value, "<pre class=\"brush: " + m.Groups[1].Value + "\">" + code.ToString());//.Append("<script type=\"text/javascript\">SyntaxHighlighter.all()</script>");
+                }
             }
         }
         #endregion

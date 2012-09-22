@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-16"?><datasources><source><host><![CDATA[localhost]]></host><port><![CDATA[3308]]></port><user><![CDATA[root]]></user><pass><![CDATA[]]></pass><database><![CDATA[ubercms123]]></database><query><![CDATA[INSERT INTO cc128_readings (temperature, watts, datetime) VALUES('%TEMPERATURE%', '%WATTS%', NOW());]]></query></source></datasources>

@@ -173,7 +173,7 @@ namespace UberCMS.Plugins
                 // Display form
                 pageElements["TITLE"] = "Admin - Token Authentication";
                 pageElements["CONTENT"] = Core.templates["admin_panel"]["token_login"]
-                    .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
+                    .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty);
                 return;
             }
 #endif
@@ -357,8 +357,8 @@ namespace UberCMS.Plugins
             pageElements["ADMIN_CONTENT"] =
                 Core.templates["admin_panel"]["settings"]
                 .Replace("%ITEMS%", settingItems.ToString())
-                .Replace("%SUCCESS%", successfullyUpdated ? Core.templates[pageElements["TEMPLATE"]]["success"].Replace("%SUCCESS%", "Successfully saved settings!") : string.Empty)
-                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
+                .Replace("%SUCCESS%", successfullyUpdated ? Core.templates[pageElements["TEMPLATE"]]["success"].Replace("<SUCCESS>", "Successfully saved settings!") : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty);
             pageElements["ADMIN_TITLE"] = "Core - Settings";
         }
         public static void pagePlugins(Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
@@ -463,7 +463,7 @@ namespace UberCMS.Plugins
                     // Display confirmation form
                     pageElements["ADMIN_CONTENT"] = Core.templates["admin_panel"]["plugin_uninstall"]
                         .Replace("%CSRF%", HttpUtility.HtmlEncode(Common.AntiCSRF.getFormToken()))
-                        .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                        .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty)
                         .Replace("%PLUGINID%", HttpUtility.HtmlEncode(pluginidData[0]["pluginid"]))
                         .Replace("%TITLE%", HttpUtility.HtmlEncode(pluginidData[0]["title"]));
                     pageElements["ADMIN_TITLE"] = "Core - Plugins - Uninstall";
@@ -492,6 +492,19 @@ namespace UberCMS.Plugins
                                 File.Delete(zipPath);
                             }
                             catch { }
+                    }
+                }
+                else if (action == "install_dir")
+                {
+                    string directory = request.Form["directory"];
+                    if (directory == null || directory.Length < 1 || directory.Length > 256 || directory.Contains("\\") || directory.Contains("/"))
+                        error = "Invalid directory name!";
+                    else if (!Directory.Exists(Core.basePath + "\\App_Code\\Plugins\\" + directory))
+                        error = "Directory does not exist!";
+                    else
+                    {
+                        string ignore = null;
+                        error = Misc.Plugins.install(null, ref ignore, Core.basePath + "\\App_Code\\Plugins\\" + directory, false, conn);
                     }
                 }
                 else
@@ -536,7 +549,7 @@ namespace UberCMS.Plugins
             }
             // Display content
             pageElements["ADMIN_CONTENT"] = Core.templates["admin_panel"]["plugins"]
-                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty)
+                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty)
                 .Replace("%ITEMS%", pluginsList.ToString())
                 ;
             pageElements["ADMIN_TITLE"] = "Core - Plugins";

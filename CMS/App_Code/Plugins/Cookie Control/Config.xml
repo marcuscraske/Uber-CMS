@@ -1,0 +1,35 @@
+<settings>
+	<!-- The name of the directory of where the plugin will reside in the plugins folder -->
+	<directory>
+		<![CDATA[Cookie Control]]>
+	</directory>
+	<!-- The title of the plugin, as displayed to the user -->
+	<title>
+		<![CDATA[Cookie Control - v1.0.0.0]]>
+	</title>
+	<!-- The class-path of the main class, including the class-name e.g. UberCMS.Plugins.Base -->
+	<classpath>
+		<![CDATA[UberCMS.Plugins.CookieControl]]>
+	</classpath>
+	<!-- The intervals between invoking the handleCycle method - set as 0 to disable -->
+	<cycle_interval>
+		<![CDATA[0]]>
+	</cycle_interval>
+	<!-- The order, ascending, in-which to find and invoke plugins; plugins with e.g. mappings or 404 handling with
+	a lower number will be invoked instead -->
+	<invoke_order>
+		<![CDATA[0]]>
+	</invoke_order>
+	<!-- Specifies if the class contains a handleRequestNotFound method for handling 404 HTTP status-codes -->
+	<handles_404>
+		<![CDATA[0]]>
+	</handles_404>
+	<!-- Specifies if the method requestStart should be invoked before a plugin is invoked -->
+	<handles_request_start>
+		<![CDATA[0]]>
+	</handles_request_start>
+	<!-- Specifies if the method requestEnd should be invoked after a plugin is invoked -->
+	<handles_request_end>
+		<![CDATA[1]]>
+	</handles_request_end>
+</settings>

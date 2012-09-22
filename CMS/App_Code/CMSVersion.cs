@@ -20,7 +20,7 @@ namespace UberCMS
     public static class CMSVersion
     {
         public const int MAJOR = 1;
-        public const int MINOR = 0;
+        public const int MINOR = 1;
         public const int BUILD = 0;
     }
 }

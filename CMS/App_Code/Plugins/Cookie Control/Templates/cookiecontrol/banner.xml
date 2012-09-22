@@ -1,0 +1,3 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[cookiecontrol]]></pkey><hkey><![CDATA[banner]]></hkey><description><![CDATA[A banner warning the user cookies is disabled.]]></description><html><![CDATA[<div class="COOKIECONTROL_BANNER">
+Most cookies are currently disabled on this site, due to <a href="http://www.ico.gov.uk/for_organisations/privacy_and_electronic_communications/the_guide/cookies.aspx">EU cookie laws</a>, which require you to permit the use of cookies; cookies are used for session-management, statistics and improving your user experience. To enable/disable cookies, click the cog at the bottom-left of the window!
+</div>]]></html></template>

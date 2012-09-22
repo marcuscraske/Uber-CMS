@@ -85,14 +85,14 @@ namespace UberCMS.Plugins
         /// Invoked when a request is mapped to this plugin.
         /// </summary>
         /// <param name="pageElements"></param>
-        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
         }
         /// <summary>
         /// Invoked when a request fails because a suitable plugin cannot be found.
         /// </summary>
         /// <param name="pageElements"></param>
-        public static void handleRequestNotFound(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void handleRequestNotFound(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
         }
         /// <summary>
@@ -101,7 +101,7 @@ namespace UberCMS.Plugins
         /// <param name="conn"></param>
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
-        public static void requestStart(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void requestStart(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
         }
         /// <summary>
@@ -110,7 +110,7 @@ namespace UberCMS.Plugins
         /// <param name="conn"></param>
         /// <param name="pageElements"></param>
         /// <param name="request"></param>
-        public static void requestEnd(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, ref string baseTemplateParent)
+        public static void requestEnd(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
         }
         /// <summary>

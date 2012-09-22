@@ -30,16 +30,16 @@
 	</div>
 	<div class="SEARCH">
 		<form method="get" action="<!--URL-->/members">
-			<input type="text" name="search" value="%SEARCH%" class="TEXTBOX" /> <input type="submit" value="Search" class="BUTTON" />
+			<input type="text" name="search" value="<SEARCH>" class="TEXTBOX" /> <input type="submit" value="Search" class="BUTTON" />
 		</form>
 	</div>
 	<div class="MEMBERS">
-		%MEMBERS%
+		<MEMBERS>
 	</div>
 	<div class="PAGE">
-		<a href="<!--URL-->/members/%LETTER%?p=%PAGE_PREV%" class="BUTTON FL">Previous</a>
-		Page: %PAGE%
-		<a href="<!--URL-->/members/%LETTER%?p=%PAGE_NEXT%" class="BUTTON FR">Next</a>
+		<a href="<!--URL-->/members/<LETTER>?p=<PAGE_PREV>" class="BUTTON FL">Previous</a>
+		Page: <PAGE>
+		<a href="<!--URL-->/members/<LETTER>?p=<PAGE_NEXT>" class="BUTTON FR">Next</a>
 		<div class="clear"></div>
 	</div>
 </div>]]></html></template>

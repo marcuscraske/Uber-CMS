@@ -16,20 +16,18 @@ using System.Collections.Generic;
 using System.Web;
 using System.Text;
 using UberLib.Connector;
-using UberLib.CC128;
 using System.Threading;
 using System.Drawing;
+using System.Diagnostics;
+using System.IO;
+using System.Xml;
 
 namespace UberCMS.Plugins
 {
     public static class CC128
     {
-        #region "Variables - Static"
-        public static int maxWatts = 0;
-        public static int lastReadingWatts = 0;
-        public static float lastReadingTemperature = 0;
-        public static Thread monitorThread = null;
-        public static EnergyMonitor monitor = null;
+        #region "Constants"
+        public const string SERVICE_NAME = "ubercms-CC128-bs";
         #endregion
 
         #region "Methods - Plugin Event Handlers"
@@ -40,6 +38,51 @@ namespace UberCMS.Plugins
             // Install SQL
             if ((error = Misc.Plugins.executeSQL(basePath + "\\SQL\\Install.sql", conn)) != null)
                 return error;
+            // Install config
+            if (!File.Exists(basePath + "\\Service\\Config.xml"))
+            {
+                StringBuilder settings = new StringBuilder();
+                XmlWriter writer = XmlWriter.Create(settings);
+                writer.WriteStartDocument();
+                writer.WriteStartElement("datasources");
+
+                writer.WriteStartElement("source");
+
+                writer.WriteStartElement("host");
+                writer.WriteCData(Core.connHost);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("port");
+                writer.WriteCData(Core.connPort.ToString());
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("user");
+                writer.WriteCData(Core.connUsername);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("pass");
+                writer.WriteCData(Core.connPassword);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("database");
+                writer.WriteCData(Core.connDatabase);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("query");
+                writer.WriteCData("INSERT INTO cc128_readings (temperature, watts, datetime) VALUES('%TEMPERATURE%', '%WATTS%', NOW());");
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
+
+                writer.Flush();
+                writer.Close();
+                File.WriteAllText(basePath + "\\Service\\Config.xml", settings.ToString());
+            }
+            // Start service
+            backgroundStart();
             // Install templates
             if((error = Misc.Plugins.templatesInstall(basePath + "\\Templates\\CC128", conn)) != null)
                 return error;
@@ -65,6 +108,8 @@ namespace UberCMS.Plugins
             // Remove content
             if ((error = Misc.Plugins.contentUninstall(basePath + "\\Content")) != null)
                 return error;
+            // Stop service
+            backgroundStop();
 
             return null;
         }
@@ -94,8 +139,9 @@ namespace UberCMS.Plugins
             else if (subPage == "ajax")
             {
                 // Write the last watt reading
+                ResultRow lastReading = conn.Query_Read("SELECT (SELECT watts FROM cc128_readings WHERE datetime >= DATE_SUB(NOW(), INTERVAL 24 HOUR) ORDER BY datetime DESC LIMIT 1) AS last_reading, (SELECT MAX(watts) FROM cc128_readings WHERE datetime >= DATE_SUB(NOW(), INTERVAL 24 HOUR)) AS max_watts")[0];
                 response.ContentType = "text/xml";
-                response.Write("<d><w>" + lastReadingWatts + "</w><m>" + maxWatts + "</m></d>");
+                response.Write("<d><w>" + lastReading["last_reading"] + "</w><m>" + lastReading["max_watts"] + "</m></d>");
                 conn.Disconnect();
                 response.End();
             }
@@ -241,7 +287,7 @@ namespace UberCMS.Plugins
                             {
                                 seconds = DateTime.Parse(reading["datetime"]).Subtract(secondsStart).TotalSeconds; // 86400 seconds in a day
                                 newX = (int)((seconds / 86400) * plotWidth);
-                                newY = (int)(((double)int.Parse(reading["watts"]) / maxWatts) * plotHeight);
+                                newY = (int)(((double)int.Parse(reading["watts"]) / (double)maxValue) * plotHeight);
                                 g.DrawLine(penDataWatts, graphPaddingLeft + (lastX != 0 ? lastX : newX - 1), (int)(graphPaddingTop + plotHeight) - (lasty != 0 ? lasty : newY), graphPaddingLeft + newX, (int)(graphPaddingTop + plotHeight) - newY);
                                 lastX = newX;
                                 lasty = newY;
@@ -347,62 +393,35 @@ namespace UberCMS.Plugins
                     break;
             }
         }
-        public static void requestEnd(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
-        {
-            pageElements["CC128_WATTS"] = lastReadingWatts.ToString();
-            pageElements["CC128_MAXWATTS"] = maxWatts.ToString();
-            pageElements["CC128_TEMP"] = lastReadingTemperature.ToString();
-        }
         #endregion
 
         #region "Methods - CMS - Data Mining"
         public static string cmsStart(string pluginid, Connector conn)
         {
-            // Start monitor thread
-            monitorThread = new Thread(delegate()
-                {
-                    monitor = new EnergyMonitor();
-                    monitor.eventNewSensorData += new EnergyMonitor._eventNewSensorData(monitor_eventNewSensorData);
-                    monitor.start();
-                    while (true)
-                    {
-                        // If the monitor has not started for some reason, or disconnected, keep attempting to start it
-                        if(monitor.ReadState == EnergyMonitor.State.ErrorOccurredOnStart || monitor.ReadState == EnergyMonitor.State.DeviceDisconnected)
-                            try
-                            {
-                                monitor.start();
-                            }
-                            catch { }
-                        Thread.Sleep(1000);
-                    }
-                });
-            monitorThread.Start();
-            // Get the max watts in the last 30 days
+            // This will ensure the background service is running; if it's already running, this won't affect it
+            backgroundStart();
+            return null;
+        }
+        #endregion
+
+        #region "Methods - Background Service"
+        public static void backgroundStart()
+        {
+            if (Process.GetProcessesByName("BackgroundService").Length != 0) return; // Service is already running
             try
             {
-                maxWatts = conn.Query_Count("SELECT MAX(watts) FROM cc128_readings WHERE datetime >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
+                Process p = new Process();
+                p.StartInfo.FileName = "BackgroundService.exe";
+                p.StartInfo.WorkingDirectory = Core.basePath + "\\App_Code\\Plugins\\CC128 Energy Monitor\\Service";
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                p.Start();
             }
-            catch { }
-            return null;
+            catch {}
         }
-        public static string cmsStop(string pluginid, Connector conn)
+        public static void backgroundStop()
         {
-            monitorThread.Abort();
-            monitorThread = null;
-            monitor.disposeSerialPort(false);
-            monitor = null;
-            return null;
-        }
-        static void monitor_eventNewSensorData(EnergyReading reading)
-        {
-            // Insert reading into table
-            if (reading.Sensors.Length != 0)
-            {
-                Core.globalConnector.Query_Execute("INSERT INTO cc128_readings (temperature, watts, datetime) VALUES('" + reading.Temperature + "', '" + reading.Sensors[0] + "', NOW())");
-                lastReadingTemperature = reading.Temperature;
-                lastReadingWatts = reading.Sensors[0];
-                if (lastReadingWatts > maxWatts) maxWatts = lastReadingWatts;
-            }
+            foreach (Process p in Process.GetProcessesByName("BackgroundService"))
+                p.Kill();
         }
         #endregion
     }

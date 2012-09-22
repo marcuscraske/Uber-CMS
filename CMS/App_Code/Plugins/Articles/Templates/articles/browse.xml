@@ -45,6 +45,12 @@
 		<img src="<!--URL-->/Content/Images/articles/index.png" alt="Index" />
 		Index
 	</a>
+	<!--IF:ARTICLES_ADMIN-->
+	<a class="A_ROW" href="<!--URL-->/articles/rebuild_cache">
+		<img src="<!--URL-->/Content/Images/articles/set.png" alt="Rebuild cache" />
+		Rebuild Formatting Cache
+	</a>
+	<!--ENDIF-->
 	<div class="A_HEADER">
 		Main Categories
 	</div>

@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS articles
 	thumbnailid INT,
 	FOREIGN KEY(`thumbnailid`) REFERENCES `articles_thumbnails`(`thumbnailid`) ON UPDATE CASCADE ON DELETE SET NULL,
 	body TEXT,
+	body_cached TEXT,
 	moderator_userid INT,
 	FOREIGN KEY(`moderator_userid`) REFERENCES `bsa_users`(`userid`) ON UPDATE CASCADE ON DELETE SET NULL,
 	published VARCHAR(1) DEFAULT 0,
@@ -25,6 +26,15 @@ CREATE TABLE IF NOT EXISTS articles
 	show_pane VARCHAR(1) DEFAULT 0,
 	datetime DATETIME
 );
+-- Upgrade v1.2
+CREATE PROCEDURE articles_upgrade_12()
+BEGIN
+	DECLARE CONTINUE HANDLER FOR 1060 BEGIN END;
+	ALTER TABLE articles ADD body_cached MEDIUMTEXT;
+END;
+CALL articles_upgrade_12();
+DROP  PROCEDURE articles_upgrade_12;
+-- Change encoding support for utf8
 ALTER TABLE `articles` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 SET FOREIGN_KEY_CHECKS=1;
 CREATE TABLE IF NOT EXISTS articles_thumbnails

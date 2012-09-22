@@ -4,7 +4,7 @@
 			Title:
 		</div>
 		<div class="CELL2">
-			<input type="text" name="title" value="%TITLE%" />
+			<input type="text" name="title" value="%TITLE%" class="TEXTBOX" />
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -23,7 +23,7 @@
 		</div>
 		<div class="CELL2">
 			Captcha:<br />
-			<input type="text" name="captcha" />
+			<input type="text" name="captcha" class="TEXTBOX" />
 		</div>
 		<div class="clear"></div>
 	</div>

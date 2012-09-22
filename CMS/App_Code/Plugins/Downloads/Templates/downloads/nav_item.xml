@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[downloads]]></pkey><hkey><![CDATA[nav_item]]></hkey><description><![CDATA[Navigation item element.]]></description><html><![CDATA[<a href="<!--URL-->/downloads/view/%PATH%">%TEXT%</a>]]></html></template>

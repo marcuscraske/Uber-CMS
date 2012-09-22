@@ -19,7 +19,6 @@ body
 {
 	z-index: 2;
 	position: absolute;
-	top: 0;
 	left: 0;
 	width: 100%;
 	background: #360;
@@ -138,9 +137,9 @@ body
 {
     float: left;
 }
-.AREA_NAV .ACCOUNT .NAV_SEP
+.AREA_NAV .ACCOUNT .NAV_BUTTON, .AREA_NAV .ACCOUNT .NAV_SEP
 {
-	float: right;
+    float: right;
 }
 .AREA_NAV .NAV_BUTTON
 {

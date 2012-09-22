@@ -36,11 +36,11 @@ namespace UberCMS
         #endregion
 
         #region "Variables - Database"
-        private static string connHost = null;
-        private static int connPort = 3306;
-        private static string connDatabase = null;
-        private static string connUsername = null;
-        private static string connPassword = null;
+        public static string connHost = null;
+        public static int connPort = 3306;
+        public static string connDatabase = null;
+        public static string connUsername = null;
+        public static string connPassword = null;
         #endregion
 
         #region "Variables"

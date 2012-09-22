@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[profile_about]]></hkey><description><![CDATA[The about page of the profile.]]></description><html><![CDATA[%NUTSHELL%
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[profile_about]]></hkey><description><![CDATA[The about page of the profile.]]></description><html><![CDATA[<NUTSHELL>
 
 <div class="HEADER">Contact</div>
-%CONTACT%]]></html></template>
+<CONTACT>]]></html></template>

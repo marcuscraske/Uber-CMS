@@ -33,6 +33,12 @@
 				Set As Current Article
 			</a>
 			<!--ENDIF:ARTICLE_PERM_PUBLISH&ARTICLE_PUBLISHED&!ARTICLE_CURRENT-->
+			<!--IF:ARTICLE_PERM_PUBLISH-->
+			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/rebuild">
+				<img src="<!--URL-->/Content/Images/articles/set.png" alt="Rebuild" />
+				Rebuild Cache
+			</a>
+			<!--ENDIF:ARTICLE_PERM_PUBLISH-->
 			<!--IF:!ARTICLE_PUBLISHED-->
 			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/publish">
 				<img src="<!--URL-->/Content/Images/articles/publish.png" alt="Publish" />

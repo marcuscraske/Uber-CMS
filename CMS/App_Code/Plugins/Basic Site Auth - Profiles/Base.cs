@@ -173,19 +173,19 @@ namespace UberCMS.Plugins
             DateTime registered = profileData["registered"].Length > 0 ? DateTime.Parse(profileData["registered"]) : DateTime.MinValue;
             pageElements["CONTENT"] =
                 Core.templates["bsa_profiles"]["profile_frame"]
-                .Replace("%USERID%", HttpUtility.HtmlEncode(profileData["userid"]))
-                .Replace("%PANE_BG_COLOUR%", profileData["colour_background"])
-                .Replace("%PANE_TEXT_COLOUR%", profileData["colour_text"])
-                .Replace("%BACKGROUND%", (profileData["background_url"].Length > 0 ? "url('" + HttpUtility.HtmlEncode(profileData["background_url"]) + "') " : string.Empty) + (profileData["background_colour"].Length > 0 ? "#" + profileData["background_colour"] : string.Empty))
-                .Replace("%USERNAME%", HttpUtility.HtmlEncode(profileData["username"]))
-                .Replace("%GROUP%", HttpUtility.HtmlEncode(profileData["group_title"]))
-                .Replace("%REGISTERED%", HttpUtility.HtmlEncode(registered.ToString("dd MMMM yyyy")))
-                .Replace("%REGISTERED_DAYS%", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(registered)))
-                .Replace("%COUNTRY_FLAG%", profileData["country_code"].Length > 0 ? profileData["country_code"] : "unknown")
-                .Replace("%COUNTRY_TITLE%", Common.Country.getCountryTitle(profileData["country_code"], conn) ?? "Unknown")
-                .Replace("%GENDER_CODE%", profileData["gender"])
-                .Replace("%GENDER%", profileData["gender"] == "1" ? "Male" : profileData["gender"] == "2" ? "Female" : "Not specified.")
-                .Replace("%OCCUPATION%", profileData["occupation"].Length > 0 ? HttpUtility.HtmlEncode(profileData["occupation"]) : "Not specified.");
+                .Replace("<USERID>", HttpUtility.HtmlEncode(profileData["userid"]))
+                .Replace("<PANE_BG_COLOUR>", profileData["colour_background"])
+                .Replace("<PANE_TEXT_COLOUR>", profileData["colour_text"])
+                .Replace("<BACKGROUND>", (profileData["background_url"].Length > 0 ? "url('" + HttpUtility.HtmlEncode(profileData["background_url"]) + "') " : string.Empty) + (profileData["background_colour"].Length > 0 ? "#" + profileData["background_colour"] : string.Empty))
+                .Replace("<USERNAME>", HttpUtility.HtmlEncode(profileData["username"]))
+                .Replace("<GROUP>", HttpUtility.HtmlEncode(profileData["group_title"]))
+                .Replace("<REGISTERED>", HttpUtility.HtmlEncode(registered.ToString("dd MMMM yyyy")))
+                .Replace("<REGISTERED_DAYS>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(registered)))
+                .Replace("<COUNTRY_FLAG>", profileData["country_code"].Length > 0 ? profileData["country_code"] : "unknown")
+                .Replace("<COUNTRY_TITLE>", Common.Country.getCountryTitle(profileData["country_code"], conn) ?? "Unknown")
+                .Replace("<GENDER_CODE>", profileData["gender"])
+                .Replace("<GENDER>", profileData["gender"] == "1" ? "Male" : profileData["gender"] == "2" ? "Female" : "Not specified.")
+                .Replace("<OCCUPATION>", profileData["occupation"].Length > 0 ? HttpUtility.HtmlEncode(profileData["occupation"]) : "Not specified.");
             ;
             pageElements["TITLE"] = "Profile - " + HttpUtility.HtmlEncode(profileData["username"]);
         }
@@ -196,115 +196,115 @@ namespace UberCMS.Plugins
             // -- Github
             if (profileData["contact_github"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "https://github.com/" + profileData["contact_github"])
-                    .Replace("%IMAGE%", "https://github.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_github"])));
+                    .Replace("<URL>", "https://github.com/" + HttpUtility.HtmlEncode(profileData["contact_github"]))
+                    .Replace("<IMAGE>", "https://github.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_github"])));
             // -- Website
             if (profileData["contact_website"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://" + profileData["contact_website"])
-                    .Replace("%IMAGE%", pageElements["ADMIN_URL"] + "/Content/Images/bsa_profiles/website.png")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_website"])));
+                    .Replace("<URL>", "http://" + HttpUtility.HtmlEncode(profileData["contact_website"]))
+                    .Replace("<IMAGE>", pageElements["ADMIN_URL"] + "/Content/Images/bsa_profiles/website.png")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_website"])));
             // -- Email
             if (profileData["contact_email"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "mailto:" + profileData["contact_email"])
-                    .Replace("%IMAGE%", pageElements["ADMIN_URL"] + "/Content/Images/bsa_profiles/website.png")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_email"])));
+                    .Replace("<URL>", "mailto:" + HttpUtility.HtmlEncode(profileData["contact_email"]))
+                    .Replace("<IMAGE>", pageElements["ADMIN_URL"] + "/Content/Images/bsa_profiles/website.png")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_email"])));
             // -- Facebook
             if(profileData["contact_facebook"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://www.facebook.com/" + profileData["contact_facebook"])
-                    .Replace("%IMAGE%", "http://facebook.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_facebook"])));
+                    .Replace("<URL>", "http://www.facebook.com/" + HttpUtility.HtmlEncode(profileData["contact_facebook"]))
+                    .Replace("<IMAGE>", "http://facebook.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_facebook"])));
             // -- G+
             if (profileData["contact_googleplus"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "https://plus.google.com/" + profileData["contact_googleplus"])
-                    .Replace("%IMAGE%", "http://plus.google.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_googleplus"])));
+                    .Replace("<URL>", "https://plus.google.com/" + HttpUtility.HtmlEncode(profileData["contact_googleplus"]))
+                    .Replace("<IMAGE>", "http://plus.google.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_googleplus"])));
             // -- Reddit
             if (profileData["contact_reddit"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://www.reddit.com/user/" + HttpUtility.UrlEncode(profileData["contact_reddit"]))
-                    .Replace("%IMAGE%", "http://www.reddit.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_reddit"])));
+                    .Replace("<URL>", "http://www.reddit.com/user/" + HttpUtility.UrlEncode(profileData["contact_reddit"]))
+                    .Replace("<IMAGE>", "http://www.reddit.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_reddit"])));
             // -- Steam
             if (profileData["contact_steam"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://steamcommunity.com/id/" + profileData["contact_steam"])
-                    .Replace("%IMAGE%", "http://steamcommunity.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_steam"])));
+                    .Replace("<URL>", "http://steamcommunity.com/id/" + HttpUtility.HtmlEncode(profileData["contact_steam"]))
+                    .Replace("<IMAGE>", "http://steamcommunity.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_steam"])));
             // -- WLM
             if (profileData["contact_wlm"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://spaces.live.com/profile.aspx?mem=" + profileData["contact_wlm"])
-                    .Replace("%IMAGE%", "http://windows.microsoft.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_wlm"])));
+                    .Replace("<URL>", "http://spaces.live.com/profile.aspx?mem=" + HttpUtility.HtmlEncode(profileData["contact_wlm"]))
+                    .Replace("<IMAGE>", "http://windows.microsoft.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_wlm"])));
             // -- Skype
             if (profileData["contact_skype"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://myskype.info/" + profileData["contact_skype"])
-                    .Replace("%IMAGE%", "http://www.skypeassets.com/i/images/icons/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_skype"])));
+                    .Replace("<URL>", "http://myskype.info/" + HttpUtility.HtmlEncode(profileData["contact_skype"]))
+                    .Replace("<IMAGE>", "http://www.skypeassets.com/i/images/icons/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_skype"])));
             // -- YouTube
             if (profileData["contact_youtube"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://www.youtube.com/user/" + profileData["contact_youtube"])
-                    .Replace("%IMAGE%", "http://www.youtube.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_youtube"])));
+                    .Replace("<URL>", "http://www.youtube.com/user/" + HttpUtility.HtmlEncode(profileData["contact_youtube"]))
+                    .Replace("<IMAGE>", "http://www.youtube.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_youtube"])));
             // -- SoundCloud
             if (profileData["contact_soundcloud"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://soundcloud.com/" + profileData["contact_soundcloud"])
-                    .Replace("%IMAGE%", "http://soundcloud.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_soundcloud"])));
+                    .Replace("<URL>", "http://soundcloud.com/" + HttpUtility.HtmlEncode(profileData["contact_soundcloud"]))
+                    .Replace("<IMAGE>", "http://soundcloud.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_soundcloud"])));
             // -- Xbox
             if (profileData["contact_xbox"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://www.xboxlc.com/profile/" + profileData["contact_xbox"])
-                    .Replace("%IMAGE%", "http://www.xbox.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_xbox"])));
+                    .Replace("<URL>", "http://www.xboxlc.com/profile/" + HttpUtility.HtmlEncode(profileData["contact_xbox"]))
+                    .Replace("<IMAGE>", "http://www.xbox.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_xbox"])));
             // -- PSN
             if (profileData["contact_psn"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://profiles.us.playstation.com/playstation/psn/visit/profiles/" + profileData["contact_psn"])
-                    .Replace("%IMAGE%", "http://us.playstation.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_psn"])));
+                    .Replace("<URL>", "http://profiles.us.playstation.com/playstation/psn/visit/profiles/" + HttpUtility.HtmlEncode(profileData["contact_psn"]))
+                    .Replace("<IMAGE>", "http://us.playstation.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_psn"])));
             // -- Flickr
             if (profileData["contact_flickr"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://www.flickr.com/photos/" + profileData["contact_flickr"])
-                    .Replace("%IMAGE%", "http://l.yimg.com/g/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_flickr"])));
+                    .Replace("<URL>", "http://www.flickr.com/photos/" + HttpUtility.HtmlEncode(profileData["contact_flickr"]))
+                    .Replace("<IMAGE>", "http://l.yimg.com/g/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_flickr"])));
             // -- Twitter
             if (profileData["contact_twitter"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://twitter.com/" + profileData["contact_twitter"])
-                    .Replace("%IMAGE%", "http://www.twitter.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_twitter"])));
+                    .Replace("<URL>", "http://twitter.com/" + HttpUtility.HtmlEncode(profileData["contact_twitter"]))
+                    .Replace("<IMAGE>", "http://www.twitter.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_twitter"])));
             // -- Xfire
             if (profileData["contact_xfire"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://www.xfire.com/profile/" + profileData["contact_xfire"])
-                    .Replace("%IMAGE%", "http://xfire.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_xfire"])));
+                    .Replace("<URL>", "http://www.xfire.com/profile/" + HttpUtility.HtmlEncode(profileData["contact_xfire"]))
+                    .Replace("<IMAGE>", "http://xfire.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_xfire"])));
             // -- Deviantart
             if (profileData["contact_deviantart"].Length > 0)
                 contact.Append(Core.templates["bsa_profiles"]["profile_about_contact"]
-                    .Replace("%URL%", "http://" + profileData["contact_deviantart"] + ".deviantart.com/")
-                    .Replace("%IMAGE%", "http://deviantart.com/favicon.ico")
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(profileData["contact_deviantart"])));
+                    .Replace("<URL>", "http://" + HttpUtility.HtmlEncode(profileData["contact_deviantart"]) + ".deviantart.com/")
+                    .Replace("<IMAGE>", "http://deviantart.com/favicon.ico")
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(profileData["contact_deviantart"])));
             // Set nutshell
             StringBuilder nutshell = new StringBuilder(HttpUtility.HtmlEncode(profileData["nutshell"]));
             if(nutshell.Length == 0)
                 nutshell.Append("User has not specified a nutshell.");
             else
-                Common.format(ref nutshell, ref pageElements, true, true);
+                Common.format(conn, ref nutshell, ref pageElements, true, true);
             // Set content
             pageElements["PROFILE_CONTENT"] = Core.templates["bsa_profiles"]["profile_about"]
-                .Replace("%NUTSHELL%", nutshell.ToString())
-                .Replace("%CONTACT%", contact.Length == 0 ? "User has not specified any contact details." : contact.ToString())
+                .Replace("<NUTSHELL>", nutshell.ToString())
+                .Replace("<CONTACT>", contact.Length == 0 ? "User has not specified any contact details." : contact.ToString())
                 ;
             pageElements.setFlag("PROFILE_ABOUT");
         }
@@ -469,34 +469,34 @@ namespace UberCMS.Plugins
 
             // Set the content
             pageElements["PROFILE_CONTENT"] = Core.templates["bsa_profiles"]["profile_settings"]
-                .Replace("%USERID%", HttpUtility.HtmlEncode(profileData["userid"]))
-                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : updatedProfile ? Core.templates[pageElements["TEMPLATE"]]["success"].Replace("%SUCCESS%", "Successfully updated profile settings!") : string.Empty)
-                .Replace("%ENABLED%", profileEnabledItems.ToString())
-                .Replace("%FRAME_BG_URL%", HttpUtility.HtmlEncode(profileData["background_url"]))
-                .Replace("%FRAME_BG_COLOUR%", HttpUtility.HtmlEncode(profileData["background_colour"]))
-                .Replace("%PANE_BG_COLOUR%", HttpUtility.HtmlEncode(profileData["colour_background"]))
-                .Replace("%PANE_TEXT_COLOUR%", HttpUtility.HtmlEncode(profileData["colour_text"]))
-                .Replace("%NUTSHELL%", HttpUtility.HtmlEncode(profileData["nutshell"]))
-                .Replace("%COUNTRY%", countryItems.ToString())
-                .Replace("%GENDER%", genderItems.ToString())
-                .Replace("%OCCUPATION%", HttpUtility.HtmlEncode(profileData["occupation"]))
-                .Replace("%CONTACT_GITHUB%", HttpUtility.HtmlEncode(profileData["contact_github"]))
-                .Replace("%CONTACT_WEBSITE%", HttpUtility.HtmlEncode(profileData["contact_website"]))
-                .Replace("%CONTACT_EMAIL%", HttpUtility.HtmlEncode(profileData["contact_email"]))
-                .Replace("%CONTACT_FACEBOOK%", HttpUtility.HtmlEncode(profileData["contact_facebook"]))
-                .Replace("%CONTACT_GOOGLEPLUS%", HttpUtility.HtmlEncode(profileData["contact_googleplus"]))
-                .Replace("%CONTACT_REDDIT%", HttpUtility.HtmlEncode(profileData["contact_reddit"]))
-                .Replace("%CONTACT_STEAM%", HttpUtility.HtmlEncode(profileData["contact_steam"]))
-                .Replace("%CONTACT_WLM%", HttpUtility.HtmlEncode(profileData["contact_wlm"]))
-                .Replace("%CONTACT_SKYPE%", HttpUtility.HtmlEncode(profileData["contact_skype"]))
-                .Replace("%CONTACT_YOUTUBE%", HttpUtility.HtmlEncode(profileData["contact_youtube"]))
-                .Replace("%CONTACT_SOUNDCLOUD%", HttpUtility.HtmlEncode(profileData["contact_soundcloud"]))
-                .Replace("%CONTACT_XBOX%", HttpUtility.HtmlEncode(profileData["contact_xbox"]))
-                .Replace("%CONTACT_PSN%", HttpUtility.HtmlEncode(profileData["contact_psn"]))
-                .Replace("%CONTACT_FLICKR%", HttpUtility.HtmlEncode(profileData["contact_flickr"]))
-                .Replace("%CONTACT_TWITTER%", HttpUtility.HtmlEncode(profileData["contact_twitter"]))
-                .Replace("%CONTACT_XFIRE%", HttpUtility.HtmlEncode(profileData["contact_xfire"]))
-                .Replace("%CONTACT_DEVIANTART%", HttpUtility.HtmlEncode(profileData["contact_deviantart"]))
+                .Replace("<USERID>", HttpUtility.HtmlEncode(profileData["userid"]))
+                .Replace("<ERROR>", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : updatedProfile ? Core.templates[pageElements["TEMPLATE"]]["success"].Replace("<SUCCESS>", "Successfully updated profile settings!") : string.Empty)
+                .Replace("<ENABLED>", profileEnabledItems.ToString())
+                .Replace("<FRAME_BG_URL>", HttpUtility.HtmlEncode(profileData["background_url"]))
+                .Replace("<FRAME_BG_COLOUR>", HttpUtility.HtmlEncode(profileData["background_colour"]))
+                .Replace("<PANE_BG_COLOUR>", HttpUtility.HtmlEncode(profileData["colour_background"]))
+                .Replace("<PANE_TEXT_COLOUR>", HttpUtility.HtmlEncode(profileData["colour_text"]))
+                .Replace("<NUTSHELL>", HttpUtility.HtmlEncode(profileData["nutshell"]))
+                .Replace("<COUNTRY>", countryItems.ToString())
+                .Replace("<GENDER>", genderItems.ToString())
+                .Replace("<OCCUPATION>", HttpUtility.HtmlEncode(profileData["occupation"]))
+                .Replace("<CONTACT_GITHUB>", HttpUtility.HtmlEncode(profileData["contact_github"]))
+                .Replace("<CONTACT_WEBSITE>", HttpUtility.HtmlEncode(profileData["contact_website"]))
+                .Replace("<CONTACT_EMAIL>", HttpUtility.HtmlEncode(profileData["contact_email"]))
+                .Replace("<CONTACT_FACEBOOK>", HttpUtility.HtmlEncode(profileData["contact_facebook"]))
+                .Replace("<CONTACT_GOOGLEPLUS>", HttpUtility.HtmlEncode(profileData["contact_googleplus"]))
+                .Replace("<CONTACT_REDDIT>", HttpUtility.HtmlEncode(profileData["contact_reddit"]))
+                .Replace("<CONTACT_STEAM>", HttpUtility.HtmlEncode(profileData["contact_steam"]))
+                .Replace("<CONTACT_WLM>", HttpUtility.HtmlEncode(profileData["contact_wlm"]))
+                .Replace("<CONTACT_SKYPE>", HttpUtility.HtmlEncode(profileData["contact_skype"]))
+                .Replace("<CONTACT_YOUTUBE>", HttpUtility.HtmlEncode(profileData["contact_youtube"]))
+                .Replace("<CONTACT_SOUNDCLOUD>", HttpUtility.HtmlEncode(profileData["contact_soundcloud"]))
+                .Replace("<CONTACT_XBOX>", HttpUtility.HtmlEncode(profileData["contact_xbox"]))
+                .Replace("<CONTACT_PSN>", HttpUtility.HtmlEncode(profileData["contact_psn"]))
+                .Replace("<CONTACT_FLICKR>", HttpUtility.HtmlEncode(profileData["contact_flickr"]))
+                .Replace("<CONTACT_TWITTER>", HttpUtility.HtmlEncode(profileData["contact_twitter"]))
+                .Replace("<CONTACT_XFIRE>", HttpUtility.HtmlEncode(profileData["contact_xfire"]))
+                .Replace("<CONTACT_DEVIANTART>", HttpUtility.HtmlEncode(profileData["contact_deviantart"]))
                 ;
             pageElements.setFlag("PROFILE_SETTINGS");
         }
@@ -563,8 +563,8 @@ namespace UberCMS.Plugins
                 }
             }
             pageElements["PROFILE_CONTENT"] = Core.templates["bsa_profiles"]["profile_upload"]
-                .Replace("%USERID%", HttpUtility.HtmlEncode(profileData["userid"]))
-                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("%ERROR%", HttpUtility.HtmlEncode(error)) : string.Empty);
+                .Replace("<USERID>", HttpUtility.HtmlEncode(profileData["userid"]))
+                .Replace("<ERROR>", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty);
             pageElements.setFlag("PROFILE_UPLOAD");
         }
         public static void pageMembers(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
@@ -583,18 +583,18 @@ namespace UberCMS.Plugins
             {
                 members.Append(
                     Core.templates["bsa_profiles"]["member"]
-                    .Replace("%USERID%", HttpUtility.HtmlEncode(member["userid"]))
-                    .Replace("%USERNAME%", HttpUtility.HtmlEncode(member["username"]))
-                    .Replace("%GROUP_TITLE%", HttpUtility.HtmlEncode(member["title"]))
+                    .Replace("<USERID>", HttpUtility.HtmlEncode(member["userid"]))
+                    .Replace("<USERNAME>", HttpUtility.HtmlEncode(member["username"]))
+                    .Replace("<GROUP_TITLE>", HttpUtility.HtmlEncode(member["title"]))
                     );
             }
             pageElements["CONTENT"] = Core.templates["bsa_profiles"]["members"]
-                .Replace("%SEARCH%", search != null ? HttpUtility.HtmlEncode(search.Replace("%", "")) : string.Empty)
-                .Replace("%MEMBERS%",  members.Length > 0 ? members.ToString() : "No members found.")
-                .Replace("%PAGE%", page.ToString())
-                .Replace("%PAGE_NEXT%", (page == int.MaxValue - 1 ? page : page + 1).ToString())
-                .Replace("%PAGE_PREV%", (page == 1 ? page : page - 1).ToString())
-                .Replace("%LETTER%", alphabet != null ? alphabet : string.Empty)
+                .Replace("<SEARCH>", search != null ? HttpUtility.HtmlEncode(search.Replace("%", "")) : string.Empty)
+                .Replace("<MEMBERS>", members.Length > 0 ? members.ToString() : "No members found.")
+                .Replace("<PAGE>", page.ToString())
+                .Replace("<PAGE_NEXT>", (page == int.MaxValue - 1 ? page : page + 1).ToString())
+                .Replace("<PAGE_PREV>", (page == 1 ? page : page - 1).ToString())
+                .Replace("<LETTER>", alphabet != null ? alphabet : string.Empty)
                 ;
             pageElements["TITLE"] = "Members";
         }

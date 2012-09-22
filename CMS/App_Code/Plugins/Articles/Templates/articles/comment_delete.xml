@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[comment_delete]]></hkey><description><![CDATA[A comment which can be deleted.]]></description><html><![CDATA[<div class="COMMENT">
 	<div class="ROW COMMENT_HEADER">
 		<div class="CELL1">
-			<a href="<!--URL-->/profile?userid=%USERID%">%USERNAME%</a>
+			<a href="<!--URL-->/profile?userid=<USERID>"><USERNAME></a>
 			<div class="FR">
-				%DATETIME%
-				<a class="COMMENT_DELETE" href="<!--URL-->/article/%ARTICLEID%/comments?dcom=%COMMENTID%" title="Delete comment">
+				<DATETIME>
+				<a class="COMMENT_DELETE" href="<!--URL-->/article/<ARTICLEID>/comments?dcom=<COMMENTID>" title="Delete comment">
 					<img src="<!--URL-->/Content/Images/articles/delete_comment.png" alt="Delete Comment" />
 				</a>
 			</div>
@@ -13,7 +13,7 @@
 	</div>
 	<div class="ROW COMMENT_BODY">
 		<div class="CELL1">
-			%BODY%
+			<BODY>
 		</div>
 		<div class="clear"></div>
 	</div>

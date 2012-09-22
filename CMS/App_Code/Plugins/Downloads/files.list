@@ -1,0 +1,7 @@
+﻿// Add all of the files within the plugin
+%LOCAL%\*,\
+-%LOCAL%\bbcode.psd
+
+// Add content files
+%GLOBAL%\Content\CSS\Downloads.css,\Content\CSS
+%GLOBAL%\Content\Images\downloads\*,\Content\Images\downloads

@@ -138,7 +138,7 @@ namespace UberCMS.Plugins
                                     // Sync the file
                                     if (File.Exists(file[0]))
                                     {
-                                        destination = basePath + "\\" + file[1] + "\\" + Path.GetFileName(file[0]);
+                                        destination = basePath + "\\" + (file[1].StartsWith("\\") ? file[1].Substring(1) : file[1]) + "\\" + Path.GetFileName(file[0]);
                                         pageSync_file(file[0], destination);
                                         output.Append("<br />").Append(file[0]).Append("<br />-> <i>").Append(destination).Append("</i>");
                                     }

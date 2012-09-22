@@ -1,48 +1,48 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[bsa_profiles]]></pkey><hkey><![CDATA[profile_frame]]></hkey><description><![CDATA[The main frame for the profile system.]]></description><html><![CDATA[<style>
 	.BSAPCBG
 	{
-		background: #%PANE_BG_COLOUR%;
+		background: #<PANE_BG_COLOUR>;
 	}
 	.BSAPCT
 	{
-		color: #%PANE_TEXT_COLOUR% !important;
+		color: #<PANE_TEXT_COLOUR> !important;
 	}
 	.BSAPCT a
 	{
-		color: #%PANE_TEXT_COLOUR%;
+		color: #<PANE_TEXT_COLOUR>;
 	}
 </style>
-<div class="BSA_PROFILES_FRAME" style="background: %BACKGROUND%; background-size: 100%;">
+<div class="BSA_PROFILES_FRAME" style="background: <BACKGROUND>; background-size: 100%;">
 	<div class="LEFT">
 		<div class="PANE CENTER BSAPCBG BSAPCT">
-			<a href="<!--URL-->/profile/upload?userid=%USERID%"><img alt="Profile picture" src="<!--URL-->/profile_image/%USERID%" class="PROFILE_PICTURE" /></a>
-			<div>%USERNAME%</div>
+			<a href="<!--URL-->/profile/upload?userid=<USERID>"><img alt="Profile picture" src="<!--URL-->/profile_image/<USERID>" class="PROFILE_PICTURE" /></a>
+			<div><USERNAME></div>
 		</div>
 		<div class="PANE BSAPCBG BSAPCT">
-			<div>%GROUP%</div>
+			<div><GROUP></div>
 			<div>&nbsp;</div>
 			<div>Joined:</div>
-			<div>%REGISTERED% (%REGISTERED_DAYS%)</div>
+			<div><REGISTERED> (<REGISTERED_DAYS>)</div>
 			<div>&nbsp;</div>
 			<div>Country:</div>
-			<div><img class="ICON" src="<!--URL-->/Content/Images/common/flags/%COUNTRY_FLAG%.png" alt="Country flag" />%COUNTRY_TITLE%</div>
+			<div><img class="ICON" src="<!--URL-->/Content/Images/common/flags/<COUNTRY_FLAG>.png" alt="Country flag" /><COUNTRY_TITLE></div>
 			<div>&nbsp;</div>
 			<div>Gender:</div>
-			<div><img class="ICON" src="<!--URL-->/Content/Images/bsa_profiles/%GENDER_CODE%.png" alt="Gender icon" />%GENDER%</div>
+			<div><img class="ICON" src="<!--URL-->/Content/Images/bsa_profiles/<GENDER_CODE>.png" alt="Gender icon" /><GENDER></div>
 			<div>&nbsp;</div>
 			<div>Occupation:</div>
-			<div>%OCCUPATION%</div>
+			<div><OCCUPATION></div>
 		</div>
 		<div class="clear"></div>
 	</div>
 	<div class="RIGHT">
 		<div class="TABS">
-			<a class="BSAPCBG BSAPCT <!--IF:PROFILE_ABOUT-->SELECTED<!--ENDIF-->" href="<!--URL-->/profile?userid=%USERID%">About</a>
+			<a class="BSAPCBG BSAPCT <!--IF:PROFILE_ABOUT-->SELECTED<!--ENDIF-->" href="<!--URL-->/profile?userid=<USERID>">About</a>
 			<!--IF:PROFILE_OWNER-->
-			<a class="BSAPCBG BSAPCT <!--IF:PROFILE_SETTINGS-->SELECTED<!--ENDIF:PROFILE_SETTINGS-->" href="<!--URL-->/profile/settings?userid=%USERID%">Settings</a>
+			<a class="BSAPCBG BSAPCT <!--IF:PROFILE_SETTINGS-->SELECTED<!--ENDIF:PROFILE_SETTINGS-->" href="<!--URL-->/profile/settings?userid=<USERID>">Settings</a>
 			<!--ENDIF:PROFILE_OWNER-->
 			<!--IF:PROFILE_OWNER-->
-			<a class="BSAPCBG BSAPCT <!--IF:PROFILE_UPLOAD-->SELECTED<!--ENDIF:PROFILE_UPLOAD-->" href="<!--URL-->/profile/upload?userid=%USERID%">Upload</a>
+			<a class="BSAPCBG BSAPCT <!--IF:PROFILE_UPLOAD-->SELECTED<!--ENDIF:PROFILE_UPLOAD-->" href="<!--URL-->/profile/upload?userid=<USERID>">Upload</a>
 			<!--ENDIF:PROFILE_OWNER-->
 			
 			<div class="clear"></div>
