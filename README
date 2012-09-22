@@ -25,39 +25,44 @@ Plugins
 ===========================================================================================
 > Plugins (official as apart of this project):
 -- Admin Panel:
-   -- Manage the CMS, settings and plugins, as well as monitor services.
-   -- Open-ended support for other plugins.
+	-- Manage the CMS, settings and plugins, as well as monitor services.
+	-- Open-ended support for other plugins.
 -- Articles:
-   -- Basic Site Auth based aritcle application for creating site pages with a revisioning
-      system like a Wiki.
-   -- BBCode and HTML supported.
-   -- Supports URL rewriting.
-   -- Supports group roles of Basic Sie auth and publishing system.
-   -- Features a shared image-store for embedding shared imagery with tagging/tracking.
+	-- 	Basic Site Auth based aritcle application for creating site pages with a revisioning
+		system like a Wiki.
+	-- BBCode and HTML supported.
+	-- Supports URL rewriting.
+	-- Supports group roles of Basic Sie auth and publishing system.
+	-- Features a shared image-store for embedding shared imagery with tagging/tracking.
 -- Basic 404 Page:
-   -- An example of how to produce a simple plugin to handle a HTTP/1.1 404 occurrence.
+	--	An example of how to produce a simple plugin to handle a HTTP/1.1 404 occurrence.
 -- Basic Site Auth:
-   -- A simple group-based authentication system with captcha security.
-   -- Passwords are hashed using two salts, a custom shifting algorithm and SHA-512.
-   -- Supports banning.
-   -- Supports Admin Panel plugin.
-   -- Account logging.
+	-- 	A simple group-based authentication system with captcha security.
+	-- 	Passwords are hashed using two salts, a custom shifting algorithm and SHA-512.
+	-- 	Supports banning.
+	-- 	Supports Admin Panel plugin.
+	-- 	Account logging.
 -- Basic Site Auth - Profiles:
-   -- A profiling system for the Basic Site Auth plugin.
-   -- Supports many contact methods.
-   -- Allows profile customisation with custom background image and colours.
-   -- Allows users to upload an avatar/display picture.
+	-- 	A profiling system for the Basic Site Auth plugin.
+	-- 	Supports many contact methods.
+	-- 	Allows profile customisation with custom background image and colours.
+	-- 	Allows users to upload an avatar/display picture.
 -- CC128 Energy Monitor:
-   -- Allows you to view the power consumption captured from a CC128 energy monitor.
-   -- Contains daily, monthly, yearly and total information views.
-   -- Ability to view consumption of a day via a dynamically created chart, which can
-      also be saved (generated as an image).
+	-- 	Allows you to view the power consumption captured from a CC128 energy monitor.
+	-- 	Contains daily, monthly, yearly and total information views.
+	-- 	Ability to view consumption of a day via a dynamically created chart, which can
+		also be saved (generated as an image).
 -- Common:
-   -- A plugin with commonly used and shared methods for e.g. validation and BBCode.
--- DevPackage:
-   -- A developer's plugin which allows you to easily dump HTML templates, upload HTML
-      templates to the database, zip plugins, sync global files to the local plugin
-	  directory and much more.
+	-- 	A plugin with commonly used and shared methods for e.g. validation and BBCode.
+--	Cookie-Control:
+	--	Allows compliance with new EU cookie laws.
+-- 	DevPackage:
+	--	A developer's plugin which allows you to easily dump HTML templates, upload HTML
+		templates to the database, zip plugins, sync global files to the local plugin
+		directory and much more.
+--	Downloads:
+	-- 	Simple downloads system with indexer and file-watcher to automatically migrate
+		changes in real-time.
 -- Uber Media:
    -- The website core used to organize media information and terminal control.
 
@@ -71,7 +76,3 @@ Current Issues
 > Needs testing on Mono:
 -- URL rewriting issues will be the most likely issue.
 -- Can't test at the moment, my Raspberry Pi is having issues.
-> Get plugins to cache providers into a static array (or just Result) to speed up request
-  times:
--- Admin menu providers
--- BB code providers (common and articles)
