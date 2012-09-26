@@ -5,7 +5,7 @@
 	</directory>
 	<!-- The title of the plugin, as displayed to the user -->
 	<title>
-		<![CDATA[Common - v1.0.0.0]]>
+		<![CDATA[Common - v1.1.0.0]]>
 	</title>
 	<!-- The class-path of the main class, including the class-name e.g. UberCMS.Plugins.Base -->
 	<classpath>

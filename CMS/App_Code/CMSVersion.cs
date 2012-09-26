@@ -21,6 +21,6 @@ namespace UberCMS
     {
         public const int MAJOR = 1;
         public const int MINOR = 1;
-        public const int BUILD = 0;
+        public const int BUILD = 1;
     }
 }

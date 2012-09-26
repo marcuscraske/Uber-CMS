@@ -448,8 +448,8 @@ namespace UberCMS.Plugins
             /// <param name="text"></param>
             public static void formatFontSize(ref StringBuilder text)
             {
-                foreach (Match m in Regex.Matches(text.ToString(), @"\[size=([1-9]|1[0-9]|2[0-9]|30)\](.*?)\[\/size\]", RegexOptions.Multiline))
-                    text.Replace(m.Value, "<span style=\"font-size: " + m.Groups[1].Value + "pt\">" + m.Groups[2].Value + "</span>");
+                foreach (Match m in Regex.Matches(text.ToString(), @"\[size=([1-9]{1}|1[0-9]{1}|2[0-9]{1}|30{1}|[1-9]{1}.[1-9]{1}|1[0-9]{1}.[1-9]{1}|2[0-9]{1}.[1-9]{1})(em|pt)\](.*?)\[\/size\]", RegexOptions.Multiline))
+                    text.Replace(m.Value, "<span style=\"font-size: " + m.Groups[1].Value + m.Groups[2].Value + "\">" + m.Groups[3].Value + "</span>");
             }
             /// <summary>
             /// Highlights text.

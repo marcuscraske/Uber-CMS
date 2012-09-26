@@ -2042,6 +2042,11 @@ namespace UberCMS.Plugins
             formatImage(ref originalText, ref pageElements);
             formatTemplate(conn, ref originalText, ref pageElements, currTree);
         }
+        /// <summary>
+        /// Includes an image from the image-store.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="pageElements"></param>
         public static void formatImage(ref StringBuilder text, ref Misc.PageElements pageElements)
         {
             foreach (Match m in Regex.Matches(text.ToString(), REGEX_IMAGE_STORE, RegexOptions.Multiline))
@@ -2051,15 +2056,34 @@ namespace UberCMS.Plugins
             foreach (Match m in Regex.Matches(text.ToString(), REGEX_IMAGE_STORE_CUSTOM_WH, RegexOptions.Multiline))
                 text.Replace(m.Value, "<a title=\"Click to open the image...\" href=\"" + pageElements["URL"] + "/articles/images/view/" + m.Groups[3].Value + "\" class=\"COMMON_IMG\"><img style=\"width: " + m.Groups[1].Value + "; height: " + m.Groups[2].Value + ";\" src=\"" + pageElements["URL"] + "/articles/images/data/" + m.Groups[3].Value + "\" /></a>");
         }
+        /// <summary>
+        /// Templates allow you to embed any other articles within an article; simply use:
+        /// [:[relative path to article|argument=value|argument 2=value| ... ]:]
+        /// 
+        /// For instance you could have a template at template/info with the following:
+        /// {{hello}} {{world}}
+        /// 
+        /// Which could be included like so:
+        /// [:[template/info|hello=cool|world=cats]:]
+        /// 
+        /// This would render:
+        /// cool cats
+        /// 
+        /// This also supports multiple lines/HTML and "|" can be escaped using "\|".
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="text"></param>
+        /// <param name="pageElements"></param>
+        /// <param name="currTree"></param>
         public static void formatTemplate(Connector conn, ref StringBuilder text, ref Misc.PageElements pageElements, int currTree)
         {
             Result data;
             StringBuilder body;
             string[] param;
-            string[] innerParam;
-            foreach (Match m in Regex.Matches(text.ToString(), @"\[\[([a-zA-Z0-9\/\._\-|= \(\)]+)\]\]", RegexOptions.Multiline))
+            int innerParamIndex;
+            foreach (Match m in Regex.Matches(text.ToString(), @"\[\:\[(.+)\]\:\]", RegexOptions.Multiline))
             {
-                param = m.Groups[1].Value.Split('|');
+                param = m.Groups[1].Value.Replace("\\|", "&#124;").Split('|');
                 data = conn.Query_Read("SELECT a.body FROM articles_thread AS at LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current WHERE at.relative_url='" + Utils.Escape(param[0]) + "'");
                 if (data.Rows.Count != 1)
                     // Template doesn't exist - replace the markup with an error message
@@ -2072,11 +2096,11 @@ namespace UberCMS.Plugins
                     {
                         for (int i = 1; i < param.Length; i++)
                         {
-                            innerParam = param[i].Split('=');
-                            if (innerParam.Length == 1)
-                                body.Replace("{{" + i + "}}", param[i]);
-                            else if (innerParam.Length == 2)
-                                body.Replace("{{" + innerParam[0] + "}}", innerParam[1]);
+                            innerParamIndex = param[i].IndexOf('=');
+                            if(innerParamIndex == -1 || innerParamIndex == param[i].Length - 1)
+                                body.Replace("{{" + i + "}}", param[i]); // Replace argument number e.g. {1} with this value - not key/pair
+                            else
+                                body.Replace("{{" + param[i].Substring(0, innerParamIndex).Replace("<br />", string.Empty) + "}}", param[i].Substring(innerParamIndex + 1));
                         }
                     }
                     // Format template

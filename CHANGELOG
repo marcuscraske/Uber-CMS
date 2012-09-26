@@ -1,3 +1,8 @@
+v1.1.1:
+-	Articles:
+	-	Template formatting improved.
+-	Common:
+	-	BBCode size improved (added em/pt with decimal support).
 v1.1.0:
 -	Added changelog.
 -	Updated Base.cs method parameters based on the changes made to the base template mechanism.
