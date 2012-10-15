@@ -6,5 +6,6 @@
 
 // Add content files
 %GLOBAL%\Content\CSS\Article.css,\Content\CSS
+%GLOBAL%\Content\CSS\ArticlePdfLayout.css,\Content\CSS
 %GLOBAL%\Content\JS\Article.js,\Content\JS
 %GLOBAL%\Content\Images\articles\*,\Content\Images\articles

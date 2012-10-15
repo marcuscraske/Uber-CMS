@@ -1,0 +1,58 @@
+﻿body
+{
+    background: #FFF;
+    color: #000;
+    font: normal 14px Arial,Verdana;
+    margin: 0em;
+}
+h2, h3, h4, h5
+{
+	font-size: 1em;
+	padding: 0.5em;
+}
+h3, h4, h5
+{
+    margin: 0em 0em 0.5em 0em;
+    border-radius: 0.5em;
+}
+h2
+{
+	background: #360;
+	color: #FFF;
+	margin: 0em 0em 0.5em 0em;
+	border-radius: 0.5em;
+}
+h3
+{
+    color: #FFF;
+    background: #690;
+}
+h4
+{
+	background: #CCC;
+	color: #666;
+}
+h5
+{
+    background: #DDD;
+    color: #333;
+}
+a
+{
+	color: #360;
+}
+.BODY, .FOOTER
+{
+    width: 60em;
+    margin: auto;
+}
+.BODY
+{
+    overflow: hidden;
+}
+.FOOTER
+{
+    margin-top: 0.5em;
+    border-top: 0.3em solid #333;
+    text-align: center;
+}

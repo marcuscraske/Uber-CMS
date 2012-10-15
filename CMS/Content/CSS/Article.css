@@ -23,14 +23,12 @@
 /* Options pane at the top of an article */
 .ARTICLE .PANE
 {
-    padding: 0em 0.5em;
-    line-height: 2.5em;
     font-style: italic;
     border-bottom: solid 0.2em #360;
     background: #CCC;
     color: #333;
     margin: -0.5em 0em 0.5em -0.5em;
-    width: 60em;
+    width: 61em;
 }
 .ARTICLE .PANE .THUMBNAIL
 {
@@ -43,8 +41,8 @@
 }
 .ARTICLE .PANE .BUTTONS
 {
-    padding-top: 1em;
     float: right;
+    padding-top: 0.5em;
 }
 .ARTICLE .PANE .BUTTONS .BUTT
 {
@@ -76,33 +74,29 @@
     height: 1.3em;
     border: 0em;
 }
-/* Article tags */
-.TAGS
+/* Article footer - tags */
+.ARTICLE .TAGS
 {
     border-top: dotted 0.1em #CCC;
     padding: 0.25em;
 }
-.TAGS span
+.ARTICLE .TAGS span
 {
     font-size: 1.25em;
 }
-.TAGS a
+.ARTICLE .TAGS a
 {
     display: inline-block;
     margin: 0.25em;
     color: inherit;
 }
-/* Link back to browse articles */
-.VIEW_ARTICLES
+/* Article footer - published */
+.ARTICLE .PUBLISHED
 {
     float: right;
-    color: inherit;
     padding: 0.25em;
-}
-.VIEW_ARTICLES:hover, .VIEW_ARTICLES:focus
-{
-    background: #CCC;
-    color: #333;
+    font-size: 0.8em;
+    text-align: right;
 }
 /* Article comments */
 .ARTICLE .COMMENT

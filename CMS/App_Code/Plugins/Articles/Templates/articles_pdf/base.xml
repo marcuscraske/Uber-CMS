@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles_pdf]]></pkey><hkey><![CDATA[base]]></hkey><description><![CDATA[The base template for viewing an article in PDF mode.]]></description><html><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title><!--TITLE--></title>
+	<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+	<link href="<!--URL-->/Content/CSS/ArticlePdfLayout.css" type="text/css" rel="Stylesheet" />
+	<!--HEADER-->
+</head>
+<body onload="<!--BODY_ONLOAD-->">
+<div class="BODY">
+	<h2><!--TITLE--></h2>
+	<!--CONTENT-->
+</div>
+<div class="FOOTER">
+	The license of content on this site varies between copyright and open-source licenses such as Creative-Commons; please view our <a href="./license">license</a> page for information on using our work.
+</div>
+<script type="text/javascript">SyntaxHighlighter.all()</script>
+</body>
+</html>]]></html></template>

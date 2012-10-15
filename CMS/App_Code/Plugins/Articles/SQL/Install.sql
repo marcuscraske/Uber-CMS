@@ -34,6 +34,14 @@ BEGIN
 END;
 CALL articles_upgrade_12();
 DROP  PROCEDURE articles_upgrade_12;
+-- Upgrade v1.3 PDF
+CREATE PROCEDURE articles_upgrade_13()
+BEGIN
+	DECLARE CONTINUE HANDLER FOR 1060 BEGIN END;
+	ALTER TABLE articles_thread ADD pdf_name TINYTEXT;
+END;
+CALL articles_upgrade_13();
+DROP  PROCEDURE articles_upgrade_13;
 -- Change encoding support for utf8
 ALTER TABLE `articles` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 SET FOREIGN_KEY_CHECKS=1;

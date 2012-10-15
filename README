@@ -34,6 +34,8 @@ Plugins
 	-- Supports URL rewriting.
 	-- Supports group roles of Basic Sie auth and publishing system.
 	-- Features a shared image-store for embedding shared imagery with tagging/tracking.
+	-- PDFs of articles can be automatically generated for article threads, allowing easy
+	   offline storage of articles.
 -- Basic 404 Page:
 	--	An example of how to produce a simple plugin to handle a HTTP/1.1 404 occurrence.
 -- Basic Site Auth:

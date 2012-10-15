@@ -1,0 +1,8 @@
+Credits for wkhtmltopdf go to:
+http://code.google.com/p/wkhtmltopdf/
+
+License:
+GNU Lesser GPL
+
+The above license may prohibit certain uses of this plugin; optionally
+you can disable PDF generation.

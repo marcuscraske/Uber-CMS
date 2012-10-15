@@ -21,6 +21,7 @@ using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Diagnostics;
 
 namespace UberCMS.Plugins
 {
@@ -80,6 +81,7 @@ namespace UberCMS.Plugins
         public const string SETTINGS_IMAGES_VIEW_REFERENCES = "images_view_references";
         public const string SETTINGS_IMAGES_PER_PAGE = "images_per_page";
         public const string SETTINGS_IMAGE_TYPES = "images_types";
+        public const string SETTINGS_PDF_ENABLED = "pdf_enabled";
         #endregion
 
         #region "Constants - Queries"
@@ -125,7 +127,7 @@ namespace UberCMS.Plugins
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_TITLE_MAX, "45", "The maximum length of an article title.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_TITLE_MIN, "1", "The minimum length of an article title.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_BODY_MIN, "1", "The minimum length of an article's body.", false);
-            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_BODY_MAX, "8000", "The maximum length of an articles body.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_BODY_MAX, "32000", "The maximum length of an articles body.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_RELATIVE_URL_CHUNK_MIN, "1", "The minimum length of a URL chunk/directory.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_RELATIVE_URL_CHUNK_MAX, "32", "The maximum length of a URL chunk/directory.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_RELATIVE_URL_MAXCHUNKS, "8", "The maximum number of chunks/directories.", false);
@@ -156,6 +158,7 @@ namespace UberCMS.Plugins
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_IMAGES_VIEW_REFERENCES, "10", "The number of references displayed per a page when viewing an image.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_IMAGE_TYPES, "image/gif,image/jpeg,image/png,image/jpg,image/bmp", "The image mime types allowed to be uploaded for images and article thumbnails.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_IMAGES_PER_PAGE, "9", "The number of images displayed per a page in the image store.", false);
+            Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_PDF_ENABLED, "1", "Specifies if articles are available as PDF downloads; requires Windows.", false);
             // Install default provider(s)
             formattingAdd(conn, pluginid, "UberCMS.Plugins.Common", "format");
             // Reserve URLS
@@ -177,7 +180,8 @@ namespace UberCMS.Plugins
             // Uninstall templates
             if ((error = Misc.Plugins.templatesUninstall("articles", conn)) != null)
                 return error;
-
+            if ((error = Misc.Plugins.templatesUninstall("articles_pdf", conn)) != null)
+                return error;
             return null;
         }
         public static string uninstall(string pluginid, Connector conn)
@@ -198,7 +202,7 @@ namespace UberCMS.Plugins
         public static void handleRequest(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
             // Check the cache is not being rebuilt, else display a page informing the user the system is currently unavailable
-            if (threadRebuildCache != null)
+            if (threadRebuildCache != null && !(request.QueryString["page"] == "articles" && request.QueryString["1"] == "images" && request.QueryString["2"] == "data" && Misc.Plugins.isNumeric(request.QueryString["3"])) && !(request.QueryString["page"] == "article" && Misc.Plugins.isNumeric(request.QueryString["1"]) && request.QueryString["2"] == null))
             {
                 pageUnavailableCacheReconstruction(pluginid, conn, ref pageElements, request, response);
                 return;
@@ -422,7 +426,7 @@ namespace UberCMS.Plugins
             if (articleid != null && Misc.Plugins.isNumeric(articleid))
             {
                 // Attempt to load the pre-existing article's data
-                preData = conn.Query_Read("SELECT a.*, at.relative_url, GROUP_CONCAT(at2.keyword SEPARATOR ',') AS tags FROM articles AS a LEFT OUTER JOIN articles_tags AS at2 ON (EXISTS (SELECT tagid FROM articles_tags_article WHERE tagid=at2.tagid AND articleid='" + Utils.Escape(articleid) + "')) LEFT OUTER JOIN articles_thread AS at ON at.threadid=a.threadid WHERE articleid='" + Utils.Escape(articleid) + "'");
+                preData = conn.Query_Read("SELECT a.*, at.relative_url, at.pdf_name, GROUP_CONCAT(at2.keyword SEPARATOR ',') AS tags FROM articles AS a LEFT OUTER JOIN articles_tags AS at2 ON (EXISTS (SELECT tagid FROM articles_tags_article WHERE tagid=at2.tagid AND articleid='" + Utils.Escape(articleid) + "')) LEFT OUTER JOIN articles_thread AS at ON at.threadid=a.threadid WHERE articleid='" + Utils.Escape(articleid) + "'");
                 if (preData.Rows.Count != 1) preData = null;
                 else
                     preDataRow = preData[0];
@@ -561,6 +565,8 @@ namespace UberCMS.Plugins
                                     if (publishAuto)
                                         conn.Query_Execute("UPDATE articles_thread SET articleid_current='" + Utils.Escape(articleid) + "' WHERE relative_url='" + Utils.Escape(relativeUrl) + "'");
                                 }
+                                // Add/update pdf
+                                pdfRebuild(pluginid, articleid, title, preData != null ? preDataRow["pdf_name"] : string.Empty, threadid, conn, request);
                                 // Add the new tags and delete any tags not used by any other articles, as well as cleanup unused thumbnails
                                 StringBuilder finalQuery = new StringBuilder();
                                 if (parsedTags.tags.Count > 0)
@@ -1370,7 +1376,7 @@ namespace UberCMS.Plugins
         {
             if (request.Form["confirm"] != null && Common.AntiCSRF.isValidTokenForm(request.Form["csrf"]))
             {
-                cacheRebuild();
+                cacheRebuild(request, pluginid, conn);
                 conn.Disconnect();
                 response.Redirect(pageElements["URL"] + "/articles");
             }
@@ -1380,13 +1386,20 @@ namespace UberCMS.Plugins
         #endregion
 
         #region "Methods - Cache Rebuilding"
-        public static void cacheRebuild()
+        public static void cacheRebuild(HttpRequest request, string pluginid, Connector conn)
         {
-            threadRebuildCache = new Thread(cacheRebuilder);
+            string baseUrl = pdfGetBaseUrl(request);
+            string baseDir = Misc.Plugins.getPluginBasePath(pluginid, conn);
+            threadRebuildCache = new Thread(
+                delegate()
+                {
+                    cacheRebuilder(baseDir, baseUrl);
+                }
+                );
             threadRebuildCache.Priority = ThreadPriority.AboveNormal;
             threadRebuildCache.Start();
         }
-        private static void cacheRebuilder()
+        private static void cacheRebuilder(string baseFolder, string baseUrl)
         {
             // Create an independent connector; we don't want issues with other plugins
             Connector conn = Core.connectorCreate(true);
@@ -1394,20 +1407,23 @@ namespace UberCMS.Plugins
             int totalArticles = conn.Query_Count("SELECT COUNT('') FROM articles");
             StringBuilder text;
             Result articleData;
+            ResultRow articleDataRow;
             Misc.PageElements pe = new Misc.PageElements(); // Used for referencing; has no purpose.
             StringBuilder articlesUpdateBuffer = new StringBuilder();
             int articlesUpdateBufferCount = 0;
             int totalArticlesInBuffer = 8;
+            // Rebuild articles
             for (int i = 0; i < totalArticles; i++) // We do this in-case there are thousands of articles - in-which case, we'd run out of memory
             {
                 articleData = conn.Query_Read("SELECT articleid, body FROM articles LIMIT " + i.ToString() + ",1");
                 if (articleData.Rows.Count == 1)
                 {
+                    articleDataRow = articleData[0];
                     // Update the cached text
-                    text = new StringBuilder(articleData[0]["body"]);
+                    text = new StringBuilder(articleDataRow["body"]);
                     articleFormat(conn, ref text, ref pe, true, true);
                     // Add to buffer
-                    articlesUpdateBuffer.Append("UPDATE articles SET body_cached='" + Utils.Escape(text.ToString()) + "' WHERE articleid='" + Utils.Escape(articleData[0]["articleid"]) + "';");
+                    articlesUpdateBuffer.Append("UPDATE articles SET body_cached='" + Utils.Escape(text.ToString()) + "' WHERE articleid='" + Utils.Escape(articleDataRow["articleid"]) + "';");
                     articlesUpdateBufferCount++;
                 }
                 // Check if the buffer is full or we've reached the end of the articles, and hence should be executed
@@ -1418,6 +1434,20 @@ namespace UberCMS.Plugins
                     articlesUpdateBufferCount = 0;
                     // Sleep to avoid overkilling the database
                     Thread.Sleep(10);
+                }
+            }
+            // Rebuild pdfs
+            if (Core.settings[SETTINGS_KEY].getBool(SETTINGS_PDF_ENABLED))
+            {
+                totalArticles = conn.Query_Count("SELECT COUNT('') FROM articles_thread WHERE articleid_current != ''");
+                for (int i = 0; i < totalArticles; i++) // Again we do it one-by-one in-case of thousands of articles
+                {
+                    articleData = conn.Query_Read("SELECT a.articleid, a.title, a.threadid, at.pdf_name FROM articles AS a, articles_thread AS at WHERE a.articleid=at.articleid_current LIMIT " + i.ToString() + ",1");
+                    if (articleData.Rows.Count == 1)
+                    {
+                        articleDataRow = articleData[0];
+                        pdfRebuild(articleDataRow["articleid"], articleDataRow["title"], articleDataRow["pdf_name"], articleDataRow["threadid"], conn, baseUrl, baseFolder);
+                    }
                 }
             }
             // End of reconstruction
@@ -1475,7 +1505,7 @@ namespace UberCMS.Plugins
             // Check we have an articleid that is not null and greater than zero, else 404
             if (articleid == null || articleid.Length == 0) return;
             // Load the article's data
-            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.articleid, a.threadid, a.title, a.userid, a.body, a.body_cached, a.moderator_userid, a.published, a.allow_comments, a.allow_html, a.show_pane, a.datetime, at.relative_url, at.articleid_current, u.username FROM (articles AS a, articles_thread AS at) LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
+            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.articleid, a.threadid, a.title, a.userid, a.body, a.body_cached, a.moderator_userid, a.published, a.allow_comments, a.allow_html, a.show_pane, a.datetime, at.relative_url, at.articleid_current, at.pdf_name, u.username FROM (articles AS a, articles_thread AS at) LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
             if (articleRaw.Rows.Count != 1)
                 return; // 404 - no data found - the article is corrupt (thread and article not linked) or the article does not exist
             ResultRow article = articleRaw[0];
@@ -1579,28 +1609,47 @@ namespace UberCMS.Plugins
                 pageElements["HEADER"] += "<meta name=\"author\" content=\"" + article["username"] + "\" />";
                 // Set the article's body
                 content.Replace("%BODY%", subpageContent.ToString())
-                    .Append(Core.templates["articles"]["article_footer"].Replace("%TAGS%", tags.Length == 0 ? "(none)" : tags.ToString()));
+                    .Append(
+                        Core.templates["articles"]["article_footer"]
+                            .Replace("%TAGS%", tags.Length == 0 ? "(none)" : tags.ToString()))
+                            .Replace("%DATE%", article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "unknown")
+                            .Replace("%FULL_DATE%", article["datetime"].Length > 0 ? DateTime.Parse(article["datetime"]).ToString("dd/MM/yyyy HH:mm:ss") : "unknown")
+                            .Replace("%REVISION%", HttpUtility.HtmlEncode(article["revision"]))
+                    ;
             }
 
             // Add pane
             content
                 .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
                 .Replace("%THREADID%", HttpUtility.HtmlEncode(article["threadid"]))
-                .Replace("%REVISION%", HttpUtility.HtmlEncode(article["revision"]))
-                .Replace("%DATE%", article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "unknown")
                 .Replace("%COMMENTS%", conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE threadid='" + Utils.Escape(article["threadid"]) + "'").ToString())
+                .Replace("%PDF_NAME%", HttpUtility.HtmlEncode(article["pdf_name"]))
                 ;
+
+            bool pdf = request.QueryString["pdf"] != null;
+
             // Set flag for showing pane - this can be overriden if a querystring force_pane is specified
-            if (article["show_pane"].Equals("1") || !published || request.QueryString["force_pane"] != null || subpage)
+            if (!pdf && (article["show_pane"].Equals("1") || !published || request.QueryString["force_pane"] != null || subpage))
                 pageElements.setFlag("ARTICLE_SHOW_PANE");
 
             // Set published flag
             if (published)
                 pageElements.setFlag("ARTICLE_PUBLISHED");
 
+            // Set download as PDF flag
+            if (Core.settings[SETTINGS_KEY].getBool(SETTINGS_PDF_ENABLED) && article["pdf_name"].Length > 0)
+                pageElements.setFlag("ARTICLE_PDF_DOWNLOAD");
+
             //Set current article flag
             if (article["articleid_current"] == article["articleid"])
                 pageElements.setFlag("ARTICLE_CURRENT");
+
+            // Check if to use the PDF template
+            if (pdf)
+            {
+                pageElements["TEMPLATE"] = "articles_pdf";
+                pageElements.setFlag("ARTICLE_PDF_MODE");
+            }
 
             // Set permission flags
             if (permCreate) pageElements.setFlag("ARTICLE_PERM_CREATE");
@@ -1821,9 +1870,13 @@ namespace UberCMS.Plugins
         {
             if (!permPublish) return;
             StringBuilder cached = new StringBuilder(article["body"]);
+            // Rebuild article text
             articleViewRebuildCache(conn, ref cached, article["allow_html"].Equals("1"), ref pageElements);
             conn.Query_Execute("UPDATE articles SET body_cached='" + Utils.Escape(cached.ToString()) + "' WHERE articleid='" + Utils.Escape(article["articleid"]) + "';" + insertEvent(RecentChanges_EventType.RebuiltArticleCache, HttpContext.Current.User.Identity.Name, article["articleid"], article["threadid"]));
             conn.Disconnect();
+            // Rebuild article pdf
+            pdfRebuild(pluginid, article["articleid"], article["title"], article["pdf_name"], article["threadid"], conn, request);
+            // Redirect back to the article
             response.Redirect(pageElements["URL"] + "/article/" + article["articleid"], true);
         }
         static void articleViewRebuildCache(Connector conn, ref StringBuilder text, bool allowHTML, ref Misc.PageElements pageElements)
@@ -2108,6 +2161,53 @@ namespace UberCMS.Plugins
                     text.Replace(m.Value, body.ToString());
                 }
             }
+        }
+        #endregion
+
+        #region "Methods - Article PDF"
+        public static bool pdfRebuild(string articleid, string title, string oldFilename, string threadid, Connector conn, string baseUrlWithoutTailingSlash, string baseDirectory)
+        {
+            try
+            {
+                // Delete the old file
+                if (!Directory.Exists(Core.basePath + "\\Content\\PDF"))
+                    Directory.CreateDirectory(Core.basePath + "\\Content\\PDF");
+                else if (oldFilename.Length > 0)
+                    File.Delete(Core.basePath + "\\Content\\PDF\\" + oldFilename + ".pdf");
+                // Generate new title
+                StringBuilder filenameRaw = new StringBuilder(articleid).Append("_");
+                foreach (char c in title)
+                    // Ensure every char is either - _ [ ] a-z A-Z 0-9
+                    if ((c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122) || c == 95 || c == 45 || c == 91 || c == 93)
+                        filenameRaw.Append(c);
+                    // Replace space with underscroll
+                    else if (c == 32)
+                        filenameRaw.Append("_");
+                string filename = filenameRaw.ToString();
+                // Launch process to generate pdf
+                Process proc = Process.Start(baseDirectory + "\\Bin\\wkhtmltopdf.exe", "--print-media-type --page-size A4 --margin-top 0mm --margin-bottom 0mm --margin-left 0mm --margin-right 0mm \"" + baseUrlWithoutTailingSlash + "/article/" + articleid + "?pdf=1\" \"" + Core.basePath + "\\Content\\PDF\\" + filename + ".pdf\"");
+                proc.WaitForExit(10000); // It shouldn't take more than ten seconds
+                // No issues...update the database
+                conn.Query_Execute("UPDATE articles_thread SET pdf_name='" + Utils.Escape(filename) + "' WHERE threadid='" + Utils.Escape(threadid) + "';");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public static bool pdfRebuild(string pluginid, string articleid, string title, string oldFilename, string threadid, Connector conn, HttpRequest request)
+        {
+            // Build base directory
+            string baseDir = Misc.Plugins.getPluginBasePath(pluginid, conn);
+            // Build base URL
+            string baseUrlWithoutTailingSlash = pdfGetBaseUrl(request);
+            // Call other method
+            return pdfRebuild(articleid, title, oldFilename, threadid, conn, baseUrlWithoutTailingSlash, baseDir);
+        }
+        public static string pdfGetBaseUrl(HttpRequest request)
+        {
+            return request.Url.Scheme + "://" + request.Url.Authority + request.ApplicationPath.TrimEnd('/');
         }
         #endregion
     }
