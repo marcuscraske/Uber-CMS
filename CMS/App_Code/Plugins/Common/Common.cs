@@ -344,7 +344,7 @@ namespace UberCMS.Plugins
             if (formattingText)
             {
                 // New lines
-                BBCode.formatNewline(ref text);
+                BBCode.formatLineBreaks(ref text);
                 // No BB code
                 BBCode.formatNoBBCode(ref text);
                 // Font face
@@ -376,7 +376,7 @@ namespace UberCMS.Plugins
                 // E-mail
                 BBCode.formatEmail(ref text);
                 // Bullet points
-                BBCode.formatBulletPoints(ref text);
+                BBCode.formatLists(ref text);
             }
             if (formattingObjects)
             {
@@ -412,10 +412,16 @@ namespace UberCMS.Plugins
             /// Replaces new-lines with <![CDATA[<br />]]>.
             /// </summary>
             /// <param name="text"></param>
-            public static void formatNewline(ref StringBuilder text)
+            public static void formatLineBreaks(ref StringBuilder text)
             {
+                text.Replace("\r", string.Empty);
+                // Exclude [nobreaks]...[/nobreaks] regions
+                // -- Replace \n with <brnb /> (our own entity we'll replace later with \n again)
+                const string replaceChars = "<brnb />";
+                foreach (Match m in Regex.Matches(text.ToString(), @"\[nobreaks\](.*?)\[\/nobreaks\]", RegexOptions.Singleline))
+                    text.Replace(m.Value, m.Groups[1].Value.Replace("\n", replaceChars));
                 // Removes carriage return (not needed) and replaces >\n ]\n for HTML and BBCode blocks
-                text.Replace("\r", string.Empty).Replace(">\n", ">").Replace("]\n", "]").Replace("\n", "<br />");
+                text.Replace(">\n", ">").Replace("]\n", "]").Replace("\n", "<br />").Replace(replaceChars, "\n");
             }
             /// <summary>
             /// Replaces a section of symbols within text to disallow bbcode formatting.
@@ -649,16 +655,17 @@ namespace UberCMS.Plugins
             /// ]]>
             /// </summary>
             /// <param name="text"></param>
-            public static void formatBulletPoints(ref StringBuilder text)
+            public static void formatLists(ref StringBuilder text)
             {
                 StringBuilder list;
-                foreach (Match m in Regex.Matches(text.ToString(), @"\[list\](.*?)\[\/list\]", RegexOptions.Multiline))
+                foreach (Match m in Regex.Matches(text.ToString(), @"\[(nlist|list)\](.*?)\[\/(\1)\]", RegexOptions.Multiline))
                 {
-                    list = new StringBuilder(m.Groups[1].Value);
+                    list = new StringBuilder(m.Groups[2].Value);
                     foreach (Match m2 in Regex.Matches(list.ToString(), @"\[\*\](.*?)<br />", RegexOptions.Multiline))
                         list.Replace(m2.Value, "<li>" + m2.Groups[1].Value + "</li>");
                     list.Replace("<br />", ""); // Remove any line breaks
-                    text.Replace(m.Value, "<ul class=\"COMMON_BP\">" + list.ToString() + "</ul>");
+                    string tag = m.Groups[1].Value == "nlist" ? "ol" : "ul";
+                    text.Replace(m.Value, "<" + tag + " class=\"COMMON_BP\">" + list.ToString() + "</" + tag + ">");
                 }
             }
             /// <summary>
