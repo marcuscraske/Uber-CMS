@@ -1,0 +1,5 @@
+﻿// Add all of the files within the plugin
+%LOCAL%\*,\
+
+// Add MathJax directory
+%GLOBAL%\Content\MathJax\*,\Content\MathJax

@@ -119,7 +119,7 @@ namespace UberCMS.Plugins
         }
         private static void generateAuthToken(string pluginid, Connector conn)
         {
-            currentToken = Common.Utils.randomText(24);
+            currentToken = Common.CommonUtils.randomText(24);
             // Write the token to file
             try
             {

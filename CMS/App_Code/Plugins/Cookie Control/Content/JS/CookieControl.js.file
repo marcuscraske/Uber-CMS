@@ -18,7 +18,15 @@
         document.cookie = "cookie-control=1; expires=" + expires.toGMTString();
     }
     else
+    {
         document.cookie = "cookie-control=1";
+    }
+    var expires = new Date();
+    if (enabled)
+        expires.setTime(expires.getTime() - 1);
+    else
+        expires.setFullYear(expires.getFullYear() + 1);
+    document.cookie = "cookie-control=1; expires=" + expires.toGMTString();
     document.getElementById("cookie-control-toggle").src = getBaseURL() + "/Content/Images/cookiecontrol/toggle_" + (enabled ? "off" : "on") + ".png";
 
     return false;

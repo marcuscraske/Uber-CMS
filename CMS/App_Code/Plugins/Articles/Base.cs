@@ -159,8 +159,9 @@ namespace UberCMS.Plugins
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_IMAGE_TYPES, "image/gif,image/jpeg,image/png,image/jpg,image/bmp", "The image mime types allowed to be uploaded for images and article thumbnails.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_IMAGES_PER_PAGE, "9", "The number of images displayed per a page in the image store.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_PDF_ENABLED, "1", "Specifies if articles are available as PDF downloads; requires Windows.", false);
-            // Install default provider(s)
-            formattingAdd(conn, pluginid, "UberCMS.Plugins.Common", "format");
+            // Install formatting provider
+            if (!Common.formatProvider_add(conn, pluginid, "UberCMS.Plugins.Articles", "articleFormat", "UberCMS.Plugins.Articles", "articleIncludes"))
+                return "Failed to install format provider!";
             // Reserve URLS
             if ((error = Misc.Plugins.reserveURLs(pluginid, null, new string[] { "home", "article", "articles" }, conn)) != null)
                 return error;
@@ -182,6 +183,9 @@ namespace UberCMS.Plugins
                 return error;
             if ((error = Misc.Plugins.templatesUninstall("articles_pdf", conn)) != null)
                 return error;
+            // Remove provider
+            Common.formatProvider_remove(conn, pluginid);
+
             return null;
         }
         public static string uninstall(string pluginid, Connector conn)
@@ -389,8 +393,10 @@ namespace UberCMS.Plugins
                 ;
             pageElements["TITLE"] = "News";
             // Add includes
+            // -- Article
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
-            Common.formatInsertDependencies(ref pageElements);
+            // -- Format provider
+            Common.formatProvider_formatIncludes(request, response, conn, ref pageElements, true, true);
         }
         public static void pageUnavailableCacheReconstruction(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
         {
@@ -566,7 +572,7 @@ namespace UberCMS.Plugins
                                         conn.Query_Execute("UPDATE articles_thread SET articleid_current='" + Utils.Escape(articleid) + "' WHERE relative_url='" + Utils.Escape(relativeUrl) + "'");
                                 }
                                 // Add/update pdf
-                                pdfRebuild(pluginid, articleid, title, preData != null ? preDataRow["pdf_name"] : string.Empty, threadid, conn, request);
+                                pdfRebuild(pluginid, articleid, title, preData != null ? preDataRow["pdf_name"] : string.Empty, threadid, request);
                                 // Add the new tags and delete any tags not used by any other articles, as well as cleanup unused thumbnails
                                 StringBuilder finalQuery = new StringBuilder();
                                 if (parsedTags.tags.Count > 0)
@@ -639,6 +645,8 @@ namespace UberCMS.Plugins
             Misc.Plugins.addHeaderJS(pageElements["URL"] + "/Content/JS/Article.js", ref pageElements);
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Common.css", ref pageElements);
+            // Add includes
+            Common.formatProvider_formatIncludes(request, response, conn, ref pageElements, true, true);
             pageElements["TITLE"] = "Articles - Editor";
         }
         public static byte[] pageArticle_Thumbnail_Unknown = null;
@@ -695,7 +703,7 @@ namespace UberCMS.Plugins
                 else
                 {
                     StringBuilder formattedData = new StringBuilder(allowHtml ? data : HttpUtility.HtmlEncode(data));
-                    articleFormat(conn, ref formattedData, ref pageElements, true, true);
+                    Common.formatProvider_format(ref formattedData, request, response, conn, ref pageElements, true, true);
                     response.Write(formattedData.ToString());
                 }
             }
@@ -1421,7 +1429,7 @@ namespace UberCMS.Plugins
                     articleDataRow = articleData[0];
                     // Update the cached text
                     text = new StringBuilder(articleDataRow["body"]);
-                    articleFormat(conn, ref text, ref pe, true, true);
+                    Common.formatProvider_format(ref text, null, null, conn, ref pe, true, true);
                     // Add to buffer
                     articlesUpdateBuffer.Append("UPDATE articles SET body_cached='" + Utils.Escape(text.ToString()) + "' WHERE articleid='" + Utils.Escape(articleDataRow["articleid"]) + "';");
                     articlesUpdateBufferCount++;
@@ -1446,7 +1454,7 @@ namespace UberCMS.Plugins
                     if (articleData.Rows.Count == 1)
                     {
                         articleDataRow = articleData[0];
-                        pdfRebuild(articleDataRow["articleid"], articleDataRow["title"], articleDataRow["pdf_name"], articleDataRow["threadid"], conn, baseUrl, baseFolder);
+                        pdfRebuild(articleDataRow["articleid"], articleDataRow["title"], articleDataRow["pdf_name"], articleDataRow["threadid"], baseUrl, baseFolder);
                     }
                 }
             }
@@ -1589,7 +1597,7 @@ namespace UberCMS.Plugins
                 else
                     subpageContent.Append(article["body_cached"]);
                 // Insert article dependencies
-                Common.formatInsertDependencies(ref pageElements);
+                Common.formatProvider_formatIncludes(request, response, conn, ref pageElements, true, true);
                 // Generate tags
                 StringBuilder tags = new StringBuilder();
                 StringBuilder metaTags = new StringBuilder("<meta name=\"keywords\" content=\"");
@@ -1629,7 +1637,7 @@ namespace UberCMS.Plugins
             bool pdf = request.QueryString["pdf"] != null;
 
             // Set flag for showing pane - this can be overriden if a querystring force_pane is specified
-            if (!pdf && (article["show_pane"].Equals("1") || !published || request.QueryString["force_pane"] != null || subpage))
+            if (article["show_pane"].Equals("1") || !published || request.QueryString["force_pane"] != null || subpage)
                 pageElements.setFlag("ARTICLE_SHOW_PANE");
 
             // Set published flag
@@ -1652,9 +1660,12 @@ namespace UberCMS.Plugins
             }
 
             // Set permission flags
-            if (permCreate) pageElements.setFlag("ARTICLE_PERM_CREATE");
-            if (permDelete) pageElements.setFlag("ARTICLE_PERM_DELETE");
-            if (permPublish) pageElements.setFlag("ARTICLE_PERM_PUBLISH");
+            if (permCreate)
+                pageElements.setFlag("ARTICLE_PERM_CREATE");
+            if (permDelete)
+                pageElements.setFlag("ARTICLE_PERM_DELETE");
+            if (permPublish)
+                pageElements.setFlag("ARTICLE_PERM_PUBLISH");
 
             pageElements["TITLE"] = HttpUtility.HtmlEncode(article["title"]);
             pageElements["CONTENT"] = content.ToString();
@@ -1875,7 +1886,7 @@ namespace UberCMS.Plugins
             conn.Query_Execute("UPDATE articles SET body_cached='" + Utils.Escape(cached.ToString()) + "' WHERE articleid='" + Utils.Escape(article["articleid"]) + "';" + insertEvent(RecentChanges_EventType.RebuiltArticleCache, HttpContext.Current.User.Identity.Name, article["articleid"], article["threadid"]));
             conn.Disconnect();
             // Rebuild article pdf
-            pdfRebuild(pluginid, article["articleid"], article["title"], article["pdf_name"], article["threadid"], conn, request);
+            pdfRebuild(pluginid, article["articleid"], article["title"], article["pdf_name"], article["threadid"], request);
             // Redirect back to the article
             response.Redirect(pageElements["URL"] + "/article/" + article["articleid"], true);
         }
@@ -1883,7 +1894,7 @@ namespace UberCMS.Plugins
         {
             if (!allowHTML)
                 text.Replace("<", "&lt;").Replace(">", "&gt;");
-            articleFormat(conn, ref text, ref pageElements, true, true);
+            Common.formatProvider_format(ref text, null, null, conn, ref pageElements, true, true);
         }
         #endregion
 
@@ -2041,59 +2052,20 @@ namespace UberCMS.Plugins
 
         #region "Methods - Formatting"
         /// <summary>
-        /// Adds a formatting provider for rendering the article's text.
+        /// The format provider used to apply article-related markup to text.
         /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="pluginid"></param>
-        /// <param name="classpath"></param>
-        /// <param name="method"></param>
-        public static void formattingAdd(Connector conn, string pluginid, string classpath, string method)
+        public static void articleFormat(ref StringBuilder text, HttpRequest request, HttpResponse response, Connector conn, ref Misc.PageElements pageElements, bool formattingText, bool formattingObjects, int currentTree)
         {
-            try
+            if (formattingObjects)
             {
-                conn.Query_Execute("INSERT INTO articles_format_providers (classpath, method, pluginid) VALUES('" + Utils.Escape(classpath) + "', '" + Utils.Escape(method) + "', '" + Utils.Escape(pluginid) + "')");
+                formatImage(ref text, ref pageElements);
+                formatTemplate(ref text, request, response, conn, ref pageElements, formattingText, formattingObjects, currentTree);
             }
-            catch { }
         }
-        /// <summary>
-        /// Removes a formatting provider based on classpath and method.
-        /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="classpath"></param>
-        /// <param name="method"></param>
-        public static void formattingRemove(Connector conn, string classpath, string method)
+        public static void articleIncludes(HttpRequest request, HttpResponse response, Connector connector, ref Misc.PageElements pageElements, bool formattingText, bool formattingObjects)
         {
-            conn.Query_Execute("DELETE FROM articles_format_providers WHERE classpath='" + Utils.Escape(classpath) + "' AND method='" + Utils.Escape(method) + "'");
-        }
-        /// <summary>
-        /// Removes a formatting provider based on pluginid.
-        /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="pluginid"></param>
-        public static void formattingRemove(Connector conn, string pluginid)
-        {
-            conn.Query_Execute("DELETE FROM articles_format_providers WHERE pluginid='" + Utils.Escape(pluginid) + "'");
-        }
-        /// <summary>
-        /// Used to format articles
-        /// </summary>
-        /// <param name="originalText"></param>
-        /// <param name="pageElements"></param>
-        /// <param name="textFormatting"></param>
-        /// <param name="objectFormatting"></param>
-        public static void articleFormat(Connector conn, ref StringBuilder originalText, ref Misc.PageElements pageElements, bool textFormatting, bool objectFormatting)
-        {
-            articleFormatProvider(conn, ref originalText, ref pageElements, textFormatting, objectFormatting, 0);
-        }
-        private static void articleFormatProvider(Connector conn, ref StringBuilder originalText, ref Misc.PageElements pageElements, bool textFormatting, bool objectFormatting, int currTree)
-        {
-            if ((++currTree) > 5) return; // We've reached the maximum of five recursions, time to return home
-            // Invoke other providers
-            foreach (ResultRow formatProvider in conn.Query_Read("SELECT classpath, method FROM articles_format_providers ORDER BY method ASC"))
-                Misc.Plugins.invokeMethod(formatProvider["classpath"], formatProvider["method"], new object[] { conn, originalText, pageElements, true, true });
-            // Invoke local providers
-            formatImage(ref originalText, ref pageElements);
-            formatTemplate(conn, ref originalText, ref pageElements, currTree);
+            if (request.QueryString["page"] != "articles" && request.QueryString["page"] != "article")
+                Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
         }
         /// <summary>
         /// Includes an image from the image-store.
@@ -2128,8 +2100,9 @@ namespace UberCMS.Plugins
         /// <param name="text"></param>
         /// <param name="pageElements"></param>
         /// <param name="currTree"></param>
-        public static void formatTemplate(Connector conn, ref StringBuilder text, ref Misc.PageElements pageElements, int currTree)
+        public static void formatTemplate(ref StringBuilder text, HttpRequest request, HttpResponse response, Connector conn, ref Misc.PageElements pageElements, bool formattingText, bool formattingObjects, int currentTree)
         {
+            if (currentTree > Common.SETTINGS_FP_RECURSIONS) return;
             Result data;
             StringBuilder body;
             string[] param;
@@ -2150,14 +2123,14 @@ namespace UberCMS.Plugins
                         for (int i = 1; i < param.Length; i++)
                         {
                             innerParamIndex = param[i].IndexOf('=');
-                            if(innerParamIndex == -1 || innerParamIndex == param[i].Length - 1)
+                            if (innerParamIndex == -1 || innerParamIndex == param[i].Length - 1)
                                 body.Replace("{{" + i + "}}", param[i]); // Replace argument number e.g. {1} with this value - not key/pair
                             else
                                 body.Replace("{{" + param[i].Substring(0, innerParamIndex).Replace("<br />", string.Empty) + "}}", param[i].Substring(innerParamIndex + 1));
                         }
                     }
                     // Format template
-                    articleFormatProvider(conn, ref body, ref pageElements, true, true, currTree);
+                    formatTemplate(ref text, request, response, conn, ref pageElements, formattingText, formattingObjects, ++currentTree);
                     text.Replace(m.Value, body.ToString());
                 }
             }
@@ -2165,7 +2138,7 @@ namespace UberCMS.Plugins
         #endregion
 
         #region "Methods - Article PDF"
-        public static bool pdfRebuild(string articleid, string title, string oldFilename, string threadid, Connector conn, string baseUrlWithoutTailingSlash, string baseDirectory)
+        private static void pdfRebuildThread(string articleid, string title, string oldFilename, string threadid, string baseUrlWithoutTailingSlash, string baseDirectory)
         {
             try
             {
@@ -2185,25 +2158,30 @@ namespace UberCMS.Plugins
                         filenameRaw.Append("_");
                 string filename = filenameRaw.ToString();
                 // Launch process to generate pdf
-                Process proc = Process.Start(baseDirectory + "\\Bin\\wkhtmltopdf.exe", "--print-media-type --page-size A4 --margin-top 0mm --margin-bottom 0mm --margin-left 0mm --margin-right 0mm \"" + baseUrlWithoutTailingSlash + "/article/" + articleid + "?pdf=1\" \"" + Core.basePath + "\\Content\\PDF\\" + filename + ".pdf\"");
-                proc.WaitForExit(10000); // It shouldn't take more than ten seconds
+                Process proc = Process.Start(baseDirectory + "\\Bin\\wkhtmltopdf.exe", "--javascript-delay 10000 --print-media-type --page-size A4 --margin-top 0mm --margin-bottom 0mm --margin-left 0mm --margin-right 0mm \"" + baseUrlWithoutTailingSlash + "/article/" + articleid + "?pdf=1\" \"" + Core.basePath + "\\Content\\PDF\\" + filename + ".pdf\"");
+                proc.WaitForExit(20000); // It shouldn't take more than twenty seconds
                 // No issues...update the database
-                conn.Query_Execute("UPDATE articles_thread SET pdf_name='" + Utils.Escape(filename) + "' WHERE threadid='" + Utils.Escape(threadid) + "';");
-                return true;
+                Core.globalConnector.Query_Execute("UPDATE articles_thread SET pdf_name='" + Utils.Escape(filename) + "' WHERE threadid='" + Utils.Escape(threadid) + "';");
             }
-            catch
-            {
-                return false;
-            }
+            catch {}
         }
-        public static bool pdfRebuild(string pluginid, string articleid, string title, string oldFilename, string threadid, Connector conn, HttpRequest request)
+        public static void pdfRebuild(string articleid, string title, string oldFilename, string threadid, string baseUrlWithoutTailingSlash, string baseDirectory)
+        {
+            Thread th = new Thread(
+                delegate()
+                {
+                    pdfRebuildThread(articleid, title, oldFilename, threadid, baseUrlWithoutTailingSlash, baseDirectory);
+                });
+            th.Start();
+        }
+        public static void pdfRebuild(string pluginid, string articleid, string title, string oldFilename, string threadid, HttpRequest request)
         {
             // Build base directory
-            string baseDir = Misc.Plugins.getPluginBasePath(pluginid, conn);
+            string baseDir = Misc.Plugins.getPluginBasePath(pluginid, Core.globalConnector);
             // Build base URL
             string baseUrlWithoutTailingSlash = pdfGetBaseUrl(request);
             // Call other method
-            return pdfRebuild(articleid, title, oldFilename, threadid, conn, baseUrlWithoutTailingSlash, baseDir);
+            pdfRebuild(articleid, title, oldFilename, threadid, baseUrlWithoutTailingSlash, baseDir);
         }
         public static string pdfGetBaseUrl(HttpRequest request)
         {

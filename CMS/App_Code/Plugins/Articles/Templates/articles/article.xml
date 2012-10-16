@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article]]></hkey><description><![CDATA[The base page for an article.]]></description><html><![CDATA[<div class="ARTICLE">
-<!--IF:ARTICLE_SHOW_PANE-->
+<!--IF:ARTICLE_SHOW_PANE&!ARTICLE_PDF_MODE-->
 	<div class="PANE">
 		<div class="BUTTONS">
 			<a class="BUTT" href="<!--URL-->/Content/PDF/%PDF_NAME%.pdf">
@@ -66,13 +66,15 @@
 		</div>
 		<div class="clear"></div>
 	</div>
-<!--ENDIF-->
-<!--IF:!ARTICLE_PDF_MODE-->
-  <!--IF:ARTICLE_PERM_CREATE|ARTICLE_PERM_DELETE|ARTICLE_PERM_PUBLISH-->
-	<a href="<!--URL-->/article/%ARTICLEID%?force_pane=1" class="BUTTON FR">Show Panel</a>
+<!--ENDIF:ARTICLE_SHOW_PANE&!ARTICLE_PDF_MODE-->
+
+<!--IF:!ARTICLE_SHOW_PANE&!ARTICLE_PDF_MODE-->
+	<a href="<!--URL-->/article/%ARTICLEID%?force_pane=1" class="SHOW_PANE">
+		<img src="<!--URL-->/Content/Images/articles/show_panel.png" alt="Show Panel" />Show Panel
+	</a>
 	<div class="clear"></div>
-  <!--ENDIF:ARTICLE_PERM_CREATE|ARTICLE_PERM_DELETE|ARTICLE_PERM_PUBLISH-->
 <!--ENDIF-->
+
 	<div class="BODY">
 <!--IF:!ARTICLE_PUBLISHED-->
 		<div class="UNPUBLISHED">

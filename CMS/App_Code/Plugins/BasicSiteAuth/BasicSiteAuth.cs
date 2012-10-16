@@ -304,7 +304,8 @@ namespace UberCMS.Plugins
                             res = conn.Query_Read("SELECT userid FROM bsa_users WHERE username LIKE '" + username.Replace("%", "") + "'");
                             conn.Query_Execute("INSERT INTO bsa_failed_logins (ip, attempted_username, datetime) VALUES('" + Utils.Escape(request.UserHostAddress) + "', '" + Utils.Escape(username) + "', NOW());");
                             // Log event
-                            logEvent(res[0]["userid"], LogEvents.Login_Incorrect, request.UserHostAddress + " - " + request.UserAgent, conn);
+                            if(res.Rows.Count == 1)
+                                logEvent(res[0]["userid"], LogEvents.Login_Incorrect, request.UserHostAddress + " - " + request.UserAgent, conn);
                             // Inform the user
                             error = incorrectUserPassword;
                         }
@@ -490,7 +491,7 @@ namespace UberCMS.Plugins
                                 if (activation)
                                 {
                                     // Generate activation key
-                                    string activationKey = Common.Utils.randomText(16);
+                                    string activationKey = Common.CommonUtils.randomText(16);
                                     conn.Query_Execute("INSERT INTO bsa_activations (userid, code) VALUES('" + userid + "', '" + Utils.Escape(activationKey) + "');");
                                     // Generate message
                                     string baseURL = "http://" + request.Url.Host + (request.Url.Port != 80 ? ":" + request.Url.Port : string.Empty);
@@ -770,7 +771,7 @@ namespace UberCMS.Plugins
                             int attempts = 0;
                             while (attempts < 5)
                             {
-                                code = Common.Utils.randomText(16);
+                                code = Common.CommonUtils.randomText(16);
                                 if (conn.Query_Count("SELECT COUNT('') FROM bsa_recovery_email WHERE code LIKE '" + Utils.Escape(code) + "'") == 0)
                                     break;
                                 else
@@ -1096,8 +1097,8 @@ namespace UberCMS.Plugins
             else
             {
                 // Salts do not exist - create them
-                salt1 = Common.Utils.randomText(16);
-                salt2 = Common.Utils.randomText(16);
+                salt1 = Common.CommonUtils.randomText(16);
+                salt2 = Common.CommonUtils.randomText(16);
                 StringBuilder saltsConfig = new StringBuilder();
                 XmlWriter writer = XmlWriter.Create(saltsConfig);
                 writer.WriteStartDocument();

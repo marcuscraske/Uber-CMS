@@ -248,3 +248,12 @@ VALUES
 ('zm', 'Zambia'),
 ('zw', 'Zimbabwe')
 ;
+CREATE TABLE IF NOT EXISTS common_format_providers
+(
+	pluginid INT,
+	FOREIGN KEY(`pluginid`) REFERENCES `plugins`(`pluginid`) ON UPDATE CASCADE ON DELETE CASCADE,
+	format_classpath VARCHAR(40) NOT NULL,
+	format_method VARCHAR(40) NOT NULL,
+	includes_classpath VARCHAR(40) NOT NULL,
+	includes_method VARCHAR(40) NOT NULL
+);

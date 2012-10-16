@@ -90,6 +90,28 @@
     margin: 0.25em;
     color: inherit;
 }
+.ARTICLE .SHOW_PANE
+{
+    float: right;
+    margin: 0em 0em 0.5em 0.5em;
+    line-height: 1.5em;
+    text-decoration: none;
+    background: #CCC;
+    color: #333;
+    padding: 0.25em 0.5em;
+    border-radius: 0.5em;
+    font-size: 0.8em;
+}
+.ARTICLE .SHOW_PANE:hover, .ARTICLE .SHOW_PANE:focus
+{
+    background: #333;
+    color: #FFF;
+}
+.ARTICLE .SHOW_PANE img
+{
+    border: 0em;
+    vertical-align: middle;
+}
 /* Article footer - published */
 .ARTICLE .PUBLISHED
 {

@@ -93,8 +93,8 @@ namespace UberCMS.Misc
             bool containsFlag;
             foreach (Match m in Regex.Matches(text.ToString(), @"<!--IF:([a-zA-Z0-9!_\|\&]*)-->(.*?)<!--ENDIF(:\1)?-->", RegexOptions.Singleline))
             {
-                expression = m.Groups[1].Value.StartsWith("!") && m.Groups[1].Value.Length > 1 ? m.Groups[1].Value.Substring(1) : m.Groups[1].Value;
-                expressionValueNegated = m.Groups[1].Value.StartsWith("!");
+                expression = m.Groups[1].Value;
+                expressionValueNegated = expression.StartsWith("!");
                 if (expression.Contains("|"))
                 {
                     foundFlag = false;
@@ -120,7 +120,7 @@ namespace UberCMS.Misc
                     foreach (string s in expression.Split('&'))
                     {
                         expressionValueNegated = s.StartsWith("!");
-                        if((expressionValueNegated && s.Length > 1) || (!expressionValueNegated && s.Length > 0))
+                        if ((expressionValueNegated && s.Length > 1) || (!expressionValueNegated && s.Length > 0))
                         {
                             containsFlag = flags.Contains(expressionValueNegated ? s.Substring(1) : s);
                             if (!(expressionValueNegated ? !containsFlag : containsFlag))
@@ -132,9 +132,11 @@ namespace UberCMS.Misc
                     }
                     expressionValue = foundFlag;
                 }
-                else
+                else if((!expression.StartsWith("!") && expression.Length > 0) || expression.Length > 1)
                     // Expression contains no other operators
-                    expressionValue = expressionValueNegated ? !flags.Contains(expression) : flags.Contains(expression);
+                    expressionValue = expressionValueNegated ? !flags.Contains(expression.Substring(1)) : flags.Contains(expression);
+                else
+                    expressionValue = false;
 
                 elseMC = Regex.Matches(m.Groups[2].Value, @"(.*?)<!--ELSE-->(.*$?)", RegexOptions.Singleline);
                 if (elseMC.Count == 1)

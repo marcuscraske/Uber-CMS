@@ -99,11 +99,3 @@ CREATE TABLE IF NOT EXISTS articles_images_links
 	FOREIGN KEY(`imageid`) REFERENCES `articles_images`(`imageid`) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(articleid, imageid)
 );
-CREATE TABLE IF NOT EXISTS articles_format_providers
-(
-	classpath VARCHAR(30) NOT NULL,
-	method VARCHAR(30) NOT NULL,
-	pluginid INT,
-	FOREIGN KEY(`pluginid`) REFERENCES `plugins`(`pluginid`) ON UPDATE CASCADE ON DELETE CASCADE,
-	UNIQUE INDEX(classpath, method)
-);

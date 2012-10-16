@@ -300,7 +300,7 @@ namespace UberCMS.Plugins
             if(nutshell.Length == 0)
                 nutshell.Append("User has not specified a nutshell.");
             else
-                Common.format(conn, ref nutshell, ref pageElements, true, true);
+                Common.formatProvider_format(ref nutshell, request, response, conn, ref pageElements, true, true);
             // Set content
             pageElements["PROFILE_CONTENT"] = Core.templates["bsa_profiles"]["profile_about"]
                 .Replace("<NUTSHELL>", nutshell.ToString())

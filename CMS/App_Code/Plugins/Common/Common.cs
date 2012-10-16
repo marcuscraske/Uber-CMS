@@ -45,6 +45,9 @@ namespace UberCMS.Plugins
             // Install pages
             if ((error = Misc.Plugins.reserveURLs(pluginid, null, new string[] { "captcha" }, conn)) != null)
                 return error;
+            // Enable formatting provider
+            if (!formatProvider_add(conn, pluginid, "UberCMS.Plugins.Common", "format", "UberCMS.Plugins.Common", "formatIncludes"))
+                return "Failed to add format provider!";
 
             return null;
         }
@@ -58,6 +61,8 @@ namespace UberCMS.Plugins
             // Uninstall pages
             if ((error = Misc.Plugins.unreserveURLs(pluginid, conn)) != null)
                 return error;
+            // Uninstall formatting provider
+            formatProvider_remove(conn, pluginid);
 
             return null;
         }
@@ -83,6 +88,11 @@ namespace UberCMS.Plugins
                     break;
             }
         }
+        public static string cmsStart(string pluginid, Connector conn)
+        {
+            formatProvider_loadCache();
+            return null;
+        }
         #endregion
 
         #region "Methods - Pages"
@@ -99,7 +109,7 @@ namespace UberCMS.Plugins
             // Set the content-type to an image
             response.ContentType = "image/png";
             // Generate random string and store as a session variable
-            string text = Common.Utils.randomText(6);
+            string text = Common.CommonUtils.randomText(6);
             // Draw text on a random banner
             int width = 160;
             int height = 70;
@@ -257,7 +267,7 @@ namespace UberCMS.Plugins
         #endregion
 
         #region "Class - Utils"
-        public static class Utils
+        public static class CommonUtils
         {
             private static Random rand = null;
             /// <summary>
@@ -282,34 +292,38 @@ namespace UberCMS.Plugins
         /// <summary>
         /// This is required to insert the required dependencies for formatted pages; this is only needed for e.g. cached or preview documents.
         /// </summary>
-        public static void formatInsertDependencies(ref Misc.PageElements pageElements)
+        public static void formatIncludes(HttpRequest request, HttpResponse response, Connector connector, ref Misc.PageElements pageElements, bool formattingText, bool formattingObjects)
         {
-            Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common.css", ref pageElements);
-            // Code syntax highlighter: base
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shCore.js", ref pageElements);
-            Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common/shCore.css", ref pageElements);
-            Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common/shThemeDefault.css", ref pageElements);
-            // Code syntax highlighter: languages - admittedly this is heavy...
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushAS3.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushBash.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushColdFusion.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCpp.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCSharp.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCss.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushDelphi.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushJava.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushJScript.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPerl.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPhp.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPowerShell.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPython.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushRuby.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushScala.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushSql.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushVb.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushXml.js", ref pageElements);
-            Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPlain.js", ref pageElements);
-            pageElements.appendToKey("BODY_FOOTER", "<script type=\"text/javascript\">SyntaxHighlighter.all()</script>");
+            if(formattingText || formattingObjects)
+                Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common.css", ref pageElements);
+            if (formattingObjects)
+            {
+                // Code syntax highlighter: base
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shCore.js", ref pageElements);
+                Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common/shCore.css", ref pageElements);
+                Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common/shThemeDefault.css", ref pageElements);
+                // Code syntax highlighter: languages - admittedly this is heavy...
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushAS3.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushBash.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushColdFusion.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCpp.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCSharp.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushCss.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushDelphi.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushJava.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushJScript.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPerl.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPhp.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPowerShell.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPython.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushRuby.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushScala.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushSql.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushVb.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushXml.js", ref pageElements);
+                Misc.Plugins.addHeaderJsOnce(pageElements["URL"] + "/Content/JS/Common/shBrushPlain.js", ref pageElements);
+                pageElements.appendToKey("BODY_FOOTER", "<script type=\"text/javascript\">SyntaxHighlighter.all()</script>");
+            }
         }
         /// <summary>
         /// Formats BB Code within text (http://en.wikipedia.org/wiki/BBCode); supported tags:
@@ -321,75 +335,75 @@ namespace UberCMS.Plugins
         /// <param name="originalText"></param>
         /// <param name="textFormatting"></param>
         /// <param name="objectFormatting"></param>
-        public static void format(Connector conn, ref StringBuilder originalText, ref Misc.PageElements pageElements, bool textFormatting, bool objectFormatting)
+        public static void format(ref StringBuilder text, HttpRequest request, HttpResponse response, Connector conn, Misc.PageElements pageElements, bool formattingText, bool formattingObjects, int currentTree)
         {
             // Attach styling file if at least one bool is true
-            if (textFormatting || objectFormatting)
+            if (formattingText || formattingObjects)
                 Misc.Plugins.addHeaderCssOnce(pageElements["URL"] + "/Content/CSS/Common.css", ref pageElements);
             // Begin formatting
-            if (textFormatting)
+            if (formattingText)
             {
                 // New lines
-                BBCode.formatNewline(ref originalText);
+                BBCode.formatNewline(ref text);
                 // No BB code
-                BBCode.formatNoBBCode(ref originalText);
+                BBCode.formatNoBBCode(ref text);
                 // Font face
-                BBCode.formatFontFace(ref originalText);
+                BBCode.formatFontFace(ref text);
                 // Font size
-                BBCode.formatFontSize(ref originalText);
+                BBCode.formatFontSize(ref text);
                 // Highlighting
-                BBCode.formatHighlighting(ref originalText);
+                BBCode.formatHighlighting(ref text);
                 // Text colour
-                BBCode.formatTextColour(ref originalText);
+                BBCode.formatTextColour(ref text);
                 // Bold
-                BBCode.formatTextBold(ref originalText);
+                BBCode.formatTextBold(ref text);
                 // Italics
-                BBCode.formatTextItalics(ref originalText);
+                BBCode.formatTextItalics(ref text);
                 // Underlined
-                BBCode.formatTextUnderlined(ref originalText);
+                BBCode.formatTextUnderlined(ref text);
                 // Strike-through
-                BBCode.formatTextStrikeThrough(ref originalText);
+                BBCode.formatTextStrikeThrough(ref text);
                 // Shadows
-                BBCode.formatTextShadow(ref originalText);
+                BBCode.formatTextShadow(ref text);
                 // Text align left
-                BBCode.formatTextAlignLeft(ref originalText);
+                BBCode.formatTextAlignLeft(ref text);
                 // Text align center
-                BBCode.formatTextAlignCenter(ref originalText);
+                BBCode.formatTextAlignCenter(ref text);
                 // Text align right
-                BBCode.formatTextAlignRight(ref originalText);
+                BBCode.formatTextAlignRight(ref text);
                 // URL
-                BBCode.formatUrl(ref originalText);
+                BBCode.formatUrl(ref text);
                 // E-mail
-                BBCode.formatEmail(ref originalText);
+                BBCode.formatEmail(ref text);
                 // Bullet points
-                BBCode.formatBulletPoints(ref originalText);
+                BBCode.formatBulletPoints(ref text);
             }
-            if (objectFormatting)
+            if (formattingObjects)
             {
                 // Float left
-                BBCode.formatFloatLeft(ref originalText);
+                BBCode.formatFloatLeft(ref text);
                 // Float right
-                BBCode.formatFloatRight(ref originalText);
+                BBCode.formatFloatRight(ref text);
                 // Clear
-                BBCode.formatClear(ref originalText);
+                BBCode.formatClear(ref text);
                 // Padding
-                BBCode.formatPadding(ref originalText);
+                BBCode.formatPadding(ref text);
                 // Block quote
-                BBCode.formatBlockQuote(ref originalText);
+                BBCode.formatBlockQuote(ref text);
                 // Image
-                BBCode.formatImage(ref originalText);
+                BBCode.formatImage(ref text);
                 // YouTube
-                BBCode.formatYouTube(ref originalText);
+                BBCode.formatYouTube(ref text);
                 // Table
-                BBCode.formatTable(ref originalText);
+                BBCode.formatTable(ref text);
                 // HTML5 Audio
-                BBCode.formatHtml5Audio(ref originalText);
+                BBCode.formatHtml5Audio(ref text);
                 // HTML5 Video
-                BBCode.formatHtml5Video(ref originalText);
+                BBCode.formatHtml5Video(ref text);
                 // Pastebin
-                BBCode.formatPastebin(ref originalText);
+                BBCode.formatPastebin(ref text);
                 // Code
-                BBCode.formatCode(ref originalText, ref pageElements);
+                BBCode.formatCode(ref text, ref pageElements);
             }
         }
         public static class BBCode
@@ -934,7 +948,7 @@ namespace UberCMS.Plugins
             /// <returns></returns>
             public static string getFormToken()
             {
-                string token = Utils.randomText(32);
+                string token = CommonUtils.randomText(32);
                 HttpContext.Current.Session[ANTI_CSRF_KEY] = token;
                 return token;
             }
@@ -945,7 +959,7 @@ namespace UberCMS.Plugins
             /// <param name="response"></param>
             public static void setCookieToken(HttpResponse response)
             {
-                string token = Utils.randomText(32);
+                string token = CommonUtils.randomText(32);
                 HttpContext.Current.Session[ANTI_CSRF_KEY] = token;
                 HttpCookie cookie = new HttpCookie(ANTI_CSRF_KEY, token);
                 cookie.Expires = DateTime.Now.AddMinutes(10);
@@ -981,6 +995,136 @@ namespace UberCMS.Plugins
                     return (string)HttpContext.Current.Session[ANTI_CSRF_KEY] == cookie.Value;
                 }
             }
+        }
+        #endregion
+
+        #region "Methods - Format Provider"
+        // Constants - format provider data lengths
+        public const int SETTINGS_FP_CLASSPATH_MIN = 1;
+        public const int SETTINGS_FP_CLASSPATH_MAX = 40;
+        public const int SETTINGS_FP_METHOD_MIN = 1;
+        public const int SETTINGS_FP_METHOD_MAX = 40;
+        public const int SETTINGS_FP_RECURSIONS = 5;
+
+        struct FormatProvider
+        {
+            int pluginid;
+            string formatClassPath, formatMethod, includesClassPath, includesMethod;
+            public FormatProvider(int pluginid, string formatClassPath, string formatMethod, string includesClassPath, string includesMethod)
+            {
+                this.pluginid = pluginid;
+                this.formatClassPath = formatClassPath;
+                this.formatMethod = formatMethod;
+                this.includesClassPath = includesClassPath;
+                this.includesMethod = includesMethod;
+            }
+            public int Pluginid
+            {
+                get
+                {
+                    return pluginid;
+                }
+            }
+            public string FormatClassPath
+            {
+                get
+                {
+                    return formatClassPath;
+                }
+            }
+            public string FormatMethod
+            {
+                get
+                {
+                    return formatMethod;
+                }
+            }
+            public string IncludesClassPath
+            {
+                get
+                {
+                    return includesClassPath;
+                }
+            }
+            public string IncludesMethod
+            {
+                get
+                {
+                    return includesMethod;
+                }
+            }
+        }
+        /// <summary>
+        /// Creates a cached table of providers, speeding-up the format-provider service and taking load off the database.
+        /// </summary>
+        private static List<FormatProvider> providersCache = new List<FormatProvider>();
+        /// <summary>
+        /// Reloads the providersCache variable / providers cached table.
+        /// </summary>
+        private static void formatProvider_loadCache()
+        {
+            lock (providersCache)
+            {
+                providersCache.Clear();
+                foreach (ResultRow provider in Core.globalConnector.Query_Read("SELECT * FROM common_format_providers"))
+                    providersCache.Add(new FormatProvider(int.Parse(provider["pluginid"]), provider["format_classpath"], provider["format_method"], provider["includes_classpath"], provider["includes_method"]));
+            }
+        }
+        /// <summary>
+        /// Adds the required includes, such as style-sheets and scripts, for a formatted page.
+        /// </summary>
+        /// <param name="request">This parameter can be null.</param>
+        /// <param name="response">This parameter can be null.</param>
+        public static void formatProvider_formatIncludes(HttpRequest request, HttpResponse response, Connector connector, ref Misc.PageElements pageElements, bool formattingText, bool formattingObjects)
+        {
+            foreach(FormatProvider provider in providersCache)
+                if(provider.IncludesClassPath.Length > 0 && provider.IncludesMethod.Length > 0)
+                    Misc.Plugins.invokeMethod(provider.IncludesClassPath, provider.IncludesMethod, new object[] { request, response, connector, pageElements, formattingText, formattingObjects });
+        }
+        /// <summary>
+        /// Formats a piece of text using the format providers; the specified parameter "text" will be directly modified.
+        /// </summary>
+        public static void formatProvider_format(ref StringBuilder text, HttpRequest request, HttpResponse response, Connector connector, ref Misc.PageElements pageElements, bool formattingText, bool formattingObjects)
+        {
+            formatProvider_format(ref text, request, response, connector, ref pageElements, formattingText, formattingObjects, 0);
+        }
+        private static void formatProvider_format(ref StringBuilder text, HttpRequest request, HttpResponse response, Connector connector, ref Misc.PageElements pageElements, bool formattingText, bool formattingObjects, int currentTree)
+        {
+            // Check if we've reached the maximum recursions
+            if (++currentTree > SETTINGS_FP_RECURSIONS) return;
+            // Invoke each provider to format the text
+            foreach (FormatProvider provider in providersCache)
+                if(provider.FormatClassPath.Length > 0 && provider.FormatMethod.Length > 0)
+                    Misc.Plugins.invokeMethod(provider.FormatClassPath, provider.FormatMethod, new object[] { text, request, response, connector, pageElements, formattingText, formattingObjects, currentTree } );
+        }
+        /// <summary>
+        /// Adds a format provider.
+        /// </summary>
+        /// <returns>Indicates if the provider was added successfully.</returns>
+        public static bool formatProvider_add(Connector conn, string pluginid, string formatClasspath, string formatMethod, string includesClasspath, string includesMethod)
+        {
+            if (formatClasspath.Length == 0 && includesClasspath.Length == 0) // Could be improved, but this is just basic protection against programmatic errors
+                return false;
+            else if(formatClasspath.Length != 0 && (formatClasspath.Length < SETTINGS_FP_CLASSPATH_MIN || formatClasspath.Length > SETTINGS_FP_CLASSPATH_MAX))
+                return false;
+            else if(formatMethod.Length != 0 && (formatMethod.Length < SETTINGS_FP_METHOD_MIN || formatMethod.Length > SETTINGS_FP_METHOD_MAX))
+                return false;
+            else if(includesClasspath.Length != 0 && (includesClasspath.Length < SETTINGS_FP_CLASSPATH_MIN || includesClasspath.Length > SETTINGS_FP_CLASSPATH_MAX))
+                return false;
+            else if(includesMethod.Length != 0 && (includesMethod.Length < SETTINGS_FP_METHOD_MIN || includesMethod.Length > SETTINGS_FP_METHOD_MAX))
+                return false;
+            else
+            {
+                conn.Query_Execute("INSERT INTO common_format_providers (pluginid, format_classpath, format_method, includes_classpath, includes_method) VALUES('" + Utils.Escape(pluginid) + "', '" + Utils.Escape(formatClasspath) + "', '" + Utils.Escape(formatMethod) + "', '" + Utils.Escape(includesClasspath) + "', '" + Utils.Escape(includesMethod) + "');");
+                return true;
+            }
+        }
+        /// <summary>
+        /// Removes all the formatting providers associated with a pluginid.
+        /// </summary>
+        public static void formatProvider_remove(Connector conn, string pluginid)
+        {
+            conn.Query_Execute("DELETE FROM common_format_providers WHERE pluginid='" + Utils.Escape(pluginid) + "'");
         }
         #endregion
     }

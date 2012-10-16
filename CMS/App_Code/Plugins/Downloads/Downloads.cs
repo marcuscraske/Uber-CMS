@@ -64,7 +64,7 @@ namespace UberCMS.Plugins
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_FILEWATCHER_ENABLED, "1", "Indicates if file-watching should be enabled; else you'll need to run the indexer for every physical file change.", false);
             Core.settings.updateSetting(conn, pluginid, SETTINGS_KEY, SETTINGS_ITEMS_PER_PAGE, "15", "The number of files or folders displayed per a page.", false);
             // Hook bbcode formatter
-            Articles.formattingAdd(conn, pluginid, "UberCMS.Plugins.Downloads", "formatBBCode");
+            Common.formatProvider_add(conn, pluginid, "UberCMS.Plugins.Downloads", "format", "", "");
             // Reserve URLs
             if ((error = Misc.Plugins.reserveURLs(pluginid, null, new string[] { "download", "downloads" }, conn)) != null)
                 return error;
@@ -92,6 +92,9 @@ namespace UberCMS.Plugins
             // Uninstall content
             if ((error = Misc.Plugins.contentUninstall(basePath + "\\Content")) != null)
                 return error;
+            // Uninstall format provider
+            Common.formatProvider_remove(conn, pluginid);
+
             return null;
         }
         public static string uninstall(string pluginid, Connector conn)
@@ -101,10 +104,9 @@ namespace UberCMS.Plugins
             // Uninstall SQL
             if ((error = Misc.Plugins.executeSQL(basePath + "\\SQL\\Uninstall.sql", conn)) != null)
                 return error;
-            // Unhook bbcode formatter
-            Articles.formattingRemove(conn, pluginid);
             // Uninstall settings
             Core.settings.removeCategory(conn, SETTINGS_KEY);
+
             return null;
         }
         public static string cmsStart(string pluginid, Connector conn)
@@ -1153,13 +1155,13 @@ namespace UberCMS.Plugins
         #endregion
 
         #region "Methods - BBCode"
-        public static void formatBBCode(Connector conn, ref StringBuilder originalText, ref Misc.PageElements pageElements, bool textFormatting, bool objectFormatting)
+        public static void format(ref StringBuilder text, HttpRequest request, HttpResponse response, Connector conn, Misc.PageElements pageElements, bool formattingText, bool formattingObjects, int currentTree)
         {
-            if (objectFormatting)
+            if (formattingObjects)
             {
                 // Download button
-                foreach (Match m in Regex.Matches(originalText.ToString(), @"\[download=([0-9]+)\]", RegexOptions.Multiline))
-                    originalText.Replace(m.Value, "<a href=\"" + pageElements["URL"] + "/download/" + m.Groups[1].Value + "\"><img src=\"" + pageElements["URL"] + "/download/" + m.Groups[1].Value + "/embed\" alt=\"Download file\" /></a>");
+                foreach (Match m in Regex.Matches(text.ToString(), @"\[download=([0-9]+)\]", RegexOptions.Multiline))
+                    text.Replace(m.Value, "<a href=\"" + pageElements["URL"] + "/download/" + m.Groups[1].Value + "\"><img src=\"" + pageElements["URL"] + "/download/" + m.Groups[1].Value + "/embed\" alt=\"Download file\" /></a>");
             }
         }
         #endregion
