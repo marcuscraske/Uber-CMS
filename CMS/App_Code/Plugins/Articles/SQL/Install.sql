@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS articles_thread
 (
 	threadid INT PRIMARY KEY AUTO_INCREMENT,
-	relative_url VARCHAR(32) NOT NULL UNIQUE,
+	relative_url VARCHAR(50) NOT NULL UNIQUE,
 	articleid_current INT,
 	FOREIGN KEY(`articleid_current`) REFERENCES `articles`(`articleid`) ON UPDATE CASCADE ON DELETE SET NULL
 );
