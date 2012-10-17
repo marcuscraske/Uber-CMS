@@ -498,3 +498,33 @@
     text-align: center;
     border-top: solid 0.2em #CCC;
 }
+/* Article heading navigation box */
+.ARTICLE_NAVIGATION
+{
+    display: inline-block;
+    background: #CCC;
+    color: #333;
+    padding: 0.25em 0.5em;
+    border-radius: 0.5em;
+    margin: 0.25em;
+    font-weight: bold;
+    border: solid 0.1em #999;
+}
+.ARTICLE_NAVIGATION a
+{
+    text-decoration: none;
+}
+.ARTICLE_NAVIGATION a:hover, .ARTICLE_NAVIGATION a:focus
+{
+    text-decoration: underline;
+}
+.ARTICLE_NAVIGATION ol
+{
+    list-style: none;
+    margin: 0em;
+    font-weight: normal;
+}
+.ARTICLE_NAVIGATION > ol
+{
+    padding-left: 0em;
+}

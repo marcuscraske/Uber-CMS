@@ -2061,6 +2061,7 @@ namespace UberCMS.Plugins
                 formatImage(ref text, ref pageElements);
                 formatTemplate(ref text, request, response, conn, ref pageElements, formattingText, formattingObjects, currentTree);
                 formatInternalLinks(ref text, ref pageElements);
+                formatNavigationBox(ref text, ref pageElements);
             }
         }
         public static void articleIncludes(HttpRequest request, HttpResponse response, Connector connector, ref Misc.PageElements pageElements, bool formattingText, bool formattingObjects)
@@ -2152,6 +2153,85 @@ namespace UberCMS.Plugins
                 else if (elems.Length == 2)
                     text.Replace(m.Value, "<a href=\"" + pageElements["URL"] + "/" + elems[0] + "\">" + elems[1] + "</a>");
             }
+        }
+
+        public static void formatNavigationBox(ref StringBuilder text, ref Misc.PageElements pageElements)
+        {
+            MatchCollection contentBoxes = Regex.Matches(text.ToString(), @"\[navigation\]", RegexOptions.Multiline);
+            if (contentBoxes.Count != 0)
+            {
+
+                // We found content-boxes; hence we'll now format the headings and build the content box
+                StringBuilder contentBox = new StringBuilder();
+                string titleFormatted, anchor;
+                int headingParent = 2; // Since h1 and h2 are already used, content will use h3 onwards
+                int currentTreeLevel = headingParent; // 1 = parent/not within a tree; this corresponds with e.g. heading 2-6
+                int treeParse, treeChangeDir;
+                List<string> titlesReserved = new List<string>(); // This will be used to avoid title-clashes; this is highly likely in sub-trees
+                int titleOffset;
+                int matchOffset = 0; // Every-time we insert an anchor, the match index is offsetted by the length of the anchor - which we'll store in here
+                int[] nodeCount = new int[4]; // This should be at the max heading count i.e. |3,4,5,6| = 4
+                foreach (Match m in Regex.Matches(text.ToString(), @"\<h(3|4|5|6)\>(.*?)\<\/h(\1)\>", RegexOptions.Multiline))
+                {
+                    // Check the tree is valid and if it has changed
+                    treeParse = int.Parse(m.Groups[1].Value);
+                    if (currentTreeLevel != treeParse)
+                    {
+                        // Tree has changed; check what to do...
+                        treeChangeDir = treeParse - currentTreeLevel;
+                        if (treeChangeDir >= 1)
+                        {
+                            // We've gone in by a level
+                            currentTreeLevel++;
+                            contentBox.Append("<ol>");
+                            // We only want to reset the count for the current node if we go back into a new node; hence this is not done when exiting a level
+                            nodeCount[currentTreeLevel - (headingParent + 1)] = 0;
+                        }
+                        else if (treeChangeDir <= -1)
+                        {
+                            // We've came out by a level
+                            currentTreeLevel--;
+                            contentBox.Append("</ol>");
+                        }
+                    }
+                    // Format the title
+                    titleFormatted = HttpUtility.UrlEncode(m.Groups[2].Value.Replace(" ", "_"));
+                    titleOffset = 1;
+                    if (titlesReserved.Contains(titleFormatted))
+                    {
+                        // Increment the counter until we find a free title
+                        while (titlesReserved.Contains(titleFormatted + "_" + titleOffset) && titleOffset < int.MaxValue)
+                            titleOffset++;
+                        titleFormatted += "_" + titleOffset;
+                    }
+                    // Reserve the title
+                    titlesReserved.Add(titleFormatted);
+                    // Insert a hyper-link at the position of the heading
+                    anchor = "<a id=\"" + titleFormatted + "\"></a>";
+                    text.Insert(m.Index + matchOffset, anchor);
+                    matchOffset += anchor.Length;
+                    // Increment node count
+                    nodeCount[currentTreeLevel - (headingParent + 1)]++;
+                    // Add title to content box
+                    contentBox.Append("<li><a href=\"#").Append(titleFormatted).Append("\">").Append(formatNavigationBox_nodeStr(nodeCount, currentTreeLevel - headingParent)).Append(" ").Append(m.Groups[2]).Append("</a></li>");
+                }
+                // Check if we ever added anything; if so we'll need closing tags for each level
+                for (int i = headingParent; i <= currentTreeLevel; i++)
+                    contentBox.Append("</ol>");
+                // Add content-box wrapper
+                contentBox.Insert(0, "<div class=\"ARTICLE_NAVIGATION\">Contents").Append("</div>");
+                // Add the content boxes
+                string contentBoxFinalized = contentBox.ToString();
+                foreach (Match m in contentBoxes)
+                    text.Replace(m.Value, contentBoxFinalized);
+            }
+        }
+        public static string formatNavigationBox_nodeStr(int[] nodeCount, int currentNodeSubractParentOffset)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < currentNodeSubractParentOffset; i++)
+                sb.Append(nodeCount[i]).Append(".");
+            return sb.ToString();
         }
         #endregion
 
