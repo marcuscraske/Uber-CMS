@@ -2060,6 +2060,7 @@ namespace UberCMS.Plugins
             {
                 formatImage(ref text, ref pageElements);
                 formatTemplate(ref text, request, response, conn, ref pageElements, formattingText, formattingObjects, currentTree);
+                formatInternalLinks(ref text, ref pageElements);
             }
         }
         public static void articleIncludes(HttpRequest request, HttpResponse response, Connector connector, ref Misc.PageElements pageElements, bool formattingText, bool formattingObjects)
@@ -2133,6 +2134,23 @@ namespace UberCMS.Plugins
                     formatTemplate(ref text, request, response, conn, ref pageElements, formattingText, formattingObjects, ++currentTree);
                     text.Replace(m.Value, body.ToString());
                 }
+            }
+        }
+        /// <summary>
+        /// Creates internal links, much like MediaWiki with [[relative address]] or [[relative url|text]].
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="pageElements"></param>
+        public static void formatInternalLinks(ref StringBuilder text, ref Misc.PageElements pageElements)
+        {
+            string[] elems;
+            foreach (Match m in Regex.Matches(text.ToString(), @"\[:\[(.*?)\]:\]", RegexOptions.Multiline))
+            {
+                elems = m.Groups[1].Value.Split('|');
+                if (elems.Length == 1)
+                    text.Replace(m.Value, "<a href=\"" + pageElements["URL"] + "/" + elems[0] + "\">" + elems[0] + "</a>");
+                else if (elems.Length == 2)
+                    text.Replace(m.Value, "<a href=\"" + pageElements["URL"] + "/" + elems[0] + "\">" + elems[1] + "</a>");
             }
         }
         #endregion

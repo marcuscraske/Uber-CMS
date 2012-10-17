@@ -660,10 +660,27 @@ namespace UberCMS.Plugins
                 StringBuilder list;
                 foreach (Match m in Regex.Matches(text.ToString(), @"\[(nlist|list)\](.*?)\[\/(\1)\]", RegexOptions.Multiline))
                 {
-                    list = new StringBuilder(m.Groups[2].Value);
-                    foreach (Match m2 in Regex.Matches(list.ToString(), @"\[\*\](.*?)<br />", RegexOptions.Multiline))
-                        list.Replace(m2.Value, "<li>" + m2.Groups[1].Value + "</li>");
-                    list.Replace("<br />", ""); // Remove any line breaks
+                    list = new StringBuilder();
+                    foreach(string line in m.Groups[2].Value.Split(new string[]{"\n", "<br />"}, StringSplitOptions.None))
+                    {
+                        if(line.StartsWith("[*]") && line.Length > 3)
+                        {
+                            if(list.Length > 0)
+                                list.Append("</li><li>");
+                            else
+                                list.Append("<li>");
+                            list.Append(line.Substring(3));
+                        }
+                        else if(list.Length > 0)
+                            list.Append("<br />").Append(line);
+                    }
+                    // Check for tailing <br />
+                    if (list[list.Length - 6] == '<' && list[list.Length - 5] == 'b' && list[list.Length - 4] == 'r' && list[list.Length - 3] == ' ' && list[list.Length - 2] == '/' && list[list.Length - 1] == '>')
+                        list.Remove(list.Length - 6, 6);
+                    // Add closing tag
+                    if (list.Length > 0)
+                        list.Append("</li>");
+                    // Get the tag of the list
                     string tag = m.Groups[1].Value == "nlist" ? "ol" : "ul";
                     text.Replace(m.Value, "<" + tag + " class=\"COMMON_BP\">" + list.ToString() + "</" + tag + ">");
                 }
