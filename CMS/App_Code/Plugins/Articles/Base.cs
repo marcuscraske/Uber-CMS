@@ -2182,16 +2182,22 @@ namespace UberCMS.Plugins
                         if (treeChangeDir >= 1)
                         {
                             // We've gone in by a level
-                            currentTreeLevel++;
-                            contentBox.Append("<ol>");
+                            while (--treeChangeDir >= 0)
+                            {
+                                contentBox.Append("<ol>");
+                                currentTreeLevel++;
+                            }
                             // We only want to reset the count for the current node if we go back into a new node; hence this is not done when exiting a level
                             nodeCount[currentTreeLevel - (headingParent + 1)] = 0;
                         }
                         else if (treeChangeDir <= -1)
                         {
                             // We've came out by a level
-                            currentTreeLevel--;
-                            contentBox.Append("</ol>");
+                            while (++treeChangeDir <= 0)
+                            {
+                                contentBox.Append("</ol>");
+                                currentTreeLevel--;
+                            }
                         }
                     }
                     // Format the title

@@ -661,28 +661,83 @@ namespace UberCMS.Plugins
                 foreach (Match m in Regex.Matches(text.ToString(), @"\[(nlist|list)\](.*?)\[\/(\1)\]", RegexOptions.Multiline))
                 {
                     list = new StringBuilder();
-                    foreach(string line in m.Groups[2].Value.Split(new string[]{"\n", "<br />"}, StringSplitOptions.None))
-                    {
-                        if(line.StartsWith("[*]") && line.Length > 3)
-                        {
-                            if(list.Length > 0)
-                                list.Append("</li><li>");
-                            else
-                                list.Append("<li>");
-                            list.Append(line.Substring(3));
-                        }
-                        else if(list.Length > 0)
-                            list.Append("<br />").Append(line);
-                    }
-                    // Check for tailing <br />
-                    if (list[list.Length - 6] == '<' && list[list.Length - 5] == 'b' && list[list.Length - 4] == 'r' && list[list.Length - 3] == ' ' && list[list.Length - 2] == '/' && list[list.Length - 1] == '>')
-                        list.Remove(list.Length - 6, 6);
-                    // Add closing tag
-                    if (list.Length > 0)
-                        list.Append("</li>");
+                    int currentTree = 1, parsedTree, treeDiff;
+                    bool lineIsBp;
+                    char c;
                     // Get the tag of the list
                     string tag = m.Groups[1].Value == "nlist" ? "ol" : "ul";
-                    text.Replace(m.Value, "<" + tag + " class=\"COMMON_BP\">" + list.ToString() + "</" + tag + ">");
+                    // Render elements
+                    foreach(string line in m.Groups[2].Value.Split(new string[]{"\n", "<br />"}, StringSplitOptions.None))
+                    {
+                        lineIsBp = true;
+                        // Check if the line is a bullet point, if so get the index
+                        parsedTree = 0;
+                        if (line.Length > 0 && line[0] == '[')
+                        {
+                            while (lineIsBp && parsedTree < line.Length - 1)
+                            {
+                                c = line[parsedTree + 1];
+                                if (c == '*')
+                                    parsedTree++;
+                                else if (c == ']' && parsedTree > 0)
+                                    break; // Valid bullet-pointer
+                                else
+                                    lineIsBp = false; // Invalid bullet-point; invalid char or no *
+                            }
+                            // Check the line isn't just e.g. [***** or [****]
+                            if (lineIsBp && parsedTree >= line.Length - 1)
+                                lineIsBp = false;
+                        }
+                        else
+                            lineIsBp = false;
+                        // If the line is not a bp, append the line - else handle tree change, adding element etc
+                        if (lineIsBp)
+                        {
+                            treeDiff = parsedTree - currentTree;
+                            if (treeDiff > 0)
+                            {
+                                // We've gone in a level/levels - add the required tags
+                                while (--treeDiff >= 0)
+                                {
+                                    list.Append("<").Append(tag).Append(">");
+                                }
+                                currentTree = parsedTree;
+                            }
+                            else if (treeDiff < 0)
+                            {
+                                // Append closing item tag
+                                list.Append("</li>");
+                                // We've came out of a level/levels
+                                while (++treeDiff <= 0)
+                                {
+                                    list.Append("</").Append(tag).Append(">");
+                                }
+                                currentTree = parsedTree;
+                            }
+                            else
+                                // Close the last element for the new element
+                                list.Append("</li>");
+
+                            // Append element
+                            list.Append("<li>").Append(line.Substring(parsedTree + 2)); // 2 due to [ ] chars
+                            
+                        }
+                        else if(list.Length > 0) // Protection against empty lists
+                            list.Append("<br />").Append(line);
+                    }
+                    if (list.Length > 0)
+                    {
+                        // Close the list
+                        for (int i = 0; i < currentTree; i++)
+                            list.Append("</").Append(tag).Append(">");
+                        // Check for tailing <br />
+                        if (list[list.Length - 6] == '<' && list[list.Length - 5] == 'b' && list[list.Length - 4] == 'r' && list[list.Length - 3] == ' ' && list[list.Length - 2] == '/' && list[list.Length - 1] == '>')
+                            list.Remove(list.Length - 6, 6);
+                        // Add closing tag
+                        list.Append("</li>");
+                        // Replace
+                        text.Replace(m.Value, "<" + tag + " class=\"COMMON_BP\">" + list.ToString());
+                    }
                 }
             }
             /// <summary>
