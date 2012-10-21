@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[browse_tag]]></hkey><description><![CDATA[A tag/category item.]]></description><html><![CDATA[	<a class="A_ROW" href="<!--URL-->/articles/tag/<TITLE_ENCODED>">
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[browse_tag]]></hkey><description><![CDATA[A tag/category item.]]></description><html><![CDATA[	<a class="A_ROW" href="<!--URL-->/articles/tag/<TITLE>">
 		<span><ARTICLES> articles</span>
 		<TITLE>
 		<div class="clear"></div>

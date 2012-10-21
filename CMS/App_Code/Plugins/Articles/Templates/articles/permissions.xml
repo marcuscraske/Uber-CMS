@@ -2,7 +2,7 @@
 <form method="POST" action="<!--URL-->/article/<ARTICLEID>/permissions">
 	<div class="ROW">
 		<div class="CELL1">
-			Select the user-groups below which can access the thread; user-groups with the ability to publish articles automatically gain access.
+			Select the user-groups below which can access the thread; user-groups with the ability to publish articles automatically gain access. You must also have at least one role selected, else the thread will be accessible by anyone.
 		</div>
 		<div class="clear"></div>
 	</div>

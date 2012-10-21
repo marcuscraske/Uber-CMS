@@ -326,7 +326,6 @@ namespace UberCMS.Plugins
                         tagCategories.Append(
                             Core.templates["articles"]["browse_tag"]
                             .Replace("<TITLE>", HttpUtility.HtmlEncode(tagCategory["keyword"]))
-                            .Replace("<TITLE_ENCODED>", HttpUtility.UrlEncode(tagCategory["keyword"]))
                             .Replace("<ARTICLES>", HttpUtility.HtmlEncode(tagCategory["articles"]))
                             );
                         appendedTags = true;
