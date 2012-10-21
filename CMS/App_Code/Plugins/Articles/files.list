@@ -3,6 +3,7 @@
 
 // Disallow psd files
 -%LOCAL%\unknown.psd
+-%LOCAL%\access_denied.psd
 
 // Add content files
 %GLOBAL%\Content\CSS\Article.css,\Content\CSS

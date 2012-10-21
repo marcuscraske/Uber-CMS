@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[editor]]></hkey><description><![CDATA[The editor used to create/modify articles.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/article/editor?%PARAMS%" enctype="multipart/form-data">
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[editor]]></hkey><description><![CDATA[The editor used to create/modify articles.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/article/editor?<PARAMS>" enctype="multipart/form-data">
 	<div class="ROW">
 		<div class="CELL2">
 			Title:
 		</div>
 		<div class="CELL2">
-			<input name="title" type="text" class="TEXTBOX" value="%TITLE%" />
+			<input name="title" type="text" class="TEXTBOX" value="<TITLE>" />
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -13,7 +13,7 @@
 			Relative URL:
 		</div>
 		<div class="CELL2">
-			<input name="relative_url" type="text" class="TEXTBOX" value="%RELATIVE_PATH%" />
+			<input name="relative_url" type="text" class="TEXTBOX" value="<RELATIVE_PATH>" />
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -22,7 +22,7 @@
 			Tags:
 		</div>
 		<div class="CELL2">
-			<input name="tags" type="text" class="TEXTBOX" value="%TAGS%" />
+			<input name="tags" type="text" class="TEXTBOX" value="<TAGS>" />
 			<p>
 				Tags should be provided as a comma-separated list e.g. news,article.
 			</p>
@@ -47,19 +47,19 @@
 		</div>
 		<div class="CELL2">
 			<div class="CHECKBOX">
-				<input type="checkbox" id="allow_html" name="allow_html" %ALLOW_HTML% />
+				<input type="checkbox" id="allow_html" name="allow_html" <ALLOW_HTML> />
 				<div>Allow HTML</div>
 			</div>
 			<div class="CHECKBOX">
-				<input type="checkbox" name="allow_comments" %ALLOW_COMMENTS% />
+				<input type="checkbox" name="allow_comments" <ALLOW_COMMENTS> />
 				<div>Allow Comments</div>
 			</div>
 			<div class="CHECKBOX">
-				<input type="checkbox" name="show_pane" %SHOW_PANE% />
+				<input type="checkbox" name="show_pane" <SHOW_PANE> />
 				<div>Show Options Pane</div>
 			</div>
 			<div class="CHECKBOX">
-				<input type="checkbox" name="inherit_thumbnail" %INHERIT% />
+				<input type="checkbox" name="inherit_thumbnail" <INHERIT> />
 				<div>Inherit thumbnail of article being modified</div>
 			</div>
 		</div>
@@ -67,7 +67,7 @@
 	</div>
 	<div class="ROW">
 		<div class="CELL1">
-			<textarea class="TEXTAREA" cols="100" rows="12" name="body" id="ARTICLE_BODY">%BODY%</textarea>
+			<textarea class="TEXTAREA" cols="100" rows="12" name="body" id="ARTICLE_BODY"><BODY></textarea>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -86,4 +86,4 @@
 		<div class="clear"></div>
 	</div>
 </form>
-%ERROR%]]></html></template>
+<ERROR>]]></html></template>

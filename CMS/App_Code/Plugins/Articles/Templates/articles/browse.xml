@@ -4,7 +4,7 @@
 	</div>
 	<div class="A_ROW">
 		<form method="get" action="<!--URL-->/articles/search">
-			<input type="text" name="keywords" class="TEXTBOX" value="%SEARCH%" />
+			<input type="text" name="keywords" class="TEXTBOX" value="<SEARCH>" />
 			<input type="submit" class="BUTTON" value="Search" />
 		</form>
 	</div>
@@ -54,9 +54,9 @@
 	<div class="A_HEADER">
 		Main Categories
 	</div>
-	%TAGS%
+	<TAGS>
 	<div class="clear"></div>
 </div>
 <div class="ARTICLES_BROWSE_CONTENT">
-	%CONTENT%
+	<CONTENT>
 </div>]]></html></template>

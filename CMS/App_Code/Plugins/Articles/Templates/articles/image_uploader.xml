@@ -4,7 +4,7 @@
 			Title:
 		</div>
 		<div class="CELL2">
-			<input type="text" name="title" value="%TITLE%" class="TEXTBOX" />
+			<input type="text" name="title" value="<TITLE>" class="TEXTBOX" />
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -34,4 +34,4 @@
 		<div class="clear"></div>
 	</div>
 </form>
-%ERROR%]]></html></template>
+<ERROR>]]></html></template>

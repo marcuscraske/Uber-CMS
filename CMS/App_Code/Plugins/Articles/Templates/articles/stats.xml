@@ -4,7 +4,7 @@
 			<div class="P">Total:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%THREADS_TOTAL%</div>
+			<div class="P"><THREADS_TOTAL></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -13,7 +13,7 @@
 			<div class="P">Average revisions:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%THREADS_AVERAGE_REVISIONS%</div>
+			<div class="P"><THREADS_AVERAGE_REVISIONS></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -23,7 +23,7 @@
 			<div class="P">Total:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%ARTICLES_TOTAL%</div>
+			<div class="P"><ARTICLES_TOTAL></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -32,7 +32,7 @@
 			<div class="P">Storage usage - text:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%ARTICLES_STORAGE_TEXT%</div>
+			<div class="P"><ARTICLES_STORAGE_TEXT></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -41,7 +41,7 @@
 			<div class="P">Storage usage - thumbnails:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%ARTICLES_STORAGE_THUMBS%</div>
+			<div class="P"><ARTICLES_STORAGE_THUMBS></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -50,7 +50,7 @@
 			<div class="P">Total thumbnails:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%ARTICLES_THUMBS_TOTAL%</div>
+			<div class="P"><ARTICLES_THUMBS_TOTAL></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -59,7 +59,7 @@
 			<div class="P">Average length of article:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%ARTICLES_AVERAGE_LENGTH%</div>
+			<div class="P"><ARTICLES_AVERAGE_LENGTH></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -69,7 +69,7 @@
 			<div class="P">Total:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%TAGS_TOTAL%</div>
+			<div class="P"><TAGS_TOTAL></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -78,7 +78,7 @@
 			<div class="P">Total unique:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%TAGS_UNIQUE%</div>
+			<div class="P"><TAGS_UNIQUE></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -87,7 +87,7 @@
 			<div class="P">Average tags per an article:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%TAGS_AVERAGE%</div>
+			<div class="P"><TAGS_AVERAGE></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -97,7 +97,7 @@
 			<div class="P">Total images:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%IMAGES_TOTAL%</div>
+			<div class="P"><IMAGES_TOTAL></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -106,7 +106,7 @@
 			<div class="P">Storage usage:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%IMAGES_STORAGE%</div>
+			<div class="P"><IMAGES_STORAGE></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -116,7 +116,7 @@
 			<div class="P">Total storage usage:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%TOTAL_STORAGE%</div>
+			<div class="P"><TOTAL_STORAGE></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -125,7 +125,7 @@
 			<div class="P">Last updated cache:</div>
 		</div>
 		<div class="CELL">
-			<div class="P">%LAST_UPDATED%</div>
+			<div class="P"><LAST_UPDATED></div>
 		</div>
 		<div class="clear"></div>
 	</div>

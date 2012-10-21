@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[permissions]]></hkey><description><![CDATA[Used for permissions delegation on an article/thread.]]></description><html><![CDATA[<SUCCESS>
+<form method="POST" action="<!--URL-->/article/<ARTICLEID>/permissions">
+	<div class="ROW">
+		<div class="CELL1">
+			Select the user-groups below which can access the thread; user-groups with the ability to publish articles automatically gain access.
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<GROUPS>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="ROW">
+		<div class="CELL1">
+			<a href="<!--URL-->/article/<ARTICLEID>" class="BUTTON FL">Cancel</a>
+			<input type="submit" class="BUTTON FR" value="Save" />
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>]]></html></template>

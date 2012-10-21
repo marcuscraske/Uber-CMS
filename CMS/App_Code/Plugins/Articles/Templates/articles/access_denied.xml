@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[access_denied]]></hkey><description><![CDATA[Displayed when a thread cannot be accessed because the user doesn't have sufficient permissions.]]></description><html><![CDATA[<center>
+<img src="<!--URL-->/Content/Images/articles/access_denied.png" alt="Access Denied" />
+<p>You do not have sufficient permissions to access this thread.</p>
+</center>]]></html></template>

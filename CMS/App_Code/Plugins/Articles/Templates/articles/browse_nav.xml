@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[browse_nav]]></hkey><description><![CDATA[The browsing page navigation.]]></description><html><![CDATA[<div class="NAV TC">
 	<!--IF:ARTICLES_PAGE_PREVIOUS-->
-	<a class="BUTTON FL" href="<!--URL-->/%URL%&amp;bpg=%PAGE_PREVIOUS%">
+	<a class="BUTTON FL" href="<!--URL-->/<URL>&amp;bpg=<PAGE_PREVIOUS>">
 		Previous
 	</a>
 	<!--ENDIF-->
-	Page %PAGE%
+	Page <PAGE>
 	<!--IF:ARTICLES_PAGE_NEXT-->
-	<a class="BUTTON FR" href="<!--URL-->/%URL%&amp;bpg=%PAGE_NEXT%">
+	<a class="BUTTON FR" href="<!--URL-->/<URL>&amp;bpg=<PAGE_NEXT>">
 		Next
 	</a>
 	<!--ENDIF-->

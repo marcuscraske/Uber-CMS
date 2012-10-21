@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[change_published]]></hkey><description><![CDATA[Change event for article published.]]></description><html><![CDATA[<div class="CHANGE">
 	<img src="<!--URL-->/Content/Images/articles/publish.png" alt="Publish" />
 	<div class="P">
-		<div class="DT" title="%DATETIME%">
-			%TIME%
+		<div class="DT" title="<DATETIME>">
+			<TIME>
 		</div>
-		<a href="<!--URL-->/profile?userid=%USERID%">%USERNAME%</a> published <a href="<!--URL-->/%RELATIVE_URL%">%TITLE%</a>
+		<a href="<!--URL-->/profile?userid=<USERID>"><USERNAME></a> published <a href="<!--URL-->/<RELATIVE_URL>"><TITLE></a>
 	</div>
 	<div class="clear"></div>
 </div>]]></html></template>

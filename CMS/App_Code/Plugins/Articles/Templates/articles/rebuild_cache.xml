@@ -26,5 +26,5 @@
 		<div class="clear"></div>
 	</div>
 	<input type="hidden" name="confirm" value="1" />
-	<input type="hidden" name="csrf" value="%CSRF%" />
+	<input type="hidden" name="csrf" value="<CSRF>" />
 </form>]]></html></template>

@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[browse_article]]></hkey><description><![CDATA[An article item.]]></description><html><![CDATA[<a href="<!--URL-->/%RELATIVE_URL%" title="%TITLE%" class="ARTICLE">
-	<span title="%DATETIME%">%DATETIME_SHORT%</span>
-	<img src="<!--URL-->/article/thumbnail/%ARTICLEID%" alt="Article thumbnail" />
-	%TITLE%
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[browse_article]]></hkey><description><![CDATA[An article item.]]></description><html><![CDATA[<a href="<!--URL-->/<RELATIVE_URL>" title="<TITLE>" class="ARTICLE">
+	<span title="<DATETIME>"><DATETIME_SHORT></span>
+	<img src="<!--URL-->/article/thumbnail/<ARTICLEID>" alt="Article thumbnail" />
+	<TITLE>
 </a>]]></html></template>

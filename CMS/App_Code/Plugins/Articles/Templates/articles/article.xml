@@ -2,62 +2,69 @@
 <!--IF:ARTICLE_SHOW_PANE&!ARTICLE_PDF_MODE-->
 	<div class="PANE">
 		<div class="BUTTONS">
-			<a class="BUTT" href="<!--URL-->/Content/PDF/%PDF_NAME%.pdf">
+			<a class="BUTT" href="<!--URL-->/article/<ARTICLEID>/pdf">
 				<img src="<!--URL-->/Content/Images/articles/pdf_download.png" alt="Download as PDF" />
 				Download as PDF
 				<div class="clear"></div>
 			</a>
-			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/history">
+			<a class="BUTT" href="<!--URL-->/article/<ARTICLEID>/history">
 				<img src="<!--URL-->/Content/Images/articles/history.png" alt="History" />
 				History
 				<div class="clear"></div>
 			</a>
-			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/comments">
+			<a class="BUTT" href="<!--URL-->/article/<ARTICLEID>/comments">
 				<img src="<!--URL-->/Content/Images/articles/comments.png" alt="Comments" />
-				Comments (%COMMENTS%)
+				Comments (<COMMENTS>)
 				<div class="clear"></div>
 			</a>
 			<!--IF:ARTICLE_PERM_CREATE-->
-			<a class="BUTT" href="<!--URL-->/article/editor?articleid=%ARTICLEID%">
+			<a class="BUTT" href="<!--URL-->/article/editor?articleid=<ARTICLEID>">
 				<img src="<!--URL-->/Content/Images/articles/edit.png" alt="Edit" />
 				Edit
 				<div class="clear"></div>
 			</a>
 			<!--ENDIF:ARTICLE_PERM_CREATE-->
 			<!--IF:ARTICLE_PERM_DELETE-->
-			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/delete">
+			<a class="BUTT" href="<!--URL-->/article/<ARTICLEID>/delete">
 				<img src="<!--URL-->/Content/Images/articles/delete.png" alt="Delete" />
 				Delete
 				<div class="clear"></div>
 			</a>
-			<a class="BUTT" href="<!--URL-->/articles/delete/%THREADID%">
+			<a class="BUTT" href="<!--URL-->/articles/delete/<THREADID>">
 				<img src="<!--URL-->/Content/Images/articles/delete.png" alt="Delete" />
 				Delete Thread
 				<div class="clear"></div>
 			</a>
 			<!--ENDIF:ARTICLE_PERM_DELETE-->
 			<!--IF:ARTICLE_PERM_PUBLISH&ARTICLE_PUBLISHED&!ARTICLE_CURRENT-->
-			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/set">
+			<a class="BUTT" href="<!--URL-->/article/<ARTICLEID>/set">
 				<img src="<!--URL-->/Content/Images/articles/set.png" alt="Set As Current Article" />
 				Set As Current Article
 				<div class="clear"></div>
 			</a>
 			<!--ENDIF:ARTICLE_PERM_PUBLISH&ARTICLE_PUBLISHED&!ARTICLE_CURRENT-->
 			<!--IF:ARTICLE_PERM_PUBLISH-->
-			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/rebuild">
+			<a class="BUTT" href="<!--URL-->/article/<ARTICLEID>/rebuild">
 				<img src="<!--URL-->/Content/Images/articles/set.png" alt="Rebuild" />
 				Rebuild Cache
 				<div class="clear"></div>
 			</a>
 			<!--ENDIF:ARTICLE_PERM_PUBLISH-->
+			<!--IF:ARTICLE_PERM_PUBLISH-->
+			<a class="BUTT" href="<!--URL-->/article/<ARTICLEID>/permissions">
+				<img src="<!--URL-->/Content/Images/articles/permissions.png" alt="Permissions" />
+				Permissions
+				<div class="clear"></div>
+			</a>
+			<!--ENDIF:ARTICLE_PERM_PUBLISH-->
 			<!--IF:!ARTICLE_PUBLISHED-->
-			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%/publish">
+			<a class="BUTT" href="<!--URL-->/article/<ARTICLEID>/publish">
 				<img src="<!--URL-->/Content/Images/articles/publish.png" alt="Publish" />
 				Publish
 				<div class="clear"></div>
 			</a>
 			<!--ENDIF:!ARTICLE_PUBLISHED-->
-			<a class="BUTT" href="<!--URL-->/article/%ARTICLEID%">
+			<a class="BUTT" href="<!--URL-->/article/<ARTICLEID>">
 				<img src="<!--URL-->/Content/Images/articles/view.png" alt="View" />
 				View
 				<div class="clear"></div>
@@ -69,7 +76,7 @@
 <!--ENDIF:ARTICLE_SHOW_PANE&!ARTICLE_PDF_MODE-->
 
 <!--IF:!ARTICLE_SHOW_PANE&!ARTICLE_PDF_MODE-->
-	<a href="<!--URL-->/article/%ARTICLEID%?force_pane=1" class="SHOW_PANE">
+	<a href="<!--URL-->/article/<ARTICLEID>?force_pane=1" class="SHOW_PANE">
 		<img src="<!--URL-->/Content/Images/articles/show_panel.png" alt="Show Panel" />Show Panel
 	</a>
 	<div class="clear"></div>
@@ -84,6 +91,6 @@
 			</div>
 		</div>
 <!--ENDIF-->
-		%BODY%
+		<BODY>
 	</div>
 </div>]]></html></template>

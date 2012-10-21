@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[thread_delete]]></hkey><description><![CDATA[The form used to confirm the deletion of an article thread.]]></description><html><![CDATA[%ERROR%
-<form method="post" action="<!--URL-->/articles/delete/%THREADID%">
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[thread_delete]]></hkey><description><![CDATA[The form used to confirm the deletion of an article thread.]]></description><html><![CDATA[<ERROR>
+<form method="post" action="<!--URL-->/articles/delete/<THREADID>">
 	<div class="ROW HEADER">
 		<div class="CELL1">
-			Confirm Deletion of %TITLE% (%RELATIVE_URL%)
+			Confirm Deletion of <TITLE> (<RELATIVE_URL>)
 		</div>
 		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL1">
-			Confirm you want to delete this <a href="<!--URL-->/%RELATIVE_URL%">thread</a>, which contains %ARTICLE_COUNT% article(s).
+			Confirm you want to delete this <a href="<!--URL-->/<RELATIVE_URL>">thread</a>, which contains <ARTICLE_COUNT> article(s).
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -29,5 +29,5 @@
 		<div class="clear"></div>
 	</div>
 	<input type="hidden" name="confirm" value="1" />
-	<input type="hidden" name="csrf" value="%CSRF%" />
+	<input type="hidden" name="csrf" value="<CSRF>" />
 </form>]]></html></template>

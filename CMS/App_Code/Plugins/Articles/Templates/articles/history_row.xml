@@ -1,41 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[history_row]]></hkey><description><![CDATA[Represents an article on the history tab of an article thread.]]></description><html><![CDATA[<div class="ROW HISTORY_ROW %SELECTED%" href="<!--URL-->/article/%ARTICLEID%">
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[history_row]]></hkey><description><![CDATA[Represents an article on the history tab of an article thread.]]></description><html><![CDATA[<div class="ROW HISTORY_ROW <SELECTED>" href="<!--URL-->/article/<ARTICLEID>">
 	<div class="CELL4 LINE">
 		<div class="ARTICLE_CELL_PADDING">
-			<a href="<!--URL-->/article/%ARTICLEID%">%TITLE%</a>
+			<a href="<!--URL-->/article/<ARTICLEID>"><TITLE></a>
 		</div>
 	</div>
 	<div class="CELL4 LINE">
 		<div class="ARTICLE_CELL_PADDING">
 			<div class="PUBLISH">
 				Created by:<br />
-				<a href="<!--URL-->/profile?userid=%CREATOR_USERID%">%CREATOR%</a><br />
-				%PUBLISHED%
+				<a href="<!--URL-->/profile?userid=<CREATOR_USERID>"><CREATOR></a><br />
+				<PUBLISHED>
 			</div>
 		</div>
 	</div>
 	<div class="CELL4 LINE">
 		<div class="ARTICLE_CELL_PADDING">
-			%DATETIME%<br />
-			(%DATETIME_SHORT%)
+			<DATETIME><br />
+			(<DATETIME_SHORT>)
 		</div>
 	</div>
 	<div class="CELL4">
 		<div class="ARTICLE_CELL_PADDING">
-			<a href="<!--URL-->/article/%ARTICLEID%" title="View">
+			<a href="<!--URL-->/article/<ARTICLEID>" title="View">
 				<img src="<!--URL-->/Content/Images/articles/view.png" alt="View" />
 			</a>
 			<!--IF:ARTICLE_PERM_PUBLISH-->
-				<a href="<!--URL-->/article/%ARTICLEID%/set" title="Set As Current Article">
+				<a href="<!--URL-->/article/<ARTICLEID>/set" title="Set As Current Article">
 					<img src="<!--URL-->/Content/Images/articles/set.png" alt="Set As Current Article" />
 				</a>
 			<!--ENDIF-->
 			<!--IF:ARTICLE_PERM_DELETE-->
-				<a href="<!--URL-->/article/%ARTICLEID%/delete" title="Delete">
+				<a href="<!--URL-->/article/<ARTICLEID>/delete" title="Delete">
 					<img src="<!--URL-->/Content/Images/articles/delete.png" alt="Delete" />
 				</a>
 			<!--ENDIF-->
 			<!--IF:ARTICLE_PERM_CREATE-->
-				<a href="<!--URL-->/article/editor?articleid=%ARTICLEID%" title="Edit">
+				<a href="<!--URL-->/article/editor?articleid=<ARTICLEID>" title="Edit">
 					<img src="<!--URL-->/Content/Images/articles/edit.png" alt="Edit" />
 				</a>
 			<!--ENDIF-->

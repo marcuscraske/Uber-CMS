@@ -34,6 +34,7 @@ BEGIN
 END;
 CALL articles_upgrade_12();
 DROP  PROCEDURE articles_upgrade_12;
+
 -- Upgrade v1.3 PDF
 CREATE PROCEDURE articles_upgrade_13()
 BEGIN
@@ -42,6 +43,7 @@ BEGIN
 END;
 CALL articles_upgrade_13();
 DROP  PROCEDURE articles_upgrade_13;
+
 -- Change encoding support for utf8
 ALTER TABLE `articles` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 SET FOREIGN_KEY_CHECKS=1;
@@ -98,4 +100,11 @@ CREATE TABLE IF NOT EXISTS articles_images_links
 	imageid INT,
 	FOREIGN KEY(`imageid`) REFERENCES `articles_images`(`imageid`) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(articleid, imageid)
+);
+CREATE TABLE IF NOT EXISTS articles_thread_permissions
+(
+	threadid INT,
+	FOREIGN KEY(`threadid`) REFERENCES `articles_thread`(`threadid`) ON UPDATE CASCADE ON DELETE CASCADE,
+	groupid INT,
+	FOREIGN KEY(`groupid`) REFERENCES `bsa_user_groups`(`groupid`) ON UPDATE CASCADE ON DELETE CASCADE
 );

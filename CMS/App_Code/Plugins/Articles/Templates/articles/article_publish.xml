@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article_publish]]></hkey><description><![CDATA[The page used to publish an article.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/article/%ARTICLEID%/publish">
+﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article_publish]]></hkey><description><![CDATA[The page used to publish an article.]]></description><html><![CDATA[<form method="post" action="<!--URL-->/article/<ARTICLEID>/publish">
 	<div class="ROW HEADER">
 		<div class="CELL1">
 			Confirm Publishing Article

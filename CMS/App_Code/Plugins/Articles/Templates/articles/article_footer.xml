@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[article_footer]]></hkey><description><![CDATA[The footer of an article (view) page.]]></description><html><![CDATA[<div class="clear"></div>
 <div class="ARTICLE">
 	<div class="PUBLISHED">
-		Published %DATE%<br />%FULL_DATE% - Revision: %REVISION%
+		Published <DATE><br /><FULL_DATE> - Revision: <REVISION>
 	</div>
 	<div class="TAGS">
 		<span>Tags:</span>
-		%TAGS%
+		<TAGS>
 	</div>
 </div>]]></html></template>

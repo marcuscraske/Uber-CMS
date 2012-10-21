@@ -33,11 +33,19 @@
 	</div>
 </div>
 <div>
+	Options:&nbsp;
 	<!--IF:IMAGE_DELETE-->
-		Options:&nbsp;
 		<a href="<!--URL-->/articles/images/view/<IMAGEID>/delete" class="BUTTON">
 			Delete
 		</a>
+	<!--ENDIF-->
+	<!--IF:IMAGE_UPLOAD-->
+		<a href="<!--URL-->/articles/images/upload" class="BUTTON">
+			Upload New Image
+		</a>
+	<!--ENDIF-->
+	<!--IF:!IMAGE_DELETE&!IMAGE_UPLOAD-->
+		(none)
 	<!--ENDIF-->
 </div>
 <div class="ARTICLE_IMAGE_HEADER">

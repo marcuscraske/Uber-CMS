@@ -103,6 +103,13 @@ namespace UberCMS.Plugins
 
         #region "Variables"
         public static Thread threadRebuildCache = null;
+        /// <summary>
+        /// The access-code's used by the PDF generator to access restricted articles; key = random 16-length code, value = articleid.
+        /// 
+        /// An access code is removed as soon as the PDF generator is finished; this seems very secure and pretty much impossible to
+        /// brute-force within the time-frame - especially since each key is for a specific article.
+        /// </summary>
+        public static Dictionary<string, string> pdfAccessCodes = new Dictionary<string, string>();
         #endregion
 
         #region "Methods - Plugin Event Handlers"
@@ -310,15 +317,22 @@ namespace UberCMS.Plugins
             // Build tag categories
             StringBuilder tagCategories = new StringBuilder();
             Result rawCategories = conn.Query_Read("SELECT DISTINCT at.keyword, COUNT(ata.tagid) AS articles FROM articles_thread AS ath LEFT OUTER JOIN articles_tags_article AS ata On ata.articleid=ath.articleid_current LEFT OUTER JOIN articles_tags AS at ON at.tagid=ata.tagid GROUP BY at.keyword ORDER BY COUNT(ata.tagid) DESC, at.keyword ASC LIMIT " + Core.settings[SETTINGS_KEY].getInt(SETTINGS_BROWSE_TAG_CATEGORIES));
+            bool appendedTags = false;
             if (rawCategories.Rows.Count != 0)
                 foreach (ResultRow tagCategory in rawCategories)
-                    tagCategories.Append(
-                        Core.templates["articles"]["browse_tag"]
-                        .Replace("%TITLE%", HttpUtility.HtmlEncode(tagCategory["keyword"]))
-                        .Replace("%TITLE_URL%", HttpUtility.UrlEncode(tagCategory["keyword"]))
-                        .Replace("%ARTICLES%", HttpUtility.HtmlEncode(tagCategory["articles"]))
-                        );
-            else
+                {
+                    if (tagCategory["keyword"].Length > 0)
+                    {
+                        tagCategories.Append(
+                            Core.templates["articles"]["browse_tag"]
+                            .Replace("<TITLE>", HttpUtility.HtmlEncode(tagCategory["keyword"]))
+                            .Replace("<TITLE_ENCODED>", HttpUtility.UrlEncode(tagCategory["keyword"]))
+                            .Replace("<ARTICLES>", HttpUtility.HtmlEncode(tagCategory["articles"]))
+                            );
+                        appendedTags = true;
+                    }
+                }
+            if(!appendedTags)
                 tagCategories.Append("No categories/tags exist!");
             // Set flags
             if (permPublish)
@@ -333,9 +347,9 @@ namespace UberCMS.Plugins
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
             // Output page
             pageElements["CONTENT"] = Core.templates["articles"]["browse"]
-                .Replace("%CONTENT%", content.ToString())
-                .Replace("%TAGS%", tagCategories.ToString())
-                .Replace("%SEARCH%", HttpUtility.HtmlEncode(search))
+                .Replace("<CONTENT>", content.ToString())
+                .Replace("<TAGS>", tagCategories.ToString())
+                .Replace("<SEARCH>", HttpUtility.HtmlEncode(search))
                 ;
         }
         public static void pageArticle(string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response)
@@ -630,16 +644,16 @@ namespace UberCMS.Plugins
             }
             // Display form
             pageElements["CONTENT"] = Core.templates["articles"]["editor"]
-                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty)
-                .Replace("%PARAMS%", preData != null ? "articleid=" + HttpUtility.UrlEncode(preData[0]["articleid"]) : string.Empty)
-                .Replace("%TITLE%", HttpUtility.HtmlEncode(title ?? (preDataRow != null ? preDataRow["title"] : string.Empty)))
-                .Replace("%RELATIVE_PATH%", HttpUtility.HtmlEncode(relativeUrl ?? (preDataRow != null ? preDataRow["relative_url"] : string.Empty)))
-                .Replace("%TAGS%", HttpUtility.HtmlEncode(tags ?? (preDataRow != null ? preDataRow["tags"] : string.Empty)))
-                .Replace("%ALLOW_HTML%", allowHTML || (title == null && preDataRow != null && preDataRow["allow_html"].Equals("1")) ? "checked" : string.Empty)
-                .Replace("%ALLOW_COMMENTS%", allowComments || (title == null && preDataRow != null && preDataRow["allow_comments"].Equals("1")) ? "checked" : string.Empty)
-                .Replace("%SHOW_PANE%", showPane || (title == null && preDataRow != null && preDataRow["show_pane"].Equals("1")) ? "checked" : string.Empty)
-                .Replace("%INHERIT%", inheritThumbnail || (title == null && preDataRow != null && preDataRow["thumbnailid"].Length > 0) ? "checked" : string.Empty)
-                .Replace("%BODY%", HttpUtility.HtmlEncode(body ?? (preDataRow != null ? preDataRow["body"] : string.Empty)))
+                .Replace("<ERROR>", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty)
+                .Replace("<PARAMS>", preData != null ? "articleid=" + HttpUtility.UrlEncode(preData[0]["articleid"]) : string.Empty)
+                .Replace("<TITLE>", HttpUtility.HtmlEncode(title ?? (preDataRow != null ? preDataRow["title"] : string.Empty)))
+                .Replace("<RELATIVE_PATH>", HttpUtility.HtmlEncode(relativeUrl ?? (preDataRow != null ? preDataRow["relative_url"] : string.Empty)))
+                .Replace("<TAGS>", HttpUtility.HtmlEncode(tags ?? (preDataRow != null ? preDataRow["tags"] : string.Empty)))
+                .Replace("<ALLOW_HTML>", allowHTML || (title == null && preDataRow != null && preDataRow["allow_html"].Equals("1")) ? "checked" : string.Empty)
+                .Replace("<ALLOW_COMMENTS>", allowComments || (title == null && preDataRow != null && preDataRow["allow_comments"].Equals("1")) ? "checked" : string.Empty)
+                .Replace("<SHOW_PANE>", showPane || (title == null && preDataRow != null && preDataRow["show_pane"].Equals("1")) ? "checked" : string.Empty)
+                .Replace("<INHERIT>", inheritThumbnail || (title == null && preDataRow != null && preDataRow["thumbnailid"].Length > 0) ? "checked" : string.Empty)
+                .Replace("<BODY>", HttpUtility.HtmlEncode(body ?? (preDataRow != null ? preDataRow["body"] : string.Empty)))
                 ;
             // Finalize page
             Misc.Plugins.addHeaderJS(pageElements["URL"] + "/Content/JS/Article.js", ref pageElements);
@@ -718,49 +732,49 @@ namespace UberCMS.Plugins
         {
             int browseArticlesSection = Core.settings[SETTINGS_KEY].getInt(SETTINGS_BROWSE_ARTICLES_SECTION);
             // Build recent articles
-            content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Recently Published"));
+            content.Append(Core.templates["articles"]["browse_header"].Replace("<TITLE>", "Recently Published"));
             Result rawArticlesRecent = conn.Query_Read("SELECT a.title, a.articleid, at.relative_url, a.datetime FROM articles_thread AS at LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current ORDER BY a.datetime DESC, a.title ASC LIMIT " + browseArticlesSection);
             if (rawArticlesRecent.Rows.Count != 0)
                 foreach (ResultRow article in rawArticlesRecent)
                     content.Append(
                         Core.templates["articles"]["browse_article"]
-                        .Replace("%RELATIVE_URL%", article["relative_url"])
-                        .Replace("%ARTICLEID%", HttpUtility.UrlEncode(article["articleid"]))
-                        .Replace("%TITLE%", HttpUtility.HtmlEncode(article["title"]))
-                        .Replace("%DATETIME%", HttpUtility.HtmlEncode(article["datetime"]))
-                        .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
+                        .Replace("<RELATIVE_URL>", article["relative_url"])
+                        .Replace("<ARTICLEID>", HttpUtility.UrlEncode(article["articleid"]))
+                        .Replace("<TITLE>", HttpUtility.HtmlEncode(article["title"]))
+                        .Replace("<DATETIME>", HttpUtility.HtmlEncode(article["datetime"]))
+                        .Replace("<DATETIME_SHORT>", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
                         );
             else
                 content.Append("None.");
 
             // Build most discussed articles
-            content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Most Discussed"));
+            content.Append(Core.templates["articles"]["browse_header"].Replace("<TITLE>", "Most Discussed"));
             Result rawArticlesDiscussed = conn.Query_Read("SELECT a.title, a.articleid, at.relative_url, a.datetime FROM articles_thread AS at LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current LEFT OUTER JOIN articles_thread_comments AS atc ON atc.threadid=at.threadid GROUP BY atc.threadid ORDER BY COUNT(atc.commentid) DESC, a.title ASC LIMIT " + browseArticlesSection);
             if (rawArticlesDiscussed.Rows.Count != 0)
                 foreach (ResultRow article in rawArticlesDiscussed)
                     content.Append(
                         Core.templates["articles"]["browse_article"]
-                        .Replace("%RELATIVE_URL%", article["relative_url"])
-                        .Replace("%ARTICLEID%", HttpUtility.UrlEncode(article["articleid"]))
-                        .Replace("%TITLE%", HttpUtility.HtmlEncode(article["title"]))
-                        .Replace("%DATETIME%", HttpUtility.HtmlEncode(article["datetime"]))
-                        .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
+                        .Replace("<RELATIVE_URL>", article["relative_url"])
+                        .Replace("<ARTICLEID>", HttpUtility.UrlEncode(article["articleid"]))
+                        .Replace("<TITLE>", HttpUtility.HtmlEncode(article["title"]))
+                        .Replace("<DATETIME>", HttpUtility.HtmlEncode(article["datetime"]))
+                        .Replace("<DATETIME_SHORT>", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
                         );
             else
                 content.Append("None.");
 
             // Build random articles
-            content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Random Articles"));
+            content.Append(Core.templates["articles"]["browse_header"].Replace("<TITLE>", "Random Articles"));
             Result rawArticlesRandom = conn.Query_Read("SELECT a.title, a.articleid, at.relative_url, a.datetime FROM articles_thread AS at LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current ORDER BY RAND(), a.title ASC LIMIT " + browseArticlesSection);
             if (rawArticlesRecent.Rows.Count != 0)
                 foreach (ResultRow article in rawArticlesRandom)
                     content.Append(
                         Core.templates["articles"]["browse_article"]
-                        .Replace("%RELATIVE_URL%", article["relative_url"])
-                        .Replace("%ARTICLEID%", HttpUtility.UrlEncode(article["articleid"]))
-                        .Replace("%TITLE%", HttpUtility.HtmlEncode(article["title"]))
-                        .Replace("%DATETIME%", HttpUtility.HtmlEncode(article["datetime"]))
-                        .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
+                        .Replace("<RELATIVE_URL>", article["relative_url"])
+                        .Replace("<ARTICLEID>", HttpUtility.UrlEncode(article["articleid"]))
+                        .Replace("<TITLE>", HttpUtility.HtmlEncode(article["title"]))
+                        .Replace("<DATETIME>", HttpUtility.HtmlEncode(article["datetime"]))
+                        .Replace("<DATETIME_SHORT>", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
                         );
             else
                 content.Append("None.");
@@ -777,11 +791,11 @@ namespace UberCMS.Plugins
             // Security
             tag = tag.Replace("%", string.Empty);
 
-            content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Tag `" + HttpUtility.HtmlEncode(tag) + "`"));
+            content.Append(Core.templates["articles"]["browse_header"].Replace("<TITLE>", "Tag `" + HttpUtility.HtmlEncode(tag) + "`"));
             // Add sorting
             content.Append(
                 Core.templates["articles"]["browse_sorting"]
-                .Replace("%URL%", "articles/tag/" + HttpUtility.HtmlEncode(tag) + "?bpg=" + page)
+                .Replace("<URL>", "articles/tag/" + HttpUtility.HtmlEncode(tag) + "?bpg=" + page)
                 );
             // Display all the articles belonging to a tag
             Result rawArticles = conn.Query_Read("SELECT ata.articleid, a.title, a.datetime, ath.relative_url FROM articles_tags_article AS ata, articles_tags AS at, articles AS a, articles_thread AS ath WHERE a.articleid=ath.articleid_current AND ata.articleid=a.articleid AND ata.tagid=at.tagid AND at.keyword LIKE '" + Utils.Escape(tag) + "' ORDER BY " + (sort == "t_a" ? "a.title ASC" : sort == "t_d" ? "a.title DESC" : sort == "d_a" ? "a.datetime ASC" : "a.datetime DESC") + " LIMIT " + ((browseArticlesPage * page) - browseArticlesPage) + "," + browseArticlesPage);
@@ -789,22 +803,22 @@ namespace UberCMS.Plugins
                 foreach (ResultRow article in rawArticles)
                     content.Append(
                         Core.templates["articles"]["browse_article"]
-                        .Replace("%RELATIVE_URL%", article["relative_url"])
-                        .Replace("%ARTICLEID%", HttpUtility.UrlEncode(article["articleid"]))
-                        .Replace("%TITLE%", HttpUtility.HtmlEncode(article["title"]))
-                        .Replace("%DATETIME%", HttpUtility.HtmlEncode(article["datetime"]))
-                        .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
+                        .Replace("<RELATIVE_URL>", article["relative_url"])
+                        .Replace("<ARTICLEID>", HttpUtility.UrlEncode(article["articleid"]))
+                        .Replace("<TITLE>", HttpUtility.HtmlEncode(article["title"]))
+                        .Replace("<DATETIME>", HttpUtility.HtmlEncode(article["datetime"]))
+                        .Replace("<DATETIME_SHORT>", HttpUtility.HtmlEncode(article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "Unknown"))
                         );
             else
                 content.Append("None.");
             // Add page navigation
             content.Append(
                 Core.templates["articles"]["browse_nav"]
-                .Replace("%TAG%", HttpUtility.UrlEncode(tag))
-                .Replace("%URL%", "articles/tag/%TAG%?sort=" + HttpUtility.UrlEncode(sort))
-                .Replace("%PAGE%", page.ToString())
-                .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
-                .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                .Replace("<TAG>", HttpUtility.UrlEncode(tag))
+                .Replace("<URL>", "articles/tag/<TAG>?sort=" + HttpUtility.UrlEncode(sort))
+                .Replace("<PAGE>", page.ToString())
+                .Replace("<PAGE_PREVIOUS>", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("<PAGE_NEXT>", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
                 );
             // Set navigation flags
             if (page > 1) pageElements.setFlag("ARTICLES_PAGE_PREVIOUS");
@@ -818,28 +832,28 @@ namespace UberCMS.Plugins
             int page;
             if (request.QueryString["bpg"] == null || !int.TryParse(request.QueryString["bpg"], out page) || page < 1) page = 1;
             // Viewing articles by search
-            content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Search Results for `" + HttpUtility.HtmlEncode(search) + "`"));
+            content.Append(Core.templates["articles"]["browse_header"].Replace("<TITLE>", "Search Results for `" + HttpUtility.HtmlEncode(search) + "`"));
             string escapedKeywords = Utils.Escape(search.Replace("%", string.Empty));
             Result results = conn.Query_Read("SELECT a.articleid, a.title, a.datetime, at.relative_url FROM articles_thread AS at LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current WHERE at.relative_url LIKE '" + escapedKeywords + "' OR a.title LIKE '%" + escapedKeywords + "%' OR a.body LIKE '%" + escapedKeywords + "%' LIMIT " + ((browseArticlesPage * page) - browseArticlesPage) + "," + browseArticlesPage);
             if (results.Rows.Count != 0)
                 foreach (ResultRow foundItem in results)
                     content.Append(
                         Core.templates["articles"]["browse_article"]
-                        .Replace("%RELATIVE_URL%", foundItem["relative_url"])
-                        .Replace("%ARTICLEID%", HttpUtility.UrlEncode(foundItem["articleid"]))
-                        .Replace("%TITLE%", HttpUtility.HtmlEncode(foundItem["title"]))
-                        .Replace("%DATETIME%", HttpUtility.HtmlEncode(foundItem["datetime"]))
-                        .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(foundItem["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(foundItem["datetime"])) : "Unknown"))
+                        .Replace("<RELATIVE_URL>", foundItem["relative_url"])
+                        .Replace("<ARTICLEID>", HttpUtility.UrlEncode(foundItem["articleid"]))
+                        .Replace("<TITLE>", HttpUtility.HtmlEncode(foundItem["title"]))
+                        .Replace("<DATETIME>", HttpUtility.HtmlEncode(foundItem["datetime"]))
+                        .Replace("<DATETIME_SHORT>", HttpUtility.HtmlEncode(foundItem["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(foundItem["datetime"])) : "Unknown"))
                         );
             else
                 content.Append("None.");
             // Add page navigation
             content.Append(
                 Core.templates["articles"]["browse_nav"]
-                .Replace("%URL%", "articles/search?keywords=" + HttpUtility.HtmlEncode(search))
-                .Replace("%PAGE%", page.ToString())
-                .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
-                .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                .Replace("<URL>", "articles/search?keywords=" + HttpUtility.HtmlEncode(search))
+                .Replace("<PAGE>", page.ToString())
+                .Replace("<PAGE_PREVIOUS>", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("<PAGE_NEXT>", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
                 );
             // Set navigation flags
             if (page > 1) pageElements.setFlag("ARTICLES_PAGE_PREVIOUS");
@@ -888,7 +902,7 @@ namespace UberCMS.Plugins
                         // Output date header
                         content.Append(
                             Core.templates["articles"]["change_date"]
-                            .Replace("%TITLE%", eventDate.ToString("dd MMMM yyyy, dddd"))
+                            .Replace("<TITLE>", eventDate.ToString("dd MMMM yyyy, dddd"))
                             );
                     }
                     // Append item
@@ -898,78 +912,78 @@ namespace UberCMS.Plugins
                         case RecentChanges_EventType.Created:
                             content.Append(
                                 Core.templates["articles"]["change_created"]
-                                .Replace("%RELATIVE_URL%", HttpUtility.UrlEncode(logEvent["relative_url"]))
-                                .Replace("%TITLE%", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
-                                .Replace("%USERID%", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("%USERNAME%", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("%DATETIME%", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("%TIME%", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
+                                .Replace("<RELATIVE_URL>", HttpUtility.UrlEncode(logEvent["relative_url"]))
+                                .Replace("<TITLE>", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
+                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
+                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
+                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
+                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
                                 );
                             break;
                         case RecentChanges_EventType.Deleted:
                             content.Append(
                                 Core.templates["articles"]["change_deleted"]
-                                .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(logEvent["articleid"]))
-                                .Replace("%THREADID%", HttpUtility.HtmlEncode(logEvent["threadid"]))
-                                .Replace("%RELATIVE_URL%", logEvent["relative_url"].Length > 0 ? HttpUtility.UrlEncode(logEvent["relative_url"]) : "(unknown)")
-                                .Replace("%USERID%", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("%USERNAME%", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("%DATETIME%", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("%TIME%", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
+                                .Replace("<ARTICLEID>", HttpUtility.HtmlEncode(logEvent["articleid"]))
+                                .Replace("<THREADID>", HttpUtility.HtmlEncode(logEvent["threadid"]))
+                                .Replace("<RELATIVE_URL>", logEvent["relative_url"].Length > 0 ? HttpUtility.UrlEncode(logEvent["relative_url"]) : "(unknown)")
+                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
+                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
+                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
+                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
                                 );
                             break;
                         case RecentChanges_EventType.DeletedThread:
                             content.Append(
                                 Core.templates["articles"]["change_deletedthread"]
-                                .Replace("%THREADID%", HttpUtility.HtmlEncode(logEvent["threadid"]))
-                                .Replace("%USERID%", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("%USERNAME%", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("%DATETIME%", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("%TIME%", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
+                                .Replace("<THREADID>", HttpUtility.HtmlEncode(logEvent["threadid"]))
+                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
+                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
+                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
+                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
                                 );
                             break;
                         case RecentChanges_EventType.Edited:
                             content.Append(
                                 Core.templates["articles"]["change_created"]
-                                .Replace("%RELATIVE_URL%", HttpUtility.UrlEncode(logEvent["relative_url"]))
-                                .Replace("%TITLE%", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
-                                .Replace("%USERID%", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("%USERNAME%", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("%DATETIME%", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("%TIME%", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
+                                .Replace("<RELATIVE_URL>", HttpUtility.UrlEncode(logEvent["relative_url"]))
+                                .Replace("<TITLE>", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
+                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
+                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
+                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
+                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
                                 );
                             break;
                         case RecentChanges_EventType.Published:
                             content.Append(
                                 Core.templates["articles"]["change_published"]
-                                .Replace("%RELATIVE_URL%", HttpUtility.UrlEncode(logEvent["relative_url"]))
-                                .Replace("%TITLE%", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
-                                .Replace("%USERID%", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("%USERNAME%", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("%DATETIME%", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("%TIME%", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
+                                .Replace("<RELATIVE_URL>", HttpUtility.UrlEncode(logEvent["relative_url"]))
+                                .Replace("<TITLE>", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
+                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
+                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
+                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
+                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
                                 );
                             break;
                         case RecentChanges_EventType.SetAsSelected:
                             content.Append(
                                 Core.templates["articles"]["change_selected"]
-                                .Replace("%RELATIVE_URL%", HttpUtility.UrlEncode(logEvent["relative_url"]))
-                                .Replace("%TITLE%", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
-                                .Replace("%USERID%", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("%USERNAME%", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("%DATETIME%", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("%TIME%", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
+                                .Replace("<RELATIVE_URL>", HttpUtility.UrlEncode(logEvent["relative_url"]))
+                                .Replace("<TITLE>", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
+                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
+                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
+                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
+                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
                                 );
                             break;
                         case RecentChanges_EventType.RebuiltArticleCache:
                             content.Append(
                                 Core.templates["articles"]["change_rebuild_cache"]
-                                .Replace("%RELATIVE_URL%", HttpUtility.UrlEncode(logEvent["relative_url"]))
-                                .Replace("%TITLE%", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
-                                .Replace("%USERID%", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("%USERNAME%", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("%DATETIME%", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("%TIME%", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
+                                .Replace("<RELATIVE_URL>", HttpUtility.UrlEncode(logEvent["relative_url"]))
+                                .Replace("<TITLE>", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
+                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
+                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
+                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
+                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
                                 );
                             break;
                     }
@@ -979,10 +993,10 @@ namespace UberCMS.Plugins
             // Append navigation
             content.Append(
                 Core.templates["articles"]["browse_nav"]
-                .Replace("%URL%", "articles/recent_changes")
-                .Replace("%PAGE%", page.ToString())
-                .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
-                .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                .Replace("<URL>", "articles/recent_changes")
+                .Replace("<PAGE>", page.ToString())
+                .Replace("<PAGE_PREVIOUS>", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("<PAGE_NEXT>", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
                 );
             // Set navigation flags
             if (page > 1) pageElements.setFlag("ARTICLES_PAGE_PREVIOUS");
@@ -999,7 +1013,7 @@ namespace UberCMS.Plugins
             // Add sorting
             content.Append(
                 Core.templates["articles"]["browse_sorting"]
-                .Replace("%URL%", "articles/index?bpg=" + page)
+                .Replace("<URL>", "articles/index?bpg=" + page)
                 );
             // List each article
             Result results = conn.Query_Read("SELECT a.articleid, a.title, a.datetime, at.relative_url FROM articles_thread AS at LEFT OUTER JOIN articles AS a ON a.articleid=at.articleid_current ORDER BY " + (sort == "t_a" ? "a.title ASC" : sort == "t_d" ? "a.title DESC" : sort == "d_a" ? "a.datetime ASC" : "a.datetime DESC") + " LIMIT " + ((browseArticlesPage * page) - browseArticlesPage) + "," + browseArticlesPage);
@@ -1007,21 +1021,21 @@ namespace UberCMS.Plugins
                 foreach (ResultRow foundItem in results)
                     content.Append(
                         Core.templates["articles"]["browse_article"]
-                        .Replace("%RELATIVE_URL%", foundItem["relative_url"])
-                        .Replace("%ARTICLEID%", HttpUtility.UrlEncode(foundItem["articleid"]))
-                        .Replace("%TITLE%", HttpUtility.HtmlEncode(foundItem["title"]))
-                        .Replace("%DATETIME%", HttpUtility.HtmlEncode(foundItem["datetime"]))
-                        .Replace("%DATETIME_SHORT%", HttpUtility.HtmlEncode(foundItem["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(foundItem["datetime"])) : "Unknown"))
+                        .Replace("<RELATIVE_URL>", foundItem["relative_url"])
+                        .Replace("<ARTICLEID>", HttpUtility.UrlEncode(foundItem["articleid"]))
+                        .Replace("<TITLE>", HttpUtility.HtmlEncode(foundItem["title"]))
+                        .Replace("<DATETIME>", HttpUtility.HtmlEncode(foundItem["datetime"]))
+                        .Replace("<DATETIME_SHORT>", HttpUtility.HtmlEncode(foundItem["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(foundItem["datetime"])) : "Unknown"))
                         );
             else
                 content.Append("No articles available.");
             // Append navigation
             content.Append(
                 Core.templates["articles"]["browse_nav"]
-                .Replace("%URL%", "articles/index")
-                .Replace("%PAGE%", page.ToString())
-                .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
-                .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                .Replace("<URL>", "articles/index")
+                .Replace("<PAGE>", page.ToString())
+                .Replace("<PAGE_PREVIOUS>", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("<PAGE_NEXT>", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
                 );
             // Set navigation flags
             if (page > 1) pageElements.setFlag("ARTICLES_PAGE_PREVIOUS");
@@ -1057,12 +1071,12 @@ namespace UberCMS.Plugins
             }
             // Display confirmation/security-verification form
             content.Append(Core.templates["articles"]["thread_delete"]
-                .Replace("%THREADID%", HttpUtility.HtmlEncode(threadData[0]["threadid"]))
-                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty)
-                .Replace("%CSRF%", HttpUtility.HtmlEncode(Common.AntiCSRF.getFormToken()))
-                .Replace("%TITLE%", HttpUtility.HtmlEncode(threadData[0]["title"]))
-                .Replace("%ARTICLE_COUNT%", HttpUtility.HtmlEncode(threadData[0]["article_count"]))
-                .Replace("%RELATIVE_URL%", HttpUtility.HtmlEncode(threadData[0]["relative_url"]))
+                .Replace("<THREADID>", HttpUtility.HtmlEncode(threadData[0]["threadid"]))
+                .Replace("<ERROR>", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", HttpUtility.HtmlEncode(error)) : string.Empty)
+                .Replace("<CSRF>", HttpUtility.HtmlEncode(Common.AntiCSRF.getFormToken()))
+                .Replace("<TITLE>", HttpUtility.HtmlEncode(threadData[0]["title"]))
+                .Replace("<ARTICLE_COUNT>", HttpUtility.HtmlEncode(threadData[0]["article_count"]))
+                .Replace("<RELATIVE_URL>", HttpUtility.HtmlEncode(threadData[0]["relative_url"]))
                 );
             pageElements["TITLE"] = "Articles - Delete Thread";
         }
@@ -1082,21 +1096,21 @@ namespace UberCMS.Plugins
                 foreach (ResultRow article in pending)
                     articlesPending.Append(
                         Core.templates["articles"]["articles_pending_row"]
-                        .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
-                        .Replace("%TITLE%", HttpUtility.HtmlEncode(article["title"]))
-                        .Replace("%USERNAME%", HttpUtility.HtmlEncode(article["username"]))
-                        .Replace("%USERID%", HttpUtility.HtmlEncode(article["userid"]))
-                        .Replace("%CREATED%", HttpUtility.HtmlEncode(article["datetime"]))
-                        .Replace("%WARNINGS%", article["allow_html"].Equals("1") ? "HTML" : "&nbsp;")
+                        .Replace("<ARTICLEID>", HttpUtility.HtmlEncode(article["articleid"]))
+                        .Replace("<TITLE>", HttpUtility.HtmlEncode(article["title"]))
+                        .Replace("<USERNAME>", HttpUtility.HtmlEncode(article["username"]))
+                        .Replace("<USERID>", HttpUtility.HtmlEncode(article["userid"]))
+                        .Replace("<CREATED>", HttpUtility.HtmlEncode(article["datetime"]))
+                        .Replace("<WARNINGS>", article["allow_html"].Equals("1") ? "HTML" : "&nbsp;")
                         );
             else
                 articlesPending.Append("No pending articles.");
             // Append navigation
             articlesPending.Append(
                 Core.templates["articles"]["pending_nav"]
-                .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
-                .Replace("%PAGE%", page.ToString())
-                .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                .Replace("<PAGE_PREVIOUS>", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("<PAGE>", page.ToString())
+                .Replace("<PAGE_NEXT>", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
                 );
             // Set navigation flags
             if (page > 1) pageElements.setFlag("ARTICLE_PAGE_PREVIOUS");
@@ -1104,7 +1118,7 @@ namespace UberCMS.Plugins
             // Output the page
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
             content.Append(Core.templates["articles"]["articles_pending"]
-                .Replace("%PENDING%", articlesPending.ToString())
+                .Replace("<PENDING>", articlesPending.ToString())
                 );
             pageElements["TITLE"] = "Articles - Pending";
         }
@@ -1171,20 +1185,20 @@ namespace UberCMS.Plugins
             pageElements["TITLE"] = "Articles - Statistics";
             content = new StringBuilder(Core.templates["articles"]["stats"]);
             content
-                .Replace("%THREADS_TOTAL%", statsCache_threadsTotal)
-                .Replace("%THREADS_AVERAGE_REVISIONS%", statsCache_threadsAverageRevisions)
-                .Replace("%ARTICLES_TOTAL%", statsCache_articlesTotal)
-                .Replace("%ARTICLES_STORAGE_TEXT%", statsCache_articlesStorageText)
-                .Replace("%ARTICLES_STORAGE_THUMBS%", statsCache_articlesStorageThumbs)
-                .Replace("%ARTICLES_THUMBS_TOTAL%", statsCache_articlesTotalThumbnails)
-                .Replace("%ARTICLES_AVERAGE_LENGTH%", statsCache_articlesAverageLength)
-                .Replace("%TAGS_TOTAL%", statsCache_tagsTotal)
-                .Replace("%TAGS_UNIQUE%", statsCache_tagsUnique)
-                .Replace("%TAGS_AVERAGE%", statsCache_tagsAverage)
-                .Replace("%IMAGES_TOTAL%", statsCache_imagesTotal)
-                .Replace("%IMAGES_STORAGE%", statsCache_imagesStorage)
-                .Replace("%TOTAL_STORAGE%", statsCache_totalStorage)
-                .Replace("%LAST_UPDATED%", lastUpdatedStats.ToString("dd/MM/yyyy HH:mm:ss"))
+                .Replace("<THREADS_TOTAL>", statsCache_threadsTotal)
+                .Replace("<THREADS_AVERAGE_REVISIONS>", statsCache_threadsAverageRevisions)
+                .Replace("<ARTICLES_TOTAL>", statsCache_articlesTotal)
+                .Replace("<ARTICLES_STORAGE_TEXT>", statsCache_articlesStorageText)
+                .Replace("<ARTICLES_STORAGE_THUMBS>", statsCache_articlesStorageThumbs)
+                .Replace("<ARTICLES_THUMBS_TOTAL>", statsCache_articlesTotalThumbnails)
+                .Replace("<ARTICLES_AVERAGE_LENGTH>", statsCache_articlesAverageLength)
+                .Replace("<TAGS_TOTAL>", statsCache_tagsTotal)
+                .Replace("<TAGS_UNIQUE>", statsCache_tagsUnique)
+                .Replace("<TAGS_AVERAGE>", statsCache_tagsAverage)
+                .Replace("<IMAGES_TOTAL>", statsCache_imagesTotal)
+                .Replace("<IMAGES_STORAGE>", statsCache_imagesStorage)
+                .Replace("<TOTAL_STORAGE>", statsCache_totalStorage)
+                .Replace("<LAST_UPDATED>", lastUpdatedStats.ToString("dd/MM/yyyy HH:mm:ss"))
                 ;
         }
         #endregion
@@ -1238,16 +1252,16 @@ namespace UberCMS.Plugins
                 foreach (ResultRow image in data)
                     results.Append(
                         Core.templates["articles"]["image_search_item"]
-                        .Replace("%IMAGEID%", HttpUtility.HtmlEncode(image["imageid"]))
-                        .Replace("%TITLE%", HttpUtility.HtmlEncode(image["title"]))
+                        .Replace("<IMAGEID>", HttpUtility.HtmlEncode(image["imageid"]))
+                        .Replace("<TITLE>", HttpUtility.HtmlEncode(image["title"]))
                         );
             else
                 results.Append("No images found.");
             // Output the page
             content.Append(
                 Core.templates["articles"]["image_search"]
-                .Replace("%RESULTS%", results.ToString())
-                .Replace("%SEARCH%", HttpUtility.HtmlEncode(search))
+                .Replace("<RESULTS>", results.ToString())
+                .Replace("<SEARCH>", HttpUtility.HtmlEncode(search))
                 );
             pageElements["TITLE"] = "Image Store - Browse";
             // Set flags
@@ -1255,10 +1269,10 @@ namespace UberCMS.Plugins
             // Append navigation
             content.Append(
                 Core.templates["articles"]["browse_nav"]
-                .Replace("%URL%", "articles/images?" + (alphabet != null ? "a=" + alphabet : string.Empty))
-                .Replace("%PAGE%", page.ToString())
-                .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
-                .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                .Replace("<URL>", "articles/images?" + (alphabet != null ? "a=" + alphabet : string.Empty))
+                .Replace("<PAGE>", page.ToString())
+                .Replace("<PAGE_PREVIOUS>", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("<PAGE_NEXT>", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
                 );
             // Append flags
             if (page > 1) pageElements.setFlag("ARTICLES_PAGE_PREVIOUS");
@@ -1334,10 +1348,10 @@ namespace UberCMS.Plugins
             // Append navigation
             content.Append(
                 Core.templates["articles"]["browse_nav"]
-                .Replace("%URL%", "articles/images/view/" + image["imageid"])
-                .Replace("%PAGE%", page.ToString())
-                .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
-                .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                .Replace("<URL>", "articles/images/view/" + image["imageid"])
+                .Replace("<PAGE>", page.ToString())
+                .Replace("<PAGE_PREVIOUS>", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("<PAGE_NEXT>", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
                 );
             // Set navigation flags
             if (page > 1) pageElements.setFlag("ARTICLES_PAGE_PREVIOUS");
@@ -1389,8 +1403,8 @@ namespace UberCMS.Plugins
             // Output form
             content.Append(
                 Core.templates["articles"]["image_uploader"]
-                .Replace("%ERROR%", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", error) : string.Empty)
-                .Replace("%TITLE%", HttpUtility.HtmlEncode(title))
+                .Replace("<ERROR>", error != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", error) : string.Empty)
+                .Replace("<TITLE>", HttpUtility.HtmlEncode(title))
                 );
             pageElements["TITLE"] = "Articles - Image Store - Upload";
         }
@@ -1404,7 +1418,7 @@ namespace UberCMS.Plugins
                 
                 response.Redirect(pageElements["URL"] + "/articles");
             }
-            content.Append(Core.templates["articles"]["rebuild_cache"].Replace("%CSRF%", Common.AntiCSRF.getFormToken()));
+            content.Append(Core.templates["articles"]["rebuild_cache"].Replace("<CSRF>", Common.AntiCSRF.getFormToken()));
             pageElements["TITLE"] = "Articles - Confirm Rebuilding Cache";
         }
         #endregion
@@ -1529,7 +1543,7 @@ namespace UberCMS.Plugins
             // Check we have an articleid that is not null and greater than zero, else 404
             if (articleid == null || articleid.Length == 0) return;
             // Load the article's data
-            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.articleid, a.threadid, a.title, a.userid, a.body, a.body_cached, a.moderator_userid, a.published, a.allow_comments, a.allow_html, a.show_pane, a.datetime, at.relative_url, at.articleid_current, at.pdf_name, u.username FROM (articles AS a, articles_thread AS at) LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
+            Result articleRaw = conn.Query_Read("SELECT (SELECT COUNT('') FROM articles_thread_permissions WHERE threadid=at.threadid LIMIT 1) AS perms_enabled, (SELECT COUNT('') FROM articles WHERE threadid=a.threadid AND articleid <= a.articleid ORDER BY articleid ASC) AS revision, (SELECT ac.allow_comments FROM articles_thread AS act LEFT OUTER JOIN articles AS ac ON ac.articleid=act.articleid_current WHERE act.threadid=at.threadid) AS allow_comments_thread, a.articleid, a.threadid, a.title, a.userid, a.body, a.body_cached, a.moderator_userid, a.published, a.allow_comments, a.allow_html, a.show_pane, a.datetime, at.relative_url, at.articleid_current, at.pdf_name, u.username FROM (articles AS a, articles_thread AS at) LEFT OUTER JOIN bsa_users AS u ON u.userid=a.userid WHERE a.articleid='" + Utils.Escape(articleid) + "' AND at.threadid=a.threadid");
             if (articleRaw.Rows.Count != 1)
                 return; // 404 - no data found - the article is corrupt (thread and article not linked) or the article does not exist
             ResultRow article = articleRaw[0];
@@ -1539,15 +1553,32 @@ namespace UberCMS.Plugins
             bool permDelete;
             bool permPublish;
             bool owner;
+            // Grab the user's permissions and check they're allowed to access the thread - with overriding for PDF generator via access-code
+            // -- Check for override
+            string pdfc = request.QueryString["pdfc"];
+            bool pdfOverride = pdfc != null && pdfc.Length == 16 && pdfAccessCodes.ContainsKey(pdfc) && pdfAccessCodes[pdfc] == article["articleid"];
+            // -- Check actual permissions
+            bool threadRequiresPermissions = !pdfOverride && article["perms_enabled"] != "0";
             if (HttpContext.Current.User.Identity.IsAuthenticated)
             {
-                Result permsRaw = conn.Query_Read("SELECT access_media_create, access_media_delete, access_media_publish FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS g ON g.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
+                Result permsRaw = conn.Query_Read("SELECT " + (threadRequiresPermissions ? "(SELECT COUNT('') FROM articles_thread_permissions WHERE threadid='" + Utils.Escape(article["threadid"]) + "' AND groupid=g.groupid) AS role_exists," : string.Empty) + " g.access_media_create, g.access_media_delete, g.access_media_publish FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS g ON g.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
                 if(permsRaw.Rows.Count != 1) return; // Something has gone wrong
                 ResultRow perms = permsRaw[0];
+                permPublish = perms["access_media_publish"].Equals("1");
+                // Check if the user has permission to view the thread; if the user has publish permissions, they are automatically allowed to view the thread
+                if (!permPublish && threadRequiresPermissions && perms["role_exists"] == "0")
+                {
+                    pageArticle_View_AccessDenied(conn, pageElements);
+                    return;
+                }
                 permCreate = perms["access_media_create"].Equals("1");
                 permDelete = perms["access_media_delete"].Equals("1");
-                permPublish = perms["access_media_publish"].Equals("1");
                 owner = article["userid"] == HttpContext.Current.User.Identity.Name;
+            }
+            else if (threadRequiresPermissions)
+            {
+                pageArticle_View_AccessDenied(conn, pageElements);
+                return;
             }
             else
             {
@@ -1595,10 +1626,17 @@ namespace UberCMS.Plugins
                     case "rebuild":
                         pageArticle_View_Rebuild(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
                         break;
+                    case "permissions":
+                        if (!permPublish) return;
+                        pageArticle_View_Permissions(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref permCreate, ref permDelete, ref permPublish, ref owner, ref subpageContent, ref article);
+                        break;
+                    case "pdf":
+                        pageArticle_View_Pdf(ref pluginid, ref conn, ref pageElements, ref request, ref response, ref article);
+                        break;
                     default:
                         return; // 404 - unknown sub-page
                 }
-                content.Replace("%BODY%", subpageContent.ToString());
+                content.Replace("<BODY>", subpageContent.ToString());
             }
             else
             {
@@ -1607,7 +1645,7 @@ namespace UberCMS.Plugins
                     // Wrap content in HTML protection container (against e.g. malicious uploads)
                     subpageContent.Append(
                         Core.templates["articles"]["article_html_protect"]
-                        .Replace("%DATA%", article["body_cached"].Replace("<", "&lt;").Replace(">", "&gt;"))
+                        .Replace("<DATA>", article["body_cached"].Replace("<", "&lt;").Replace(">", "&gt;"))
                         );
                 }
                 else
@@ -1621,7 +1659,7 @@ namespace UberCMS.Plugins
                 {
                     // Append tag for the bottom of the article
                     tags.Append(
-                        Core.templates["articles"]["article_tag"].Replace("%TITLE%", HttpUtility.HtmlEncode(tag["keyword"]))
+                        Core.templates["articles"]["article_tag"].Replace("<TITLE_ENCODED>", HttpUtility.HtmlEncode(tag["keyword"])).Replace("<TITLE>", HttpUtility.HtmlEncode(tag["keyword"]))
                         );
                     // Append tag for meta
                     metaTags.Append(HttpUtility.HtmlEncode(tag["keyword"])).Append(",");
@@ -1632,22 +1670,22 @@ namespace UberCMS.Plugins
                 // -- Append meta author
                 pageElements["HEADER"] += "<meta name=\"author\" content=\"" + article["username"] + "\" />";
                 // Set the article's body
-                content.Replace("%BODY%", subpageContent.ToString())
+                content.Replace("<BODY>", subpageContent.ToString())
                     .Append(
                         Core.templates["articles"]["article_footer"]
-                            .Replace("%TAGS%", tags.Length == 0 ? "(none)" : tags.ToString()))
-                            .Replace("%DATE%", article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "unknown")
-                            .Replace("%FULL_DATE%", article["datetime"].Length > 0 ? DateTime.Parse(article["datetime"]).ToString("dd/MM/yyyy HH:mm:ss") : "unknown")
-                            .Replace("%REVISION%", HttpUtility.HtmlEncode(article["revision"]))
+                            .Replace("<TAGS>", tags.Length == 0 ? "(none)" : tags.ToString()))
+                            .Replace("<DATE>", article["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(article["datetime"])) : "unknown")
+                            .Replace("<FULL_DATE>", article["datetime"].Length > 0 ? DateTime.Parse(article["datetime"]).ToString("dd/MM/yyyy HH:mm:ss") : "unknown")
+                            .Replace("<REVISION>", HttpUtility.HtmlEncode(article["revision"]))
                     ;
             }
 
             // Add pane
             content
-                .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
-                .Replace("%THREADID%", HttpUtility.HtmlEncode(article["threadid"]))
-                .Replace("%COMMENTS%", conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE threadid='" + Utils.Escape(article["threadid"]) + "'").ToString())
-                .Replace("%PDF_NAME%", HttpUtility.HtmlEncode(article["pdf_name"]))
+                .Replace("<ARTICLEID>", HttpUtility.HtmlEncode(article["articleid"]))
+                .Replace("<THREADID>", HttpUtility.HtmlEncode(article["threadid"]))
+                .Replace("<COMMENTS>", conn.Query_Count("SELECT COUNT('') FROM articles_thread_comments WHERE threadid='" + Utils.Escape(article["threadid"]) + "'").ToString())
+                .Replace("<PDF_NAME>", HttpUtility.HtmlEncode(article["pdf_name"]))
                 ;
 
             bool pdf = request.QueryString["pdf"] != null;
@@ -1687,6 +1725,11 @@ namespace UberCMS.Plugins
             pageElements["CONTENT"] = content.ToString();
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
             Misc.Plugins.addHeaderJS(pageElements["URL"] + "/Content/JS/Article.js", ref pageElements);
+        }
+        public static void pageArticle_View_AccessDenied(Connector conn, Misc.PageElements pageElements)
+        {
+            pageElements["CONTENT"] = Core.templates["articles"]["access_denied"];
+            pageElements["TITLE"] = "Access Denied";
         }
         public static void pageArticle_View_Comments(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
         {
@@ -1759,10 +1802,10 @@ namespace UberCMS.Plugins
             // Set navigator
             content.Append(
                 Core.templates["articles"]["page_nav"]
-                .Replace("%SUBPAGE%", "comments")
-                .Replace("%PAGE%", commentsPage.ToString())
-                .Replace("%PAGE_PREVIOUS%", (commentsPage > 1 ? commentsPage - 1 : 1).ToString())
-                .Replace("%PAGE_NEXT%", (commentsPage < int.MaxValue ? commentsPage + 1 : int.MaxValue).ToString())
+                .Replace("<SUBPAGE>", "comments")
+                .Replace("<PAGE>", commentsPage.ToString())
+                .Replace("<PAGE_PREVIOUS>", (commentsPage > 1 ? commentsPage - 1 : 1).ToString())
+                .Replace("<PAGE_NEXT>", (commentsPage < int.MaxValue ? commentsPage + 1 : int.MaxValue).ToString())
                 );
             // -- Set flags for the previous and next buttons - very simple solution but highly efficient
             if (commentsPage > 1)
@@ -1773,10 +1816,8 @@ namespace UberCMS.Plugins
             if (HttpContext.Current.User.Identity.IsAuthenticated && allowComments)
                 content.Append(
                         Core.templates["articles"]["comments_postbox"]
-                    .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
-                    .Replace("%SUBPAGE%", "history")
-                    .Replace("%ERROR%", commentError != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", commentError) : string.Empty)
-                    .Replace("%COMMENT_BODY%", HttpUtility.HtmlEncode(commentBody))
+                    .Replace("<ERROR>", commentError != null ? Core.templates[pageElements["TEMPLATE"]]["error"].Replace("<ERROR>", commentError) : string.Empty)
+                    .Replace("<COMMENT_BODY>", HttpUtility.HtmlEncode(commentBody))
                     );
         }
         public static void pageArticle_View_Delete(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
@@ -1820,7 +1861,6 @@ namespace UberCMS.Plugins
                     );
             content.Append(
                 Core.templates["articles"]["article_delete"]
-                .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
             );
         }
         public static void pageArticle_View_History(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
@@ -1842,24 +1882,23 @@ namespace UberCMS.Plugins
             {
                 content.Append(
                     Core.templates["articles"]["history_row"]
-                    .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(a["articleid"]))
-                    .Replace("%SELECTED%", a["articleid"] == currentArticleID ? "SELECTED" : string.Empty)
-                    .Replace("%TITLE%", HttpUtility.HtmlEncode(a["title"]))
-                    .Replace("%PUBLISHED%", a["published"].Equals("1") ? "Published by " + HttpUtility.HtmlEncode(a["username"]) : "Pending publication.")
-                    .Replace("%DATETIME%", a["datetime"].Length > 0 ? a["datetime"] : "Unknown")
-                    .Replace("%DATETIME_SHORT%", a["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(a["datetime"])) : "Unknown")
-                    .Replace("%CREATOR_USERID%", HttpUtility.HtmlEncode(a["userid"]))
-                    .Replace("%CREATOR%", HttpUtility.HtmlEncode(a["author"]))
+                    .Replace("<ARTICLEID>", HttpUtility.HtmlEncode(a["articleid"]))
+                    .Replace("<SELECTED>", a["articleid"] == currentArticleID ? "SELECTED" : string.Empty)
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(a["title"]))
+                    .Replace("<PUBLISHED>", a["published"].Equals("1") ? "Published by " + HttpUtility.HtmlEncode(a["username"]) : "Pending publication.")
+                    .Replace("<DATETIME>", a["datetime"].Length > 0 ? a["datetime"] : "Unknown")
+                    .Replace("<DATETIME_SHORT>", a["datetime"].Length > 0 ? Misc.Plugins.getTimeString(DateTime.Parse(a["datetime"])) : "Unknown")
+                    .Replace("<CREATOR_USERID>", HttpUtility.HtmlEncode(a["userid"]))
+                    .Replace("<CREATOR>", HttpUtility.HtmlEncode(a["author"]))
                     );
             }
             // Append navigator
             content.Append(
                 Core.templates["articles"]["page_nav"]
-                .Replace("%ARTICLEID%", article["articleid"])
-                .Replace("%SUBPAGE%", "history")
-                .Replace("%PAGE%", page.ToString())
-                .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
-                .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
+                .Replace("<SUBPAGE>", "history")
+                .Replace("<PAGE>", page.ToString())
+                .Replace("<PAGE_PREVIOUS>", (page > 1 ? page - 1 : 1).ToString())
+                .Replace("<PAGE_NEXT>", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
                 );
             // Set navigator flags
             if (page > 1)
@@ -1884,7 +1923,6 @@ namespace UberCMS.Plugins
             }
             content.Append(
                 Core.templates["articles"]["article_publish"]
-                .Replace("%ARTICLEID%", HttpUtility.HtmlEncode(article["articleid"]))
                 );
         }
         public static void pageArticle_View_Set(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
@@ -1901,10 +1939,128 @@ namespace UberCMS.Plugins
             articleViewRebuildCache(conn, ref cached, article["allow_html"].Equals("1"), ref pageElements);
             conn.Query_Execute("UPDATE articles SET body_cached='" + Utils.Escape(cached.ToString()) + "' WHERE articleid='" + Utils.Escape(article["articleid"]) + "';" + insertEvent(RecentChanges_EventType.RebuiltArticleCache, HttpContext.Current.User.Identity.Name, article["articleid"], article["threadid"]));
             conn.Disconnect();
-            // Rebuild article pdf
-            pdfRebuild(pluginid, article["articleid"], article["title"], article["pdf_name"], article["threadid"], request);
+            // Rebuild article pdf if this is the current article
+            string currentArticleID = (conn.Query_Scalar("SELECT articleid_current FROM articles_thread WHERE threadid='" + Utils.Escape(article["threadid"]) + "'") ?? string.Empty).ToString();
+            if(currentArticleID == article["articleid"])
+                pdfRebuild(pluginid, article["articleid"], article["title"], article["pdf_name"], article["threadid"], request);
             // Redirect back to the article
             response.Redirect(pageElements["URL"] + "/article/" + article["articleid"], true);
+        }
+        public static void pageArticle_View_Permissions(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref bool permCreate, ref bool permDelete, ref bool permPublish, ref bool owner, ref StringBuilder content, ref ResultRow article)
+        {
+            if (!permPublish) return;
+            // Check postback
+            List<string> groupidsPostback = new List<string>();
+            string field;
+            for (int i = 0; i < request.Form.Count; i++)
+            {
+                field = request.Form.GetKey(i);
+                if (field.StartsWith("group_") && field.Length > 6)
+                {
+                    field = field.Substring(6);
+                    if (Misc.Plugins.isNumeric(field))
+                        groupidsPostback.Add(field);
+                }
+            }
+            bool updatedPerms = false;
+            if (groupidsPostback.Count > 0)
+            {
+                // Update the permissions for the thread
+                StringBuilder query = new StringBuilder();
+                query.Append("DELETE FROM articles_thread_permissions WHERE threadid='").Append(Utils.Escape(article["threadid"])).Append("'; INSERT IGNORE INTO articles_thread_permissions (threadid, groupid) VALUES");
+                string start = "('" + Utils.Escape(article["threadid"]) + "','";
+                foreach (string groupid in groupidsPostback)
+                    query.Append(start).Append(groupid).Append("'),");
+                query.Remove(query.Length - 1, 1).Append(";");
+                conn.Query_Execute(query.ToString());
+                updatedPerms = true;
+            }
+            // Generate user groups
+            StringBuilder groups = new StringBuilder();
+            foreach(ResultRow group in conn.Query_Read("SELECT g.groupid, g.title, (SELECT COUNT('') FROM articles_thread_permissions WHERE threadid='" + Utils.Escape(article["threadid"]) + "' AND groupid=g.groupid) AS access FROM bsa_user_groups AS g"))
+                groups.Append(
+                    Core.templates["articles"]["permissions_usergroup"]
+                    .Replace("<GROUPID>", group["groupid"])
+                    .Replace("<TITLE>", HttpUtility.HtmlEncode(group["title"]))
+                    .Replace("<CHECKED>", group["access"] != "0" ? "checked" : string.Empty)
+                    );
+            // Set content
+            content.Append(
+                Core.templates["articles"]["permissions"]
+                .Replace("<SUCCESS>", updatedPerms ? Core.templates[pageElements["TEMPLATE"]]["success"].Replace("<SUCCESS>", "Successfully updated permissions!") : string.Empty)
+                .Replace("<GROUPS>", groups.ToString())
+                );
+        }
+        public static void pageArticle_View_Pdf(ref string pluginid, ref Connector conn, ref Misc.PageElements pageElements, ref HttpRequest request, ref HttpResponse response, ref ResultRow article)
+        {
+            // This download method borrows code from Uber Media; much credit to http://forums.asp.net/t/1218116.aspx
+            string filename = article["pdf_name"] + ".pdf";
+            string path = Core.basePath + "\\" + PDF_DIRECTORY + "\\" + filename;
+            string lastModified = article["datetime"];
+
+            if (!File.Exists(path))
+            {
+                conn.Disconnect();
+                response.StatusCode = 500;
+                response.Write("Failed to physically locate the file, please try your request again or contact us immediately!");
+                response.End();
+            }
+            try
+            {
+                // Clear the response so far, as well as disable the buffer
+                response.Clear();
+                response.Buffer = false;
+                // Based on RFC 2046 - page 4 - media types - point 5 - http://www.rfc-editor.org/rfc/rfc2046.txt - http://stackoverflow.com/questions/1176022/unknown-file-type-mime
+                response.ContentType = "application/octet-stream";
+                FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+                BinaryReader bin = new BinaryReader(fs);
+                long startRead = 0;
+                // Read the range of bytes requested - allows downloads to be continued
+                if (request.Headers["Range"] != null)
+                {
+                    string[] range = request.Headers["Range"].Split(new char[] { '=', '-' }); // RFC 2616 - section 14.35
+                    // Ensure there are at least two parts
+                    if (range.Length >= 2)
+                    {
+                        // Attempt to parse the requested bytes
+                        long.TryParse(range[1], out startRead);
+                        // Ensure its inclusive of 0 to size of file, else reset it to zero
+                        if (startRead < 0 || startRead >= fs.Length) startRead = 0;
+                        else
+                            // Write the range of bytes being sent - RFC 2616 - section 14.16
+                            response.AddHeader("Content-Range", string.Format(" bytes {0}-{1}/{2}", startRead, fs.Length - 1, fs.Length));
+                    }
+                }
+                // Specify the number of bytes being sent
+                response.AddHeader("Content-Length", (fs.Length - startRead).ToString());
+                // Specify other headers
+                response.AddHeader("Connection", "Keep-Alive");
+                response.AddHeader("Last-Modified", lastModified);
+                response.AddHeader("ETag", HttpUtility.UrlEncode(filename, System.Text.Encoding.UTF8) + lastModified); // Unique entity identifier
+                response.AddHeader("Accept-Ranges", "bytes");
+                response.AddHeader("Content-Disposition", "attachment;filename=" + filename);
+                response.StatusCode = 206;
+                // Start the stream at the offset
+                bin.BaseStream.Seek(startRead, SeekOrigin.Begin);
+                const int chunkSize = 16384; // 16kb will be transferred at a time
+                // Write bytes whilst the user is connected in chunks of 1024 bytes
+                int maxChunks = (int)Math.Ceiling((double)(fs.Length - startRead) / chunkSize);
+                int i;
+                for (i = 0; i < maxChunks && response.IsClientConnected; i++)
+                {
+                    response.BinaryWrite(bin.ReadBytes(chunkSize));
+                    response.Flush();
+                }
+                bin.Close();
+                fs.Close();
+            }
+            catch
+            {
+                response.StatusCode = 500;
+                response.Write("Failed to get file, please try your request again or contact us immediately!");
+            }
+            conn.Disconnect();
+            response.End();
         }
         static void articleViewRebuildCache(Connector conn, ref StringBuilder text, bool allowHTML, ref Misc.PageElements pageElements)
         {
@@ -2258,15 +2414,29 @@ namespace UberCMS.Plugins
         #endregion
 
         #region "Methods - Article PDF"
+        private const string PDF_DIRECTORY = "_articlespdf";
         private static void pdfRebuildThread(string articleid, string title, string oldFilename, string threadid, string baseUrlWithoutTailingSlash, string baseDirectory)
         {
+            // Add access code
+            string accessCode = null;
+            lock (pdfAccessCodes)
+            {
+                int attempts = 0;
+                // Generate a unique key
+                while (attempts < 20 && pdfAccessCodes.ContainsKey((accessCode = Common.CommonUtils.randomText(16))))
+                    attempts++;
+                // No unique access-code could be generated, abort.
+                if (attempts >= 20)
+                    return;
+            }
+            pdfAccessCodes.Add(accessCode, articleid);
             try
             {
                 // Delete the old file
-                if (!Directory.Exists(Core.basePath + "\\Content\\PDF"))
-                    Directory.CreateDirectory(Core.basePath + "\\Content\\PDF");
+                if (!Directory.Exists(Core.basePath + "\\" + PDF_DIRECTORY))
+                    Directory.CreateDirectory(Core.basePath + "\\" + PDF_DIRECTORY);
                 else if (oldFilename.Length > 0)
-                    File.Delete(Core.basePath + "\\Content\\PDF\\" + oldFilename + ".pdf");
+                    File.Delete(Core.basePath + "\\" + PDF_DIRECTORY + "\\" + oldFilename + ".pdf");
                 // Generate new title
                 StringBuilder filenameRaw = new StringBuilder(articleid).Append("_");
                 foreach (char c in title)
@@ -2278,12 +2448,14 @@ namespace UberCMS.Plugins
                         filenameRaw.Append("_");
                 string filename = filenameRaw.ToString();
                 // Launch process to generate pdf
-                Process proc = Process.Start(baseDirectory + "\\Bin\\wkhtmltopdf.exe", "--javascript-delay 10000 --print-media-type --page-size A4 --margin-top 0mm --margin-bottom 0mm --margin-left 0mm --margin-right 0mm \"" + baseUrlWithoutTailingSlash + "/article/" + articleid + "?pdf=1\" \"" + Core.basePath + "\\Content\\PDF\\" + filename + ".pdf\"");
+                Process proc = Process.Start(baseDirectory + "\\Bin\\wkhtmltopdf.exe", "--javascript-delay 10000 --print-media-type --page-size A4 --margin-top 0mm --margin-bottom 0mm --margin-left 0mm --margin-right 0mm \"" + baseUrlWithoutTailingSlash + "/article/" + articleid + "?pdf=1&pdfc=" + accessCode + "\" \"" + Core.basePath + "\\" + PDF_DIRECTORY + "\\" + filename + ".pdf\"");
                 proc.WaitForExit(20000); // It shouldn't take more than twenty seconds
                 // No issues...update the database
                 Core.globalConnector.Query_Execute("UPDATE articles_thread SET pdf_name='" + Utils.Escape(filename) + "' WHERE threadid='" + Utils.Escape(threadid) + "';");
             }
-            catch {}
+            catch { }
+            // Remove access code
+            pdfAccessCodes.Remove(accessCode);
         }
         public static void pdfRebuild(string articleid, string title, string oldFilename, string threadid, string baseUrlWithoutTailingSlash, string baseDirectory)
         {

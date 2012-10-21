@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><template><pkey><![CDATA[articles]]></pkey><hkey><![CDATA[comments_postbox]]></hkey><description><![CDATA[The postbox on an article for making comments.]]></description><html><![CDATA[<h3>Make a Comment</h3>
-%ERROR%
-<form method="post" action="<!--URL-->/article/%ARTICLEID%/comments">
+<ERROR>
+<form method="post" action="<!--URL-->/article/<ARTICLEID>/comments">
 	<div class="ROW">
 		<div class="CELL1">
-			<textarea class="TEXTAREA" name="comment_body" rows="3" cols="100">%COMMENT_BODY%</textarea>
+			<textarea class="TEXTAREA" name="comment_body" rows="3" cols="100"><COMMENT_BODY></textarea>
 		</div>
 		<div class="clear"></div>
 	</div>
