@@ -776,6 +776,7 @@ namespace UberCMS.Plugins
             string sort = request.QueryString["sort"];
             // Security
             tag = tag.Replace("%", string.Empty);
+
             content.Append(Core.templates["articles"]["browse_header"].Replace("%TITLE%", "Tag `" + HttpUtility.HtmlEncode(tag) + "`"));
             // Add sorting
             content.Append(
@@ -952,6 +953,17 @@ namespace UberCMS.Plugins
                         case RecentChanges_EventType.SetAsSelected:
                             content.Append(
                                 Core.templates["articles"]["change_selected"]
+                                .Replace("%RELATIVE_URL%", HttpUtility.UrlEncode(logEvent["relative_url"]))
+                                .Replace("%TITLE%", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
+                                .Replace("%USERID%", HttpUtility.HtmlEncode(logEvent["userid"]))
+                                .Replace("%USERNAME%", HttpUtility.HtmlEncode(logEvent["username"]))
+                                .Replace("%DATETIME%", HttpUtility.HtmlEncode(logEvent["datetime"]))
+                                .Replace("%TIME%", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
+                                );
+                            break;
+                        case RecentChanges_EventType.RebuiltArticleCache:
+                            content.Append(
+                                Core.templates["articles"]["change_rebuild_cache"]
                                 .Replace("%RELATIVE_URL%", HttpUtility.UrlEncode(logEvent["relative_url"]))
                                 .Replace("%TITLE%", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
                                 .Replace("%USERID%", HttpUtility.HtmlEncode(logEvent["userid"]))
@@ -1192,7 +1204,7 @@ namespace UberCMS.Plugins
                     pageArticles_Images_Upload(ref content, pluginid, conn, ref pageElements, request, response, permCreate);
                     break;
                 case "view":
-                    pageArticles_Images_View(ref content, pluginid, conn, ref pageElements, request, response, permDelete);
+                    pageArticles_Images_View(ref content, pluginid, conn, ref pageElements, request, response, permCreate, permDelete);
                     break;
             }
         }
@@ -1243,7 +1255,7 @@ namespace UberCMS.Plugins
             // Append navigation
             content.Append(
                 Core.templates["articles"]["browse_nav"]
-                .Replace("%URL%", "articles/images")
+                .Replace("%URL%", "articles/images?" + (alphabet != null ? "a=" + alphabet : string.Empty))
                 .Replace("%PAGE%", page.ToString())
                 .Replace("%PAGE_PREVIOUS%", (page > 1 ? page - 1 : 1).ToString())
                 .Replace("%PAGE_NEXT%", (page < int.MaxValue ? page + 1 : int.MaxValue).ToString())
@@ -1265,7 +1277,7 @@ namespace UberCMS.Plugins
             conn.Disconnect();
             response.End();
         }
-        public static void pageArticles_Images_View(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, bool permDelete)
+        public static void pageArticles_Images_View(ref StringBuilder content, string pluginid, Connector conn, ref Misc.PageElements pageElements, HttpRequest request, HttpResponse response, bool permCreate, bool permDelete)
         {
             string imageid = request.QueryString["3"];
             if (imageid == null || imageid.Length == 0) return;
@@ -1287,6 +1299,9 @@ namespace UberCMS.Plugins
                 pageElements.setFlag("IMAGE_DELETE");       // Set flag
                 Common.AntiCSRF.setCookieToken(response);   // Set cookie for anti-csrf protection
             }
+            // Set upload flag
+            if (permCreate)
+                pageElements.setFlag("IMAGE_UPLOAD");
             // Build the list of articles using the image
             int page;
             if (request.QueryString["bpg"] == null || !int.TryParse(request.QueryString["bpg"], out page) || page < 1) page = 1;
@@ -1386,6 +1401,7 @@ namespace UberCMS.Plugins
             {
                 cacheRebuild(request, pluginid, conn);
                 conn.Disconnect();
+                
                 response.Redirect(pageElements["URL"] + "/articles");
             }
             content.Append(Core.templates["articles"]["rebuild_cache"].Replace("%CSRF%", Common.AntiCSRF.getFormToken()));
@@ -2145,7 +2161,7 @@ namespace UberCMS.Plugins
         public static void formatInternalLinks(ref StringBuilder text, ref Misc.PageElements pageElements)
         {
             string[] elems;
-            foreach (Match m in Regex.Matches(text.ToString(), @"\[:\[(.*?)\]:\]", RegexOptions.Multiline))
+            foreach (Match m in Regex.Matches(text.ToString(), @"\[\[(.*?)\]\]", RegexOptions.Multiline))
             {
                 elems = m.Groups[1].Value.Split('|');
                 if (elems.Length == 1)
