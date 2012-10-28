@@ -62,12 +62,18 @@
 				<input type="checkbox" name="inherit_thumbnail" <INHERIT> />
 				<div>Inherit thumbnail of article being modified</div>
 			</div>
+<!--IF:UPDATE_EXISTING-->
+			<div class="CHECKBOX">
+				<input type="checkbox" name="update_existing" <UPDATE_EXISTING> />
+				<div>Update existing article</div>
+			</div>
+<!--ENDIF-->
 		</div>
 		<div class="clear"></div>
 	</div>
 	<div class="ROW">
 		<div class="CELL1">
-			<textarea class="TEXTAREA" cols="100" rows="12" name="body" id="ARTICLE_BODY"><BODY></textarea>
+			<textarea class="TEXTAREA" cols="100" rows="36" name="body" id="ARTICLE_BODY"><BODY></textarea>
 		</div>
 		<div class="clear"></div>
 	</div>

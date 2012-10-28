@@ -1065,7 +1065,7 @@ namespace UberCMS.Plugins
                 string c;
                 foreach (char rc in text)
                 {
-                    c = rc.ToString();
+                    c = rc.ToString().ToLower();
                     if (!strictChars.Contains(c))
                         return "Username cannot contain the character '" + c + "'!";
                 }

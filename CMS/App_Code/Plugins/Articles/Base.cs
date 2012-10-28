@@ -434,8 +434,11 @@ namespace UberCMS.Plugins
                 response.Redirect(pageElements["URL"] + "/login", true);
 
             // Load the users permissions and check they're able to create articles
-            Result permisions = conn.Query_Read("SELECT access_media_create, access_admin FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS ug ON ug.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
-            if (permisions.Rows.Count != 1 || !permisions[0]["access_media_create"].Equals("1")) return;
+            Result perms = conn.Query_Read("SELECT ug.access_media_create, ug.access_media_publish, ug.access_media_edit, ug.access_admin FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS ug ON ug.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
+            if (perms.Rows.Count != 1 || !perms[0]["access_media_create"].Equals("1")) return;
+            bool permAdmin = perms[0]["access_admin"].Equals("1");
+            bool permEdit = perms[0]["access_media_edit"].Equals("1");
+            bool permPublish = perms[0]["access_media_publish"].Equals("1");
 
             string error = null;
             Result preData = null;
@@ -459,6 +462,7 @@ namespace UberCMS.Plugins
             bool allowComments = request.Form["allow_comments"] != null;
             bool showPane = request.Form["show_pane"] != null;
             bool inheritThumbnail = request.Form["inherit_thumbnail"] != null;
+            bool updateExisting = request.Form["update_existing"] != null;
             HttpPostedFile thumbnail = request.Files["thumbnail"];
             if (title != null && body != null && relativeUrl != null && tags != null)
             {
@@ -478,7 +482,7 @@ namespace UberCMS.Plugins
                 else
                 {
                     // Verify the user has not exceeded post limits for today - unless they're admin, we'll just skip the checks
-                    ResultRow postLimits = permisions[0]["access_admin"].Equals("1") ? null : conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' AND datetime >= DATE_SUB(NOW(), INTERVAL 1 HOUR)) AS articles_hour, (SELECT COUNT('') FROM articles WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' AND datetime >= DATE_SUB(NOW(), INTERVAL 1 DAY)) AS articles_day")[0];
+                    ResultRow postLimits = permAdmin ? null : conn.Query_Read("SELECT (SELECT COUNT('') FROM articles WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' AND datetime >= DATE_SUB(NOW(), INTERVAL 1 HOUR)) AS articles_hour, (SELECT COUNT('') FROM articles WHERE userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "' AND datetime >= DATE_SUB(NOW(), INTERVAL 1 DAY)) AS articles_day")[0];
                     if (postLimits != null && int.Parse(postLimits["articles_hour"]) >= Core.settings[SETTINGS_KEY].getInt(SETTINGS_ARTICLES_EDIT_PER_HOUR))
                         error = "You've already posted the maximum amount of articles allowed within an hour, please try again later!";
                     else if (postLimits != null && int.Parse(postLimits["articles_day"]) >= Core.settings[SETTINGS_KEY].getInt(SETTINGS_ARTICLES_EDIT_PER_DAY))
@@ -529,7 +533,9 @@ namespace UberCMS.Plugins
                                     if (articleid != null)
                                     {
                                         Result updateCheck = conn.Query_Read("SELECT userid, published FROM articles WHERE articleid='" + Utils.Escape(articleid) + "' AND threadid='" + Utils.Escape(threadid) + "'");
-                                        if (updateCheck.Rows.Count == 1 && updateCheck[0]["userid"] == HttpContext.Current.User.Identity.Name && !updateCheck[0]["published"].Equals("1"))
+                                        // If the article is unpublished *or* update-existing is true, set the update flag to true
+                                        bool ucPublished = updateCheck[0]["published"].Equals("1");
+                                        if (updateCheck.Rows.Count == 1 && ((updateCheck[0]["userid"] == HttpContext.Current.User.Identity.Name && !ucPublished) || (updateExisting && (permAdmin || permEdit))))
                                             updateArticle = true;
                                     }
                                 }
@@ -559,10 +565,6 @@ namespace UberCMS.Plugins
                                 }
                                 else
                                 {
-                                    // Check if the user is able to publish articles, if so we'll just publish it automatically
-                                    Result userPerm = conn.Query_Read("SELECT ug.access_media_publish FROM bsa_users AS u LEFT OUTER JOIN bsa_user_groups AS ug ON ug.groupid=u.groupid WHERE u.userid='" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'");
-                                    if (userPerm.Rows.Count != 1) return; // Something is critically wrong with basic-site-auth
-                                    bool publishAuto = userPerm[0]["access_media_publish"].Equals("1"); // If true, this will also set the new article as the current article for the thread
                                     // Insert article and link to the thread
                                     StringBuilder query = new StringBuilder();
                                     query
@@ -572,8 +574,8 @@ namespace UberCMS.Plugins
                                         .Append("', '").Append(Utils.Escape(HttpContext.Current.User.Identity.Name))
                                         .Append("', '").Append(Utils.Escape(body))
                                         .Append("', '").Append(Utils.Escape(cached.ToString()))
-                                        .Append("', ").Append(publishAuto ? "'" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'" : "NULL")
-                                        .Append(", '").Append(publishAuto ? "1" : "0")
+                                        .Append("', ").Append(permPublish ? "'" + Utils.Escape(HttpContext.Current.User.Identity.Name) + "'" : "NULL")
+                                        .Append(", '").Append(permPublish ? "1" : "0")
                                         .Append("', '").Append(allowComments ? "1" : "0")
                                         .Append("', '").Append(allowHTML ? "1" : "0")
                                         .Append("', '").Append(showPane ? "1" : "0")
@@ -581,7 +583,7 @@ namespace UberCMS.Plugins
                                         .Append(", NOW()); SELECT LAST_INSERT_ID();");
                                     articleid = conn.Query_Scalar(query.ToString()).ToString();
                                     // If this was automatically published, set it as the current article for the thread
-                                    if (publishAuto)
+                                    if (permPublish)
                                         conn.Query_Execute("UPDATE articles_thread SET articleid_current='" + Utils.Escape(articleid) + "' WHERE relative_url='" + Utils.Escape(relativeUrl) + "'");
                                 }
                                 // Add/update pdf
@@ -652,8 +654,13 @@ namespace UberCMS.Plugins
                 .Replace("<ALLOW_COMMENTS>", allowComments || (title == null && preDataRow != null && preDataRow["allow_comments"].Equals("1")) ? "checked" : string.Empty)
                 .Replace("<SHOW_PANE>", showPane || (title == null && preDataRow != null && preDataRow["show_pane"].Equals("1")) ? "checked" : string.Empty)
                 .Replace("<INHERIT>", inheritThumbnail || (title == null && preDataRow != null && preDataRow["thumbnailid"].Length > 0) ? "checked" : string.Empty)
+                .Replace("<UPDATE_EXISTING>", updateExisting || (title == null && preDataRow != null) ? "checked" : string.Empty)
                 .Replace("<BODY>", HttpUtility.HtmlEncode(body ?? (preDataRow != null ? preDataRow["body"] : string.Empty)))
                 ;
+            // Set flags
+            // -- Update existing checkbox
+            if ((permAdmin || permEdit) && preData != null)
+                pageElements.setFlag("UPDATE_EXISTING");
             // Finalize page
             Misc.Plugins.addHeaderJS(pageElements["URL"] + "/Content/JS/Article.js", ref pageElements);
             Misc.Plugins.addHeaderCSS(pageElements["URL"] + "/Content/CSS/Article.css", ref pageElements);
@@ -889,6 +896,8 @@ namespace UberCMS.Plugins
             year = month = day = 0;
             Result logData = conn.Query_Read("SELECT ale.*, at.relative_url, a.title, u.username FROM articles_log_events AS ale LEFT OUTER JOIN articles AS a ON a.articleid=ale.articleid LEFT OUTER JOIN articles_thread AS at ON at.threadid=ale.threadid LEFT OUTER JOIN bsa_users AS u ON u.userid=ale.userid ORDER BY datetime DESC LIMIT " + ((changesPerPage * page) - changesPerPage) + "," + changesPerPage);
             if (logData.Rows.Count != 0)
+            {
+                string logHtml;
                 foreach (ResultRow logEvent in logData)
                 {
                     eventDate = DateTime.Parse(logEvent["datetime"]);
@@ -909,84 +918,47 @@ namespace UberCMS.Plugins
                     switch (type)
                     {
                         case RecentChanges_EventType.Created:
-                            content.Append(
-                                Core.templates["articles"]["change_created"]
-                                .Replace("<RELATIVE_URL>", HttpUtility.UrlEncode(logEvent["relative_url"]))
-                                .Replace("<TITLE>", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
-                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
-                                );
+                            logHtml = Core.templates["articles"]["change_created"];
                             break;
                         case RecentChanges_EventType.Deleted:
-                            content.Append(
-                                Core.templates["articles"]["change_deleted"]
-                                .Replace("<ARTICLEID>", HttpUtility.HtmlEncode(logEvent["articleid"]))
-                                .Replace("<THREADID>", HttpUtility.HtmlEncode(logEvent["threadid"]))
-                                .Replace("<RELATIVE_URL>", logEvent["relative_url"].Length > 0 ? HttpUtility.UrlEncode(logEvent["relative_url"]) : "(unknown)")
-                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
-                                );
+                            logHtml = Core.templates["articles"]["change_deleted"];
                             break;
                         case RecentChanges_EventType.DeletedThread:
-                            content.Append(
-                                Core.templates["articles"]["change_deletedthread"]
-                                .Replace("<THREADID>", HttpUtility.HtmlEncode(logEvent["threadid"]))
-                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
-                                );
+                            logHtml = Core.templates["articles"]["change_deletedthread"];
                             break;
                         case RecentChanges_EventType.Edited:
-                            content.Append(
-                                Core.templates["articles"]["change_created"]
-                                .Replace("<RELATIVE_URL>", HttpUtility.UrlEncode(logEvent["relative_url"]))
-                                .Replace("<TITLE>", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
-                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
-                                );
+                            logHtml = Core.templates["articles"]["change_edited"];
                             break;
                         case RecentChanges_EventType.Published:
-                            content.Append(
-                                Core.templates["articles"]["change_published"]
-                                .Replace("<RELATIVE_URL>", HttpUtility.UrlEncode(logEvent["relative_url"]))
-                                .Replace("<TITLE>", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
-                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
-                                );
+                            logHtml = Core.templates["articles"]["change_published"];
                             break;
                         case RecentChanges_EventType.SetAsSelected:
-                            content.Append(
-                                Core.templates["articles"]["change_selected"]
-                                .Replace("<RELATIVE_URL>", HttpUtility.UrlEncode(logEvent["relative_url"]))
-                                .Replace("<TITLE>", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
-                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
-                                );
+                            logHtml = Core.templates["articles"]["change_selected"];
                             break;
                         case RecentChanges_EventType.RebuiltArticleCache:
-                            content.Append(
-                                Core.templates["articles"]["change_rebuild_cache"]
-                                .Replace("<RELATIVE_URL>", HttpUtility.UrlEncode(logEvent["relative_url"]))
-                                .Replace("<TITLE>", logEvent["title"].Length > 0 ? HttpUtility.HtmlEncode(logEvent["title"]) : "(unknown)")
-                                .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
-                                .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
-                                .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
-                                .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
-                                );
+                            logHtml = Core.templates["articles"]["change_rebuild_cache"];
+                            break;
+                        default:
+                            logHtml = null;
                             break;
                     }
+                    // Replace text and append
+                    if (logHtml != null)
+                    {
+                        content.Append(
+                                    logHtml
+                                    .Replace("<ARTICLEID>", HttpUtility.HtmlEncode(logEvent["articleid"]))
+                                    .Replace("<THREADID>", HttpUtility.HtmlEncode(logEvent["threadid"]))
+                                    .Replace("<RELATIVE_URL>", logEvent["relative_url"].Length > 0 ? HttpUtility.UrlEncode(logEvent["relative_url"]) : "(unknown)")
+                                    .Replace("<USERID>", HttpUtility.HtmlEncode(logEvent["userid"]))
+                                    .Replace("<USERNAME>", HttpUtility.HtmlEncode(logEvent["username"]))
+                                    .Replace("<DATETIME>", HttpUtility.HtmlEncode(logEvent["datetime"]))
+                                    .Replace("<TIME>", HttpUtility.HtmlEncode(Misc.Plugins.getTimeString(eventDate)))
+                                    .Replace("<TITLE>", HttpUtility.HtmlEncode(logEvent["title"]))
+                                    );
+                    }
                 }
+            }
             else
                 content.Append("No recent changes have occurred or the log has been wiped.");
             // Append navigation
