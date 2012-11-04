@@ -555,7 +555,7 @@ namespace UberCMS.Plugins
                                         .Append("', body_cached='").Append(Utils.Escape(cached.ToString()))
                                         .Append("', allow_comments='").Append(allowComments ? "1" : "0")
                                         .Append("', allow_html='").Append(allowHTML ? "1" : "0")
-                                        .Append("', show_pane='").Append(showPane).Append("' WHERE articleid='").Append(Utils.Escape(articleid)).Append("';");
+                                        .Append("', show_pane='").Append(showPane ? "1" : "0").Append("' WHERE articleid='").Append(Utils.Escape(articleid)).Append("';");
                                     // Delete the previous tags
                                     query.Append("DELETE FROM articles_tags_article WHERE articleid='" + Utils.Escape(articleid) + "';");
                                     // Delete the previous images associated with the article
